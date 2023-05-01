@@ -1,0 +1,21 @@
+if def(BUILD_DEBUG)
+print "DEBUG BUILD\n"
+elif def(BUILD_RELEASE)
+print "RELEASE BUILD\n"
+else
+static_assert 0, "Unknown configuration"
+endc
+
+section "header", rom0[$0100]
+	di
+	jr main
+	ds ($0150 - @), 0
+
+section "main", rom0[$0150]
+main:
+	ld a, 0
+	.loop
+		ld [$C000], a
+		inc a
+		jr .loop
+
