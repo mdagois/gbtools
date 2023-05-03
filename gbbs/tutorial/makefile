@@ -12,12 +12,15 @@ configurations = release debug
 # as necessary (i.e. do not put any important files in the build directory)
 build_directory = build
 
-# 4. Add source files to each project.
+# 4. Set the fix options that apply to all projects.
+fix_options = --validate
+
+# 5. Add source files to each project.
 # We only have one single project, 'tutorial', so we use the variable
 # 'tutorial_sources'.
 tutorial_sources = src/main.rgbasm
 
-# 5. [Optional] Add compilation options for each configuration.
+# 6. [Optional] Add compilation options for each configuration.
 # This step shows how straightforward it is to define compile options for
 # each configuration.
 # It is also possible to define compile options for a given project (i.e. tutorial)
@@ -25,15 +28,15 @@ tutorial_sources = src/main.rgbasm
 debug_compile_options = -DBUILD_DEBUG
 release_compile_options = -DBUILD_RELEASE
 
-# 6. [Optional] Add link options for the 'tutorial' project.
+# 7. [Optional] Add link options for the 'tutorial' project.
 # As for compile options, it is possible to define link options for each
 # configuration, project or project/combination combination.
 tutorial_link_options = --dmg --tiny
 
-# 7. Include GGBS.
+# 8. Include GGBS.
 # GGBS automatically generates the rules to build the projects.
 include ../gbbs.mk
 
-# 8. Type `make help` to see all targets.
-# 9. Check the GBBS reference to learn about other options.
+# 9. Type `make help` to see all targets.
+# 10. Check the GBBS reference to learn about other options.
 

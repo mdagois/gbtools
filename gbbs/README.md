@@ -21,6 +21,8 @@ Then, GBBS generates the `make` targets to build a DMG ROM from a single source 
 
 	build_directory = build
 
+	fix_options = --validate
+
 	my_game_sources = src/main.rgbasm
 	my_game_link_options = --dmg --tiny
 
@@ -46,50 +48,23 @@ On other operating systems, the shells commands should be already available.
 Make sure you have the right version of `make`, and then, install the RGBDS toolchain.
 
 On all systems, GBBS should work as is if all the required executables are in the PATH.
-However, it is possible to define `shell_command_directory` and `rgbds_directory` in `make` to point to directories containing the shell command executables and the RGBDS toolchain respectively.
+However, it is possible to define the `shell_command_directory` and `rgbds_directory` variables to point to directories containing the shell command executables and the RGBDS toolchain respectively.
+There are three ways to define those variables: on the command line, in the makefile itself and in the special file `user.mk`.
 
+Assuming Windows and that the RGBDS toolchain is in `c:\src\bin`, below is how the variable would be specified on the command line.
+Note that `/` is used instead of `\`, even on Windows, as `make` interprets the latter as an escaping character.
 
+	make rgbds_directory=c:/src/bin all
 
+When defining the variable in the makefile itself, it just needs to be assigned the right value as below.
+Quote (`"`) would be necessary if the directory path were to contain spaces.
 
+	rgbds_directory = c:/src/bin
 
-### Custom directories
-
-1. xxx
-
-	make rgbds_directory=c:/src/bin/test all
-
-2. xxx
-
-	rgbds_directory=c:/src/bin/test
-
-3. xxx
-
-	-include config.mk
-
-	
-
-Use quotes for path that contains spaces
-
-xxx 3 ways
-	- cli -> slash instead of blackslash on windows
-	- inside the makefile
-	- -include config.mk
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+Finally, it is possible to define the variables in a special file, named `user.mk`, placed in the same directory as the makefile.
+GBBS always includes `user.mk` if it exists.
+This method is the preferred one, especially if several people are using the same makefile.
+It keeps the `make` commands simple (i.e. no need to specify the directory every single time), and it does not clutter the makefile with hardcoded paths.
 
 ### Features
 
@@ -108,7 +83,7 @@ xxx 3 ways
 	* GBBS exposes some makefile debugging utilities
 	* GBBS reports user-friendly error for missing mandatory variables or unexpected values
 
-## Get started
+## Getting started
 
 ### Terminology
 
@@ -121,12 +96,12 @@ xxx 3 ways
 
 ### Tutorial
 
-The `tutorial` directory contains a makefile that introduces the basics of GBBS.
+The [tutorial](tutorial) directory contains a makefile that introduces the basics of GBBS.
 Open that makefile and read the comments in it.
 
 ### Samples
 
-The `samples` directory contains a makefile that leverages GBBS to build several ROMs.
+The [samples](samples) directory contains a makefile that leverages GBBS to build several ROMs.
 It shows a more realistic use case of GBBS.
 
 ## Reference
@@ -238,7 +213,7 @@ They are mostly useful when debugging GBBS itself.
 
 Rules execute in parallel when `make` is invoked with the `-j<N>` option.
 There is one notable exception though.
-`clean` type rules delete directories, so they cannot safely be run at the same time as `build` rules.
+Rules of the `clean` type delete directories, so they cannot safely be run at the same time as `build` rules.
 So, `make -j8 clean all` will be forcibly executed as `make clean all` (i.e. not parallel).
 It is recommended to execute both rules separately, i.e. `make clean` first, then `make -j8 all`.
 
