@@ -7,7 +7,7 @@ A straightforward build system for programs written in assembly using the [RGBDS
 Game Boy Build System (GBBS) leverages `make` to simplify building and managing ROMs.
 It consists of a single file, `gbbs.mk`, containing a build rule generator.
 Building a ROM only requires a makefile that defines a small set of mandatory variables and includes `gbbs.mk`.
-Optional variables can be specified to allow a finer control over the build process.
+Optional variables can be specified for a finer control over the build process.
 Additional custom rules can be added to the makefile for tasks such as asset conversion.
 
 ### Example
