@@ -269,8 +269,8 @@ $$($1_$2_build_directory)/%$(object_extension): $$(root_directory)/% | $$$$(@D)/
 	$(call compile_command,$1,$2,$$@,$$<)
 
 launch_$1_$2:
-	$(emulator_command) $($1_$2_launch_options_list) $($1_$2_binary) &
-	$(if $($1_$2_launch_options_list2),$(emulator_command) $($1_$2_launch_options_list2) $($1_$2_binary) &,)
+	$(emulator_command) $$($1_$2_launch_options_list) $$($1_$2_binary) &
+	$$(if $$($1_$2_launch_options_list2),$(emulator_command) $$($1_$2_launch_options_list2) $$($1_$2_binary) &,)
 
 clean_$1_$2:
 	$$(rmdir_command) $$($1_$2_build_directory)
