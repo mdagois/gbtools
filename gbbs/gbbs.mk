@@ -12,6 +12,9 @@
 # secondary expansion is heavily used in rule generation
 .SECONDEXPANSION:
 
+# include the user configuration (e.g. to override the shell command directory)
+-include user.mk
+
 ########################################
 # Helper functions
 ########################################
@@ -89,6 +92,8 @@ rgbds_directory_with_slash := $(if $(rgbds_directory),$(rgbds_directory)/,)
 rgbasm_command=$(rgbds_directory_with_slash)rgbasm
 rgblink_command=$(rgbds_directory_with_slash)rgblink
 rgbfix_command=$(rgbds_directory_with_slash)rgbfix
+
+# emulator
 emulator_command ?= bgb
 
 ########################################
