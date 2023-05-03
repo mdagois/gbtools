@@ -31,6 +31,25 @@ Then, GBBS generates the `make` targets to build a DMG ROM from a single source 
 To learn the basics of GBBS, head to the [getting started](#getting-started) section.
 Also, check the [reference](#reference) to discover the available variables.
 
+### Features
+
+Here is a list of the main features of GBBS.
+
+* GNU make rules generation
+	* GBBS generates the build rules for the compilation, linkage and fix phases
+	* GBBS provides a simple help rule to list available `make` targets
+* Dependencies management
+	* GBBS tracks dependencies between files and rebuilds only the necessary artifacts
+	* GBBS also detects compilation and linkage options changes
+* Clean and efficient
+	* GBBS is designed for out-of-source builds
+	* GBBS has strong support for parallel rule execution (`make -j`)
+	* GNU make syntax is still fully available
+	* GBBS does not rely on recursive makefiles
+* Miscellaneous
+	* GBBS exposes some makefile debugging utilities
+	* GBBS reports user-friendly error for missing mandatory variables or unexpected values
+
 ### Requirements
 
 Requirements have been kept to a minimum.
@@ -65,25 +84,6 @@ Finally, it is possible to define the variables in a special file, named `user.m
 GBBS always includes `user.mk` if it exists.
 This is the preferred method, especially if several people are using the same makefile (e.g. a collaborative project).
 It keeps the `make` commands simple (i.e. no need to specify the directory every single time), and it does not clutter the makefile with hardcoded paths.
-
-### Features
-
-Here is a list of the main features of GBBS.
-
-* GNU make rules generation
-	* GBBS generates the build rules for the compilation, linkage and fix phases
-	* GBBS provides a simple help rule to list available `make` targets
-* Dependencies management
-	* GBBS tracks dependencies between files and rebuilds only the necessary artifacts
-	* GBBS also detects compilation and linkage options changes
-* Clean and efficient
-	* GBBS is designed for out-of-source builds
-	* GBBS has strong support for parallel rule execution (`make -j`)
-	* GNU make syntax is still fully available
-	* GBBS does not rely on recursive makefiles
-* Miscellaneous
-	* GBBS exposes some makefile debugging utilities
-	* GBBS reports user-friendly error for missing mandatory variables or unexpected values
 
 ## Getting started
 
