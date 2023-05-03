@@ -10,3 +10,7 @@ A set of tools for Game Boy development.
 
 The [third_party](third_party) directory contains useful binaries from external sources.
 
+## Support
+
+Please report any issues [here](https://github.com/mdagois/gbtools/issues).
+
