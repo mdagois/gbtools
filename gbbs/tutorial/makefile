@@ -12,7 +12,7 @@ configurations = release debug
 # as necessary (i.e. do not put any important files in the build directory)
 build_directory = build
 
-# 4. Set the fix options that apply to all projects.
+# 4. Specify the fix options that apply to all projects.
 fix_options = --validate
 
 # 5. Add source files to each project.

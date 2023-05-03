@@ -28,8 +28,8 @@ Then, GBBS generates the `make` targets to build a DMG ROM from a single source 
 
 	include gbbs.mk
 
-To learn the basics of GBBS, head to the [Getting started](getting-started) section.
-Also check the [reference](#reference) to discover the available variables.
+To learn the basics of GBBS, head to the [Getting started](#getting-started) section.
+Also, check the [reference](#reference) to discover the available variables.
 
 ### Requirements
 
@@ -40,40 +40,42 @@ Only the following executables are required.
 * GNU make 4.2 or later
 * `mkdir`, `rm` and `touch` shell commands (like those found in Bash)
 
-On Windows, the shell commands come with Git (by default, under `C:\Program Files\Git\usr\bin`).
+On Windows, the shell commands come with Git (by default, installed under `C:\Program Files\Git\usr\bin`).
 A copy of `make` is available [here](../third_party) for convenience.
 You can grab the RGBDS toolchain binaries from their GitHub repository.
 
 On other operating systems, the shells commands should be already available.
 Make sure you have the right version of `make`, and then, install the RGBDS toolchain.
 
-On all systems, GBBS should work as is if all the required executables are in the PATH.
-However, it is possible to define the `shell_command_directory` and `rgbds_directory` variables to point to directories containing the shell command executables and the RGBDS toolchain respectively.
-There are three ways to define those variables: on the command line, in the makefile itself and in the special file `user.mk`.
+On all systems, GBBS should work without any additional setup if all the required executables are in the PATH.
+However, if the executables are not in the PATH, it is possible to define the `shell_command_directory` and `rgbds_directory` variables to point to directories containing the shell command executables and the RGBDS toolchain respectively.
+There are three ways to define those variables: on the command line, in the makefile itself and in the special file `user.mk` (more on this one below).
 
-Assuming Windows and that the RGBDS toolchain is in `c:\src\bin`, below is how the variable would be specified on the command line.
+Assuming that Windows is the operating system and that the RGBDS toolchain is in `c:\src\bin`, below is how the `rgbds_directory` variable would be specified on the command line.
 Note that `/` is used instead of `\`, even on Windows, as `make` interprets the latter as an escaping character.
 
-	make rgbds_directory=c:/src/bin all
+	make rgbds_directory=c:/src/bin <target>
 
 When defining the variable in the makefile itself, it just needs to be assigned the right value as below.
-Quote (`"`) would be necessary if the directory path were to contain spaces.
+Double quotes (`"`) are necessary when the directory path contains spaces.
 
 	rgbds_directory = c:/src/bin
 
 Finally, it is possible to define the variables in a special file, named `user.mk`, placed in the same directory as the makefile.
 GBBS always includes `user.mk` if it exists.
-This method is the preferred one, especially if several people are using the same makefile.
+This is the preferred method, especially if several people are using the same makefile (e.g. a collaborative project).
 It keeps the `make` commands simple (i.e. no need to specify the directory every single time), and it does not clutter the makefile with hardcoded paths.
 
 ### Features
+
+Here is a list of the main features of GBBS.
 
 * GNU make rules generation
 	* GBBS generates the build rules for the compilation, linkage and fix phases
 	* GBBS provides a simple help rule to list available `make` targets
 * Dependencies management
 	* GBBS tracks dependencies between files and rebuilds only the necessary artifacts
-	* GBBS detects out-of-date files as well as compilation and linkage options changes
+	* GBBS also detects compilation and linkage options changes
 * Clean and efficient
 	* GBBS is designed for out-of-source builds
 	* GBBS has strong support for parallel rule execution (`make -j`)
@@ -101,8 +103,8 @@ Open that makefile and read the comments in it.
 
 ### Samples
 
-The [samples](samples) directory contains a makefile that leverages GBBS to build several ROMs.
-It shows a more realistic use case of GBBS.
+The [samples](samples) directory contains a makefile that leverages GBBS to build multiple ROMs.
+It shows a more complex use case of GBBS.
 
 ## Reference
 
@@ -122,9 +124,9 @@ Here is a list of the variables available at the solution level.
 |link_options						|A list of options passed to `rgblink` during compilation of any target in the solution.
 |fix_options						|A list of options passed to `rgbfix` during compilation of any target in the solution.
 |default_target						|The default target executed when running the `make` command without any target specified. It defaults to `help` when not specified.
-|shell_command_directory			|The path to a directory containing shell executables required by the GBBS (e.g. C:\\Program Files\\Git\\usr\\bin\\). It must end with a directory separator (either `\\` or `/`). Optional if compatible versions of `mkdir`, `rm` and `touch` are already in the path.
-|emulator_command					|The command used to launch the emulator. Default to `bgb`.
-|rgbds_directory					|The path to the RGBDS directory. It must end with a directory separator (either `\\` or `/`). Optional if `rgbasm`, `rgblink` and `rgbfix` are already in the path.
+|shell_command_directory			|The path to a directory containing the shell command executables required by GBBS (e.g. C:/Program Files/Git/usr/bin). Optional if compatible versions of `mkdir`, `rm` and `touch` are already in the PATH.
+|emulator_command					|The command used to launch the emulator. Defaults to `bgb`.
+|rgbds_directory					|The path to the RGBDS directory. Optional if `rgbasm`, `rgblink` and `rgbfix` are already in the PATH.
 
 ### Project variables
 
@@ -133,12 +135,12 @@ Here is a list of the variables available for each project.
 |Variable							|Description
 |:---								|:---
 |\<project\>_sources				|A list of the source files added to the project. Source files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_<configuration>_sources` is specified.
-|\<project\>_description			|The description displayed in the `help` rule for the project.
+|\<project\>_description			|The description displayed by the `help` rule for the project.
 |\<project\>_compile_options		|A list of options passed to `rgbasm` during the compilation of any target in the project.
 |\<project\>_link_options			|A list of options passed to `rgblink` during compilation of any target in the project.
 |\<project\>_fix_options			|A list of options passed to `rgbfix` during compilation of any target in the project.
-|\<project\>_launch_options			|A list of options passed to the first instance of the `BGB` emulator when launching a target.
-|\<project\>_launch_options2		|A list of options passed to the second instance of the `BGB` emulator when launching a target. The second instance is only started when this variable is not empty. This is convenient when building and testing multiplayer games, as it is possible to `--listen` on the first instance and `--connect` on the second one.
+|\<project\>_launch_options			|A list of options passed to the first instance of the emulator when launching a ROM.
+|\<project\>_launch_options2		|A list of options passed to the second instance of the emulator when launching a ROM. The second instance is only started when this variable is not empty. It is convenient when building and testing multiplayer games, as it is possible to `--listen` on the first instance and `--connect` on the second one.
 
 ### Configuration variables
 
@@ -146,7 +148,7 @@ Here is a list of the variables available for each configuration.
 
 |Variable							|Description
 |:---								|:---
-|\<configuration\>_description		|The description displayed in the `help` rule.
+|\<configuration\>_description		|The description displayed by the `help` rule.
 |\<configuration\>_compile_options	|A list of options passed to `rgbasm` during the compilation of any target in the configuration.
 |\<configuration\>_link_options		|A list of options passed to `rgblink` during compilation of any target in the configuration.
 |\<configuration\>_fix_options		|A list of options passed to `rgbfix` during compilation of any target in the configuration.
@@ -179,7 +181,7 @@ The following options are automatically handled by GBBS.
 They must not be used as compilation, linkage or fix options.
 
 * rgbasm
-  * -M dependency_file -MG -MP
+  * -M <dependency_file> -MG -MP
 * rgblink
   * --map (-m)
   * --sym (-s)
@@ -194,7 +196,7 @@ They must not be used as compilation, linkage or fix options.
 The build directory contains all binaries and temporary files produced by the build process.
 
 For each configuration, a directory is created to hold the binaries.
-These directories are of direct interest to the user of the build system, as they hold the final result of the build process, i.e. the ROMs, map and symbol files.
+These directories are of direct interest to the user of the build system, as they hold the final result of the build process, i.e. the ROM, map and symbol files.
 
 The build directory also contains a `.temp` directory that holds temporary files used by the build system to perform its duties.
 This directory can be safely ignored.
@@ -220,7 +222,7 @@ It is recommended to execute both rules separately, i.e. `make clean` first, the
 ### In case of trouble
 
 If `make` commands keep failing on the same error, even after the error has been seemingly addressed, do `make disable_asserts=1 clean`.
-If that does not solve the issue, manually delete the `build_directory` and re-run `make`.
+If the problem persists, manually delete the `build_directory` and re-run `make`.
 
 ### Acknowledgement
 
