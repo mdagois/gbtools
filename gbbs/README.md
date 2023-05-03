@@ -28,7 +28,7 @@ Then, GBBS generates the `make` targets to build a DMG ROM from a single source 
 
 	include gbbs.mk
 
-To learn the basics of GBBS, head to the [Getting started](#getting-started) section.
+To learn the basics of GBBS, head to the [getting started](#getting-started) section.
 Also, check the [reference](#reference) to discover the available variables.
 
 ### Requirements
