@@ -152,6 +152,19 @@ const ColorRGBA* Image::getPixels() const
 	return m_pixels;
 }
 
+bool Image::iterateTiles(
+	uint32_t start_row, uint32_t row_count,
+	uint32_t area_width, uint32_t area_height,
+	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
+{
+	return iterateArea(
+		start_row, row_count, area_width, area_height,
+		[&tile_callback](const ImageArea& area)
+		{
+			return area.iterateTiles(tile_callback);
+		});
+}
+
 bool Image::iterateArea(
 	uint32_t start_row, uint32_t row_count,
 	uint32_t area_width, uint32_t area_height,
@@ -186,17 +199,5 @@ bool Image::iterateArea(
 	}
 
 	return true;
-}
-
-bool Image::iterateTiles(
-	uint32_t start_row, uint32_t row_count,
-	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
-{
-	return iterateArea(
-		start_row, row_count, kTileSize, kTileSize,
-		[&tile_callback](const ImageArea& area)
-		{
-			return area.iterateTiles(tile_callback);
-		});
 }
 

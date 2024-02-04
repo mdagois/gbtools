@@ -71,13 +71,16 @@ public:
 	const char* getFilename() const;
 	const ColorRGBA* getPixels() const;
 
+	bool iterateTiles(
+		uint32_t start_row, uint32_t row_count,
+		uint32_t area_width, uint32_t area_height,
+		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
+
+private:
 	bool iterateArea(
 		uint32_t start_row, uint32_t row_count,
 		uint32_t area_width, uint32_t area_height,
 		std::function<bool(const ImageArea&)> area_callback) const;
-	bool iterateTiles(
-		uint32_t start_row, uint32_t row_count,
-		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:
 	std::string m_filename;
