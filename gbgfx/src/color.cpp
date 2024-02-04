@@ -1,5 +1,13 @@
+#include <algorithm>
 #include <cassert>
 #include "color.h"
+
+////////////////////////////////////////////////////////////////////////////////
+
+enum : uint16_t
+{
+	kBGR555_Magenta = 0x7C1FU,
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -23,5 +31,23 @@ ColorBGR555 convertColor(ColorRGBA rgba)
 	const uint8_t blue = rgba.b / 8;
 	assert(red < 32 && green < 32 && blue < 32);
 	return (blue << 10) | (green << 5) | red;
+}
+
+void sortColors(ColorBGR555* colors, uint32_t count)
+{
+	std::sort(
+		colors, colors + count,
+		[](const ColorBGR555 lhs, const ColorBGR555 rhs)
+		{
+			if(lhs == kBGR555_Magenta)
+			{
+				return true;
+			}
+			if(rhs == kBGR555_Magenta)
+			{
+				return false;
+			}
+			return getLuminance(lhs) < getLuminance(rhs);
+		});
 }
 

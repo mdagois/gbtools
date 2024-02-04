@@ -28,6 +28,7 @@ enum : ColorBGR555
 };
 
 double getLuminance(const ColorBGR555 color);
+void sortColors(ColorBGR555* colors, uint32_t count);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Conversion

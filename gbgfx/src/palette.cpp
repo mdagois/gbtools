@@ -1,18 +1,40 @@
+#include <cassert>
 #include "palette.h"
 
+////////////////////////////////////////////////////////////////////////////////
+
 Palette::Palette()
+: m_color_count(0)
 {
 	for(int32_t i = 0; i < kColorsPerPalette; ++i)
 	{
-		colors[i] = kBGR555_Invalid;
+		m_colors[i] = kBGR555_Invalid;
 	}
 }
 
-//struct PaletteSet
-//{
-//	Palette palettes[kPaletteMaxCount];
-//};
-//
+Palette::~Palette()
+{
+}
+
+void Palette::push(ColorBGR555 color)
+{
+	assert(m_color_count < kColorsPerPalette);
+	m_colors[m_color_count] = color;
+	++m_color_count;
+	sortColors(m_colors, m_color_count);
+}
+
+uint32_t Palette::getColorCount() const
+{
+	return m_color_count;
+}
+
+const ColorBGR555 Palette::operator[](int32_t index) const
+{
+	assert(index >= 0 && index < static_cast<int32_t>(m_color_count));
+	return m_colors[index];
+}
+
 //static bool extractTilePalette(Palette& out_tile_palette, const ColorRGBA* pixels, uint32_t row_pitch)
 //{
 //	set<ColorBGR555> colors;
@@ -40,8 +62,8 @@ Palette::Palette()
 //
 //	return true;
 //}
-//
-//static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
+
+//bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
 //{
 //	set<ColorBGR555> colors;
 //	for(uint32_t i = 0; i < kColorsPerPalette; ++i)
@@ -75,7 +97,7 @@ Palette::Palette()
 //	sortColors(out_palette.colors, c);
 //	return true;
 //}
-//
+
 //static bool mergePaletteIntoSet(PaletteSet& out_palette_set, const Palette palette)
 //{
 //	for(uint32_t p = 0; p < kPaletteMaxCount; ++p)
@@ -89,7 +111,7 @@ Palette::Palette()
 //
 //	return false;
 //}
-//
+
 //static bool extractPalettes(PaletteSet& out_palette_set, const Image& image)
 //{
 //	return iterateImageTiles(
