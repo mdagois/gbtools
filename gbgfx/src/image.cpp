@@ -77,7 +77,7 @@ bool Image::iterateTiles(
 	}
 
 	const uint32_t total_row_count = getHeight() / tile_height;
-	const uint32_t iterate_row_count = std::max(total_row_count - start_row, row_count);
+	const uint32_t iterate_row_count = std::min(total_row_count - start_row, row_count);
 	const uint32_t iterate_column_count = getWidth() / tile_width;
 	const ColorRGBA* pixels = getPixels() + (start_row * getWidth() * tile_height);
 	for(uint32_t j = 0; j < iterate_row_count; ++j)
