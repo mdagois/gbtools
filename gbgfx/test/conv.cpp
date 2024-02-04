@@ -3,11 +3,6 @@
 
 using namespace std;
 
-enum : uint32_t
-{
-	kTileSize = 8,
-};
-
 int main(int argc, const char** argv)
 {
 	const char* image_filename = "test/demo.png";
@@ -25,8 +20,8 @@ int main(int argc, const char** argv)
 
 	uint32_t tile_count = 0;
 	if(!image.iterateTiles(
-		0, kIterateAllRows, kTileSize, kTileSize,
-		[&tile_count](const ColorRGBA*, uint32_t x, uint32_t y)
+		0, kIterateAllRows,
+		[&tile_count](const TileRGBA& tile, uint32_t x, uint32_t y)
 		{
 			++tile_count;
 			return true;
