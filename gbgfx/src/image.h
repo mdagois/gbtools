@@ -21,7 +21,7 @@ enum : uint32_t
 // Tile
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef ColorRGBA TileRGBA[kTileSize][kTileSize];
+typedef ColorRGBA ImageTile[kTileSize][kTileSize];
 
 ////////////////////////////////////////////////////////////////////////////////
 // Image area
@@ -43,7 +43,7 @@ public:
 	const ColorRGBA* getPixels() const;
 
 	bool iterateTiles(
-		std::function<bool(const TileRGBA&, uint32_t, uint32_t)> tile_callback) const;
+		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:
 	const ColorRGBA* m_pixels;
@@ -77,7 +77,7 @@ public:
 		std::function<bool(const ImageArea&)> area_callback) const;
 	bool iterateTiles(
 		uint32_t start_row, uint32_t row_count,
-		std::function<bool(const TileRGBA&, uint32_t, uint32_t)> tile_callback) const;
+		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:
 	std::string m_filename;

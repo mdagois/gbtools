@@ -21,7 +21,7 @@ int main(int argc, const char** argv)
 	uint32_t tile_count = 0;
 	if(!image.iterateTiles(
 		0, kIterateAllRows,
-		[&tile_count](const TileRGBA& tile, uint32_t x, uint32_t y)
+		[&tile_count](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			++tile_count;
 			return true;

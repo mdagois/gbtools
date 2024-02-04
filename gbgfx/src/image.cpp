@@ -60,7 +60,7 @@ const ColorRGBA* ImageArea::getPixels() const
 }
 
 bool ImageArea::iterateTiles(
-	std::function<bool(const TileRGBA&, uint32_t, uint32_t)> tile_callback) const
+	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
 	assert(getWidth() % kTileSize == 0);
 	assert(getHeight() % kTileSize == 0);
@@ -73,7 +73,7 @@ bool ImageArea::iterateTiles(
 		for(uint32_t i = 0; i < iterate_column_count; ++i)
 		{
 			const ColorRGBA* tile_pixels = pixels + (j * m_pitch * kTileSize) + (i * kTileSize);
-			TileRGBA tile;
+			ImageTile tile;
 			for(uint32_t p = 0; p < kTileSize; ++p)
 			{
 				tile[p][0] = pixels[0];
@@ -190,7 +190,7 @@ bool Image::iterateArea(
 
 bool Image::iterateTiles(
 	uint32_t start_row, uint32_t row_count,
-	std::function<bool(const TileRGBA&, uint32_t, uint32_t)> tile_callback) const
+	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
 	return iterateArea(
 		start_row, row_count, kTileSize, kTileSize,
