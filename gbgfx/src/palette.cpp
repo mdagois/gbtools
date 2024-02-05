@@ -8,7 +8,7 @@ Palette::Palette()
 {
 	for(int32_t i = 0; i < kColorsPerPalette; ++i)
 	{
-		m_colors[i] = kBGR555_Invalid;
+		m_colors[i] = kRGBA_Invalid;
 	}
 }
 
@@ -16,7 +16,7 @@ Palette::~Palette()
 {
 }
 
-void Palette::push(ColorBGR555 color)
+void Palette::push(ColorRGBA color)
 {
 	assert(m_color_count < kColorsPerPalette);
 	m_colors[m_color_count] = color;
@@ -29,7 +29,7 @@ uint32_t Palette::getColorCount() const
 	return m_color_count;
 }
 
-const ColorBGR555 Palette::operator[](int32_t index) const
+const ColorRGBA Palette::operator[](int32_t index) const
 {
 	assert(index >= 0 && index < static_cast<int32_t>(m_color_count));
 	return m_colors[index];
@@ -37,7 +37,7 @@ const ColorBGR555 Palette::operator[](int32_t index) const
 
 //static bool extractTilePalette(Palette& out_tile_palette, const ColorRGBA* pixels, uint32_t row_pitch)
 //{
-//	set<ColorBGR555> colors;
+//	set<ColorRGBA> colors;
 //	for(uint32_t j = 0; j < kTileSize; ++j)
 //	{
 //		const ColorRGBA* row_pixels = pixels + (j * row_pitch);
@@ -53,7 +53,7 @@ const ColorBGR555 Palette::operator[](int32_t index) const
 //	}
 //
 //	uint32_t c = 0;
-//	for(ColorBGR555 color : colors)
+//	for(ColorRGBA color : colors)
 //	{
 //		out_tile_palette.colors[c] = color;
 //		++c;
@@ -65,7 +65,7 @@ const ColorBGR555 Palette::operator[](int32_t index) const
 
 //bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
 //{
-//	set<ColorBGR555> colors;
+//	set<ColorRGBA> colors;
 //	for(uint32_t i = 0; i < kColorsPerPalette; ++i)
 //	{
 //		if(lhs.colors[i] == kBGR555_Invalid)
@@ -89,7 +89,7 @@ const ColorBGR555 Palette::operator[](int32_t index) const
 //	}
 //
 //	uint32_t c = 0;
-//	for(ColorBGR555 color : colors)
+//	for(ColorRGBA color : colors)
 //	{
 //		out_palette.colors[c] = color;
 //		++c;

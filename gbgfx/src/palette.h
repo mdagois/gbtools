@@ -29,12 +29,12 @@ public:
 	Palette();
 	~Palette();
 
-	void push(ColorBGR555 color);
+	void push(ColorRGBA color);
 	uint32_t getColorCount() const;
-	const ColorBGR555 operator[](int32_t index) const;
+	const ColorRGBA operator[](int32_t index) const;
 
 private:
-	ColorBGR555 m_colors[kColorsPerPalette];
+	ColorRGBA m_colors[kColorsPerPalette];
 	uint32_t m_color_count;
 };
 

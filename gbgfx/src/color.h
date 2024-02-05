@@ -14,7 +14,10 @@ struct ColorRGBA
 	uint8_t a;
 };
 
+static ColorRGBA kRGBA_Invalid = {0xFFU, 0xFFU, 0xFFU, 0x00U};
+
 double getLuminance(const ColorRGBA color);
+void sortColors(ColorRGBA* colors, uint32_t count);
 
 ////////////////////////////////////////////////////////////////////////////////
 // BGR555
