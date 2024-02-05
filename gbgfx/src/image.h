@@ -6,8 +6,7 @@
 #include <string>
 
 #include "color.h"
-
-//TODO Add error codes
+#include "result.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
@@ -42,7 +41,7 @@ public:
 	const char* getFilename() const;
 	const ColorRGBA* getPixels() const;
 
-	bool iterateTiles(
+	Result iterateTiles(
 		uint32_t start_tile_row, uint32_t tile_row_count,
 		uint32_t metatile_width, uint32_t metatile_height,
 		bool use_microtile_8x16,

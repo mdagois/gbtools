@@ -6,16 +6,6 @@
 #include "image.h"
 
 ////////////////////////////////////////////////////////////////////////////////
-
-static bool validateSize(const Image& image, uint32_t width, uint32_t height)
-{
-	return
-		width > 0 && height > 0 &&
-		(width % kTileSize == 0) && (height % kTileSize == 0) &&
-		(image.getWidth() % width == 0) && (image.getHeight() % height == 0);
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // Image area
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -218,30 +208,34 @@ const ColorRGBA* Image::getPixels() const
 	return m_pixels;
 }
 
-bool Image::iterateTiles(
+Result Image::iterateTiles(
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool use_microtile_8x16,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
-	if(!validateSize(*this, metatile_width, metatile_height))
+	if(metatile_width == 0 && metatile_height == 0)
 	{
-		return false;
+		return kError_MetatileDimensionsMustNotBeZero;
 	}
 	if(use_microtile_8x16 && ((metatile_height % (kTileSize * 2)) != 0))
 	{
-		return false;
+		return kError_MetatileHeightMustBeMultipleOf16;
+	}
+	if((getWidth() % metatile_width != 0) || (getHeight() % metatile_height != 0))
+	{
+		return kError_ImageDimensionsMustBeMultiplesOfMetatileDimensions;
 	}
 	if((metatile_height % kTileSize) != 0 || (metatile_height % kTileSize) != 0)
 	{
-		return false;
+		return kError_MetatileDimensionsMustBeMultiplesOfTileSize;
 	}
 	
 	ImageArea full_image(
 		m_pixels,
 		0, 0, m_width, m_height,
 		m_width);
-	return full_image.iterateArea(
+	full_image.iterateArea(
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
 		[&tile_callback, use_microtile_8x16](const ImageArea& metatile_area)
@@ -253,5 +247,6 @@ bool Image::iterateTiles(
 					return microtile_area.iterateTiles(tile_callback);
 				});
 		});
+	return kSuccess;
 }
 
