@@ -16,6 +16,41 @@ static bool validateSize(const Image& image, uint32_t width, uint32_t height)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Image area
+////////////////////////////////////////////////////////////////////////////////
+
+class ImageArea
+{
+public:
+	ImageArea(
+		const ColorRGBA* pixels,
+		uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+		uint32_t pitch);
+	~ImageArea();
+
+	uint32_t getX() const;
+	uint32_t getY() const;
+	uint32_t getWidth() const;
+	uint32_t getHeight() const;
+	const ColorRGBA* getPixels() const;
+
+	bool iterateArea(
+		uint32_t start_tile_row, uint32_t tile_row_count,
+		uint32_t metatile_width, uint32_t metatile_height,
+		std::function<bool(const ImageArea&)> area_callback) const;
+	bool iterateTiles(
+		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
+
+private:
+	const ColorRGBA* m_pixels;
+	uint32_t m_x;
+	uint32_t m_y;
+	uint32_t m_width;
+	uint32_t m_height;
+	uint32_t m_pitch;
+};
+
+////////////////////////////////////////////////////////////////////////////////
 
 ImageArea::ImageArea(
 	const ColorRGBA* pixels,
@@ -57,6 +92,37 @@ uint32_t ImageArea::getHeight() const
 const ColorRGBA* ImageArea::getPixels() const
 {
 	return m_pixels;
+}
+
+bool ImageArea::iterateArea(
+	uint32_t start_tile_row, uint32_t tile_row_count,
+	uint32_t metatile_width, uint32_t metatile_height,
+	std::function<bool(const ImageArea&)> area_callback) const
+{
+	if(tile_row_count == kIterateAllRows)
+	{
+		tile_row_count = 0xFFFFFFFFU;
+	}
+	assert(tile_row_count > 0);
+
+	const uint32_t total_row_count = getHeight() / metatile_height;
+	const uint32_t iterate_row_count = std::min(total_row_count - start_tile_row, tile_row_count);
+	const uint32_t iterate_column_count = getWidth() / metatile_width;
+	const ColorRGBA* pixels = getPixels() + (start_tile_row * getWidth() * metatile_height);
+	for(uint32_t j = 0; j < iterate_row_count; ++j)
+	{
+		for(uint32_t i = 0; i < iterate_column_count; ++i)
+		{
+			const ColorRGBA* area_pixels = pixels + (j * getWidth() * metatile_height) + (i * metatile_width);
+			const ImageArea tile_area(area_pixels, i, j, metatile_width, metatile_height, this->getWidth());
+			if(!area_callback(tile_area))
+			{
+				return false;
+			}
+		}
+	}
+
+	return true;
 }
 
 bool ImageArea::iterateTiles(
@@ -153,51 +219,39 @@ const ColorRGBA* Image::getPixels() const
 }
 
 bool Image::iterateTiles(
-	uint32_t start_row, uint32_t row_count,
-	uint32_t area_width, uint32_t area_height,
+	uint32_t start_tile_row, uint32_t tile_row_count,
+	uint32_t metatile_width, uint32_t metatile_height,
+	bool use_microtile_8x16,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
-	return iterateArea(
-		start_row, row_count, area_width, area_height,
-		[&tile_callback](const ImageArea& area)
-		{
-			return area.iterateTiles(tile_callback);
-		});
-}
-
-bool Image::iterateArea(
-	uint32_t start_row, uint32_t row_count,
-	uint32_t area_width, uint32_t area_height,
-	std::function<bool(const ImageArea&)> area_callback) const
-{
-	if(row_count == kIterateAllRows)
-	{
-		row_count = 0xFFFFFFFFU;
-	}
-	assert(row_count > 0);
-
-	if(!validateSize(*this, area_width, area_height))
+	if(!validateSize(*this, metatile_width, metatile_height))
 	{
 		return false;
 	}
-
-	const uint32_t total_row_count = getHeight() / area_height;
-	const uint32_t iterate_row_count = std::min(total_row_count - start_row, row_count);
-	const uint32_t iterate_column_count = getWidth() / area_width;
-	const ColorRGBA* pixels = getPixels() + (start_row * getWidth() * area_height);
-	for(uint32_t j = 0; j < iterate_row_count; ++j)
+	if(use_microtile_8x16 && ((metatile_height % (kTileSize * 2)) != 0))
 	{
-		for(uint32_t i = 0; i < iterate_column_count; ++i)
-		{
-			const ColorRGBA* area_pixels = pixels + (j * getWidth() * area_height) + (i * area_width);
-			const ImageArea tile_area(area_pixels, i, j, area_width, area_height, this->getWidth());
-			if(!area_callback(tile_area))
-			{
-				return false;
-			}
-		}
+		return false;
 	}
-
-	return true;
+	if((metatile_height % kTileSize) != 0 || (metatile_height % kTileSize) != 0)
+	{
+		return false;
+	}
+	
+	ImageArea full_image(
+		m_pixels,
+		0, 0, m_width, m_height,
+		m_width);
+	return full_image.iterateArea(
+		start_tile_row, tile_row_count,
+		metatile_width, metatile_height,
+		[&tile_callback, use_microtile_8x16](const ImageArea& metatile_area)
+		{
+			return metatile_area.iterateArea(
+				0, kIterateAllRows, kTileSize, kTileSize * (use_microtile_8x16 ? 2 : 1),
+				[&tile_callback](const ImageArea& microtile_area)
+				{
+					return microtile_area.iterateTiles(tile_callback);
+				});
+		});
 }
 

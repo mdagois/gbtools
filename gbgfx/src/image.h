@@ -7,6 +7,8 @@
 
 #include "color.h"
 
+//TODO Add error codes
+
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
 ////////////////////////////////////////////////////////////////////////////////
@@ -22,37 +24,6 @@ enum : uint32_t
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef ColorRGBA ImageTile[kTileSize][kTileSize];
-
-////////////////////////////////////////////////////////////////////////////////
-// Image area
-////////////////////////////////////////////////////////////////////////////////
-
-class ImageArea
-{
-public:
-	ImageArea(
-		const ColorRGBA* pixels,
-		uint32_t x, uint32_t y, uint32_t width, uint32_t height,
-		uint32_t pitch);
-	~ImageArea();
-
-	uint32_t getX() const;
-	uint32_t getY() const;
-	uint32_t getWidth() const;
-	uint32_t getHeight() const;
-	const ColorRGBA* getPixels() const;
-
-	bool iterateTiles(
-		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
-
-private:
-	const ColorRGBA* m_pixels;
-	uint32_t m_x;
-	uint32_t m_y;
-	uint32_t m_width;
-	uint32_t m_height;
-	uint32_t m_pitch;
-};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Image
@@ -72,15 +43,10 @@ public:
 	const ColorRGBA* getPixels() const;
 
 	bool iterateTiles(
-		uint32_t start_row, uint32_t row_count,
-		uint32_t area_width, uint32_t area_height,
+		uint32_t start_tile_row, uint32_t tile_row_count,
+		uint32_t metatile_width, uint32_t metatile_height,
+		bool use_microtile_8x16,
 		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
-
-private:
-	bool iterateArea(
-		uint32_t start_row, uint32_t row_count,
-		uint32_t area_width, uint32_t area_height,
-		std::function<bool(const ImageArea&)> area_callback) const;
 
 private:
 	std::string m_filename;

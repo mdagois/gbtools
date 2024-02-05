@@ -20,7 +20,8 @@ int main(int argc, const char** argv)
 
 	uint32_t tile_count = 0;
 	if(!image.iterateTiles(
-		0, kIterateAllRows, kTileSize, kTileSize * 2,
+		0, kIterateAllRows, kTileSize * 2, kTileSize * 2,
+		true,
 		[&tile_count](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			++tile_count;
