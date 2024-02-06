@@ -6,6 +6,24 @@
 #include "image.h"
 
 ////////////////////////////////////////////////////////////////////////////////
+// Image tile
+////////////////////////////////////////////////////////////////////////////////
+
+ImageTile::ImageTile()
+{
+}
+
+ImageTile::~ImageTile()
+{
+}
+
+ColorRGBA& ImageTile::operator[](int32_t index)
+{
+	assert(index < kPixelsPerTile);
+	return m_pixels[index];
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Image area
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -132,14 +150,15 @@ bool ImageArea::iterateTiles(
 			ImageTile tile;
 			for(uint32_t p = 0; p < kTileSize; ++p)
 			{
-				tile[p][0] = pixels[0];
-				tile[p][1] = pixels[1];
-				tile[p][2] = pixels[2];
-				tile[p][3] = pixels[3];
-				tile[p][4] = pixels[4];
-				tile[p][5] = pixels[5];
-				tile[p][6] = pixels[6];
-				tile[p][7] = pixels[7];
+				const uint32_t base_index = p * kTileSize;
+				tile[base_index + 0] = tile_pixels[0];
+				tile[base_index + 1] = tile_pixels[1];
+				tile[base_index + 2] = tile_pixels[2];
+				tile[base_index + 3] = tile_pixels[3];
+				tile[base_index + 4] = tile_pixels[4];
+				tile[base_index + 5] = tile_pixels[5];
+				tile[base_index + 6] = tile_pixels[6];
+				tile[base_index + 7] = tile_pixels[7];
 				tile_pixels += m_pitch;
 			}
 			const uint32_t tile_x = m_x * iterate_column_count + i;

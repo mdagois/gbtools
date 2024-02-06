@@ -22,7 +22,22 @@ enum : uint32_t
 // Tile
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef ColorRGBA ImageTile[kTileSize][kTileSize];
+enum : uint32_t
+{
+	kPixelsPerTile = kTileSize * kTileSize,
+};
+
+class ImageTile
+{
+public:
+	ImageTile();
+	virtual ~ImageTile();
+
+	ColorRGBA& operator[](int32_t index);
+
+private:
+	ColorRGBA m_pixels[kPixelsPerTile];
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 // Image
@@ -32,7 +47,7 @@ class Image
 {
 public:
 	Image();
-	~Image();
+	virtual ~Image();
 
 	bool read(const char* filename);
 
