@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include "palette.h"
 
@@ -87,6 +88,12 @@ const Palette& PaletteSet::operator[](int32_t index) const
 
 void PaletteSet::optimize()
 {
+	std::sort(
+		m_palettes.begin(), m_palettes.end(),
+		[](const Palette& lhs, const Palette& rhs)
+		{
+			return lhs.getColorCount() > rhs.getColorCount();
+		});
 }
 
 //bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)

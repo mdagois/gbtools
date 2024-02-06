@@ -42,8 +42,16 @@ int main(int argc, const char** argv)
 
 	cout << "Tile count: " << tile_count << endl;
 	cout << "Palette count: " << palette_set.getPaletteCount() << endl;
+	for(uint32_t i = 0; i < palette_set.getPaletteCount(); ++i)
+	{
+		cout << "\tsize = " << palette_set[i].getColorCount() << endl;
+	}
 	palette_set.optimize();
 	cout << "Palette count: " << palette_set.getPaletteCount() << endl;
+	for(uint32_t i = 0; i < palette_set.getPaletteCount(); ++i)
+	{
+		cout << "\tsize = " << palette_set[i].getColorCount() << endl;
+	}
 
 	return 0;
 }
