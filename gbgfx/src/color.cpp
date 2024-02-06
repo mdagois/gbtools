@@ -6,7 +6,7 @@
 
 static bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs)
 {
-    return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b && lhs.a == rhs.a;
+    return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
 }
 
 static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};

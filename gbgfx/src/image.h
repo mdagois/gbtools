@@ -16,16 +16,12 @@ enum : uint32_t
 {
 	kTileSize = 8,
 	kIterateAllRows = 0,
+	kPixelsPerTile = kTileSize * kTileSize,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tile
 ////////////////////////////////////////////////////////////////////////////////
-
-enum : uint32_t
-{
-	kPixelsPerTile = kTileSize * kTileSize,
-};
 
 class ImageTile
 {
@@ -34,6 +30,7 @@ public:
 	virtual ~ImageTile();
 
 	ColorRGBA& operator[](int32_t index);
+	const ColorRGBA operator[](int32_t index) const;
 
 private:
 	ColorRGBA m_pixels[kPixelsPerTile];

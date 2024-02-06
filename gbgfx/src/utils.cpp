@@ -9,12 +9,9 @@ static bool operator<(const ColorRGBA& lhs, const ColorRGBA& rhs)
 Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 {
 	std::set<ColorRGBA> colors;
-	for(uint32_t j = 0; j < kTileSize; ++j)
+	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
 	{
-		for(uint32_t i = 0; i < kTileSize; ++i)
-		{
-			colors.insert(tile[j][i]);
-		}
+		colors.insert(tile[i]);
 	}
 	if(colors.size() > kColorsPerPalette)
 	{

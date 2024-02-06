@@ -23,6 +23,12 @@ ColorRGBA& ImageTile::operator[](int32_t index)
 	return m_pixels[index];
 }
 
+const ColorRGBA ImageTile::operator[](int32_t index) const
+{
+	assert(index < kPixelsPerTile);
+	return m_pixels[index];
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Image area
 ////////////////////////////////////////////////////////////////////////////////
@@ -122,7 +128,7 @@ bool ImageArea::iterateArea(
 		for(uint32_t i = 0; i < iterate_column_count; ++i)
 		{
 			const ColorRGBA* area_pixels = pixels + (j * getWidth() * metatile_height) + (i * metatile_width);
-			const ImageArea tile_area(area_pixels, i, j, metatile_width, metatile_height, this->getWidth());
+			const ImageArea tile_area(area_pixels, i, j, metatile_width, metatile_height, m_pitch);
 			if(!area_callback(tile_area))
 			{
 				return false;
@@ -141,7 +147,7 @@ bool ImageArea::iterateTiles(
 
 	const uint32_t iterate_row_count = getHeight() / kTileSize;
 	const uint32_t iterate_column_count = getWidth() / kTileSize;
-	const ColorRGBA* pixels = getPixels();
+	const ColorRGBA* const pixels = getPixels();
 	for(uint32_t j = 0; j < iterate_row_count; ++j)
 	{
 		for(uint32_t i = 0; i < iterate_column_count; ++i)
