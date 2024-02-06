@@ -1,3 +1,4 @@
+#include <cassert>
 #include <iostream>
 #include "gbgfx.h"
 
@@ -24,6 +25,12 @@ int main(int argc, const char** argv)
 		true,
 		[&tile_count](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
+			Palette palette;
+			if(kSuccess != extractTilePalette(palette, tile))
+			{
+				assert(false);
+			}
+			cout << tile_count << " -> " << palette.getColorCount() << endl;
 			++tile_count;
 			return true;
 		}))

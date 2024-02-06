@@ -5,6 +5,7 @@ add_library(
 	STATIC
 	color.h color.cpp
 	image.h image.cpp
-	palette.h palette.cpp)
+	palette.h palette.cpp
+	utils.h utils.cpp)
 target_compile_definitions(gbgfx PUBLIC _CRT_SECURE_NO_WARNINGS)
 

@@ -35,34 +35,6 @@ const ColorRGBA Palette::operator[](int32_t index) const
 	return m_colors[index];
 }
 
-//static bool extractTilePalette(Palette& out_tile_palette, const ColorRGBA* pixels, uint32_t row_pitch)
-//{
-//	set<ColorRGBA> colors;
-//	for(uint32_t j = 0; j < kTileSize; ++j)
-//	{
-//		const ColorRGBA* row_pixels = pixels + (j * row_pitch);
-//		for(uint32_t i = 0; i < kTileSize; ++i)
-//		{
-//			colors.insert(convertColor(row_pixels[i]));
-//		}
-//	}
-//	if(colors.size() > kColorsPerPalette)
-//	{
-//		cout << "Too many colors (" << colors.size() << ") in tile" << endl;
-//		return false;
-//	}
-//
-//	uint32_t c = 0;
-//	for(ColorRGBA color : colors)
-//	{
-//		out_tile_palette.colors[c] = color;
-//		++c;
-//	}
-//	sortColors(out_tile_palette.colors, c);
-//
-//	return true;
-//}
-
 //bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
 //{
 //	set<ColorRGBA> colors;

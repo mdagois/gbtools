@@ -43,7 +43,6 @@ private:
 //	Palette palettes[kPaletteMaxCount];
 //};
 
-//static bool extractTilePalette(Palette& out_tile_palette, const ColorRGBA* pixels, uint32_t row_pitch)
 
 //static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
 

@@ -9,7 +9,8 @@ enum Result : uint32_t
 	kError_MetatileHeightMustBeMultipleOf16,
 	kError_ImageDimensionsMustBeMultiplesOfMetatileDimensions,
 	kError_MetatileDimensionsMustBeMultiplesOfTileSize,
-	KError_Unknown,
+
+	kError_TooManyColorInPalette,
 
 	kResult_Count,
 };
