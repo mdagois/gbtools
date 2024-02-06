@@ -22,11 +22,11 @@ void sortColors(ColorRGBA* colors, uint32_t count)
 		colors, colors + count,
 		[](const ColorRGBA lhs, const ColorRGBA rhs)
 		{
-			if(lhs == kRGBA_Magenta)
+			if(lhs == kRGBA_Magenta || rhs == kRGBA_Invalid)
 			{
 				return true;
 			}
-			if(rhs == kRGBA_Magenta)
+			if(lhs == kRGBA_Invalid || rhs == kRGBA_Magenta)
 			{
 				return false;
 			}

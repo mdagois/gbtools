@@ -27,7 +27,7 @@ class Palette
 {
 public:
 	Palette();
-	~Palette();
+	virtual ~Palette();
 
 	void push(ColorRGBA color);
 	uint32_t getColorCount() const;
