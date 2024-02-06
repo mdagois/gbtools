@@ -3,6 +3,24 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static bool operator==(const Palette& lhs, const Palette& rhs)
+{
+    if(lhs.getColorCount() != rhs.getColorCount())
+	{
+		return false;
+	}
+
+	for(uint32_t i = 0; i < lhs.getColorCount(); ++i)
+	{
+		if(lhs[i] != rhs[i])
+		{
+			return false;
+		}
+	}
+
+	return true;
+}
+
 Palette::Palette()
 : m_color_count(0)
 {
@@ -33,6 +51,42 @@ const ColorRGBA Palette::operator[](int32_t index) const
 {
 	assert(index >= 0 && index < static_cast<int32_t>(m_color_count));
 	return m_colors[index];
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+PaletteSet::PaletteSet()
+{
+}
+
+PaletteSet::~PaletteSet()
+{
+}
+
+void PaletteSet::push(const Palette& palette)
+{
+	for(uint32_t i = 0; i < m_palettes.size(); ++i)
+	{
+		if(m_palettes[i] == palette)
+		{
+			return;
+		}
+	}
+	m_palettes.push_back(palette);
+}
+
+uint32_t PaletteSet::getPaletteCount() const
+{
+	return static_cast<uint32_t>(m_palettes.size());
+}
+
+const Palette& PaletteSet::operator[](int32_t index) const
+{
+	return m_palettes[index];
+}
+
+void PaletteSet::optimize()
+{
 }
 
 //bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)

@@ -1,5 +1,6 @@
 #pragma once
 
+#include <vector>
 #include "color.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -36,6 +37,25 @@ public:
 private:
 	ColorRGBA m_colors[kColorsPerPalette];
 	uint32_t m_color_count;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Palette set
+////////////////////////////////////////////////////////////////////////////////
+
+class PaletteSet
+{
+public:
+	PaletteSet();
+	virtual ~PaletteSet();
+
+	void push(const Palette& palette);
+	uint32_t getPaletteCount() const;
+	const Palette& operator[](int32_t index) const;
+	void optimize();
+
+private:
+	std::vector<Palette> m_palettes;
 };
 
 //struct PaletteSet
