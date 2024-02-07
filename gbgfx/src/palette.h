@@ -7,9 +7,11 @@
 // Constants
 ////////////////////////////////////////////////////////////////////////////////
 
-enum : uint32_t
+enum
 {
 	kColorsPerPalette = 4,
+	kInvalidColorIndex = 0xFFU,
+	kInvalidPaletteIndex = 0xFFFFFFFFU,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -27,6 +29,7 @@ public:
 	uint32_t size() const;
 	bool contains(const Palette& sub_palette) const;
 	const ColorRGBA operator[](int32_t index) const;
+	uint8_t findColorIndex(ColorRGBA color) const;
 
 private:
 	ColorRGBA m_colors[kColorsPerPalette];
@@ -47,6 +50,7 @@ public:
 	uint32_t size() const;
 	const Palette& operator[](int32_t index) const;
 	void optimize();
+	uint32_t findCompatiblePaletteIndex(const Palette& palette) const;
 
 private:
 	std::vector<Palette> m_palettes;
