@@ -31,7 +31,7 @@ public:
 	virtual ~Palette();
 
 	void push(ColorRGBA color);
-	uint32_t getColorCount() const;
+	uint32_t size() const;
 	bool contains(const Palette& sub_palette) const;
 	const ColorRGBA operator[](int32_t index) const;
 
@@ -51,7 +51,7 @@ public:
 	virtual ~PaletteSet();
 
 	void push(const Palette& palette);
-	uint32_t getPaletteCount() const;
+	uint32_t size() const;
 	const Palette& operator[](int32_t index) const;
 	void optimize();
 

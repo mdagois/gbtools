@@ -4,14 +4,26 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static bool hasColor(const Palette& palette, ColorRGBA color)
+{
+	for(uint32_t i = 0; i < palette.size(); ++i)
+	{
+		if(color == palette[i])
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 static bool operator==(const Palette& lhs, const Palette& rhs)
 {
-    if(lhs.getColorCount() != rhs.getColorCount())
+    if(lhs.size() != rhs.size())
 	{
 		return false;
 	}
 
-	for(uint32_t i = 0; i < lhs.getColorCount(); ++i)
+	for(uint32_t i = 0; i < lhs.size(); ++i)
 	{
 		if(lhs[i] != rhs[i])
 		{
@@ -21,6 +33,8 @@ static bool operator==(const Palette& lhs, const Palette& rhs)
 
 	return true;
 }
+
+////////////////////////////////////////////////////////////////////////////////
 
 Palette::Palette()
 : m_color_count(0)
@@ -43,7 +57,19 @@ void Palette::push(ColorRGBA color)
 	sortColors(m_colors, m_color_count);
 }
 
-uint32_t Palette::getColorCount() const
+bool Palette::contains(const Palette& sub_palette) const
+{
+	for(uint32_t i = 0; i < sub_palette.size(); ++i)
+	{
+		if(!hasColor(*this, sub_palette[i]))
+		{
+			return false;
+		}
+	}
+	return true;
+}
+
+uint32_t Palette::size() const
 {
 	return m_color_count;
 }
@@ -76,7 +102,7 @@ void PaletteSet::push(const Palette& palette)
 	m_palettes.push_back(palette);
 }
 
-uint32_t PaletteSet::getPaletteCount() const
+uint32_t PaletteSet::size() const
 {
 	return static_cast<uint32_t>(m_palettes.size());
 }
@@ -92,7 +118,7 @@ void PaletteSet::optimize()
 		m_palettes.begin(), m_palettes.end(),
 		[](const Palette& lhs, const Palette& rhs)
 		{
-			return lhs.getColorCount() > rhs.getColorCount();
+			return lhs.size() > rhs.size();
 		});
 
 	//TODO Merge palettes that can be removed with modifications
