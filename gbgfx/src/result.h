@@ -1,5 +1,8 @@
 #pragma once
 
+//TODO Turn Result into object
+//TODO Add error message 
+
 enum Result : uint32_t
 {
 	kSuccess,

@@ -94,6 +94,9 @@ void PaletteSet::optimize()
 		{
 			return lhs.getColorCount() > rhs.getColorCount();
 		});
+
+	//TODO Merge palettes that can be removed with modifications
+	//TODO Merge palettes that require modifications
 }
 
 //bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)

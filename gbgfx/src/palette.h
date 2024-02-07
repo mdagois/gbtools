@@ -32,6 +32,7 @@ public:
 
 	void push(ColorRGBA color);
 	uint32_t getColorCount() const;
+	bool contains(const Palette& sub_palette) const;
 	const ColorRGBA operator[](int32_t index) const;
 
 private:
