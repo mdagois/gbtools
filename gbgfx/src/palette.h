@@ -10,14 +10,6 @@
 enum : uint32_t
 {
 	kColorsPerPalette = 4,
-//	kPaletteMaxCount = 8,
-//	kVramBankCount = 2,
-//	kTilesPerVramBank = 256,
-//	kTilesMaxCount = kTilesPerVramBank * kVramBankCount,
-//	kTilemapIndexMaxCount = 1024,
-
-//	kColorIndex_Invalid = 0xFFFFFFFFU,
-//	kPaletteIndex_Invalid = 0xFFFFFFFFU,
 };
 
 ////////////////////////////////////////////////////////////////////////////////
