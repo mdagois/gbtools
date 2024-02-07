@@ -19,12 +19,13 @@ int main(int argc, const char** argv)
 		<< image.getWidth() << "x" << image.getHeight()
 		<< endl;
 
+	Tileset tileset;
 	PaletteSet palette_set;
 	uint32_t tile_count = 0;
 	if(kSuccess != image.iterateTiles(
 		0, kIterateAllRows, kTileSize * 2, kTileSize * 2,
 		true,
-		[&tile_count, &palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&tileset, &palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
 			if(kSuccess != extractTilePalette(palette, tile))
@@ -32,7 +33,7 @@ int main(int argc, const char** argv)
 				assert(false);
 			}
 			palette_set.push(palette);
-			++tile_count;
+			tileset.push(convert(tile));
 			return true;
 		}))
 	{
@@ -40,7 +41,7 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	cout << "Tile count: " << tile_count << endl;
+	cout << "Tile count: " << tileset.size() << endl;
 	cout << "Palette count: " << palette_set.size() << endl;
 	for(uint32_t i = 0; i < palette_set.size(); ++i)
 	{

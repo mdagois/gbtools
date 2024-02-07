@@ -20,3 +20,9 @@ Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 	return kSuccess;
 }
 
+Tile convert(const ImageTile& image_tile)
+{
+	//TODO
+	return 0U;
+}
+
