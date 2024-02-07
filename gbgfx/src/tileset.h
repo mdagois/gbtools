@@ -21,7 +21,7 @@ enum TileFlipType : uint32_t
 
 struct TileFlip
 {
-	uint32_t m_color_indices[kPixelsPerTile];
+	uint8_t color_indices[kPixelsPerTile];
 };
 
 class Tile
@@ -30,8 +30,7 @@ public:
 	Tile();
 	virtual ~Tile();
 
-private:
-	void generateFlips();
+	void initialize(const TileFlip& tile_flip, uint32_t palette_index);
 
 private:
 	TileFlip m_flips[kTileFlipType_Count];
