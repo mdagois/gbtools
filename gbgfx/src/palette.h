@@ -31,6 +31,7 @@ public:
 	virtual ~Palette();
 
 	void push(ColorRGBA color);
+	void clear();
 	uint32_t size() const;
 	bool contains(const Palette& sub_palette) const;
 	const ColorRGBA operator[](int32_t index) const;
@@ -58,16 +59,4 @@ public:
 private:
 	std::vector<Palette> m_palettes;
 };
-
-//struct PaletteSet
-//{
-//	Palette palettes[kPaletteMaxCount];
-//};
-
-
-//static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
-
-//static bool mergePaletteIntoSet(PaletteSet& out_palette_set, const Palette palette)
-
-//static bool extractPalettes(PaletteSet& out_palette_set, const Image& image)
 

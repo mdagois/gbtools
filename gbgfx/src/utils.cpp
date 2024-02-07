@@ -1,11 +1,6 @@
 #include <set>
 #include "utils.h"
 
-static bool operator<(const ColorRGBA& lhs, const ColorRGBA& rhs)
-{
-    return getLuminance(lhs) < getLuminance(rhs);
-}
-
 Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 {
 	std::set<ColorRGBA> colors;

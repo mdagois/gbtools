@@ -18,6 +18,7 @@ static ColorRGBA kRGBA_Invalid = {0x00U, 0x00U, 0x00U, 0x00U};
 
 bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs);
 bool operator!=(const ColorRGBA& lhs, const ColorRGBA& rhs);
+bool operator<(const ColorRGBA& lhs, const ColorRGBA& rhs);
 double getLuminance(const ColorRGBA color);
 void sortColors(ColorRGBA* colors, uint32_t count);
 
