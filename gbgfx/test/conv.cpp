@@ -19,13 +19,13 @@ int main(int argc, const char** argv)
 		<< image.getWidth() << "x" << image.getHeight()
 		<< endl;
 
-	Tileset tileset;
+	std::vector<ImageTile> image_tiles;
 	PaletteSet palette_set;
 	uint32_t tile_count = 0;
 	if(kSuccess != image.iterateTiles(
 		0, kIterateAllRows, kTileSize * 2, kTileSize * 2,
 		true,
-		[&tileset, &palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&image_tiles, &palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
 			if(kSuccess != extractTilePalette(palette, tile))
@@ -33,12 +33,24 @@ int main(int argc, const char** argv)
 				assert(false);
 			}
 			palette_set.push(palette);
-			tileset.push(convert(tile));
+			image_tiles.push_back(tile);
 			return true;
 		}))
 	{
 		cout << "Error on tile" << endl;
 		return 1;
+	}
+
+	Tileset tileset;
+	for(uint32_t i = 0; i < image_tiles.size(); ++i)
+	{
+		Tile tile;
+		if(!generateTile(tile, image_tiles[i], palette_set))
+		{
+			cout << "Cannot generate tile (" << i << ") from image tile and palette set" << endl;
+			return 1;
+		}
+		tileset.push(tile);
 	}
 
 	cout << "Tile count: " << tileset.size() << endl;

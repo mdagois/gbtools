@@ -5,5 +5,5 @@
 #include "tileset.h"
 
 Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile);
-Tile convert(const ImageTile& image_tile);
+bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set);
 

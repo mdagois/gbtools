@@ -1,6 +1,7 @@
 #pragma once
 
 #include "color.h"
+#include "constants.h"
 #include "image.h"
 #include "palette.h"
 #include "result.h"
