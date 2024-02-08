@@ -1,4 +1,9 @@
 #include <set>
+
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#include "third_party/stb_image_write.h"
+
+#include "constants.h"
 #include "utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -66,5 +71,24 @@ bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet&
 	}
 	out_tile.initialize(tile_flip, palette_index);
 	return true;
+}
+
+bool writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const Tileset& tileset, const PaletteSet& palette_set)
+{
+	const uint32_t tile_row_count = tileset.size() / tile_column_count + (tileset.size() % tile_column_count == 0 ? 0 : 1);
+	const int32_t image_width = static_cast<int32_t>(tile_column_count * kTileSize);
+	const int32_t image_height = static_cast<int32_t>(tile_row_count * kTileSize);
+
+	constexpr int32_t kChannelCount = 4;
+
+	ColorRGBA* data = new ColorRGBA[image_width * image_height];
+
+	const int result = stbi_write_png(
+		filename,
+		image_width, image_height, kChannelCount,
+		data, sizeof(ColorRGBA) * image_width);
+
+	delete [] data;
+	return result != 0;
 }
 

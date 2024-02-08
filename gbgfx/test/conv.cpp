@@ -66,6 +66,12 @@ int main(int argc, const char** argv)
 		cout << "\tsize = " << palette_set[i].size() << endl;
 	}
 
+	if(!writeTilesetToPNG("test/demo_tileset.png", 16, tileset, palette_set))
+	{
+		cout << "Could not write tileset" << endl;
+		return 1;
+	}
+
 	return 0;
 }
 
