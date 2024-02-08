@@ -73,6 +73,8 @@ bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet&
 	return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip, const Palette& palette)
 {
 	const uint8_t* indices = flip.color_indices;
