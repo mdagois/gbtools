@@ -29,21 +29,22 @@ Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool generateTileFlip(
+static Result generateTileFlip(
 	TileFlip& out_tile_flip, uint32_t& out_palette_index,
 	const ImageTile& image_tile, const PaletteSet& palette_set)
 {
 	{
 		Palette tile_palette;
-		if(kSuccess != extractTilePalette(tile_palette, image_tile))
+		const Result result = extractTilePalette(tile_palette, image_tile);
+		if(result != kSuccess)
 		{
-			return false;
+			return result;
 		}
 
 		const uint32_t palette_index = palette_set.findCompatiblePaletteIndex(tile_palette);
 		if(palette_index == kInvalidPaletteIndex)
 		{
-			return false;
+			return kError_CouldNotFindCompatiblePalette;
 		}
 		out_palette_index = palette_index;
 	}
@@ -54,23 +55,24 @@ static bool generateTileFlip(
 		const uint8_t color_index = palette.findColorIndex(image_tile[i]);
 		if(color_index == kInvalidColorIndex)
 		{
-			return false;
+			return kError_CouldNotFindColorInPalette;
 		}
 		out_tile_flip.color_indices[i] = color_index;
 	}
-	return true;
+	return kSuccess;
 }
 
-bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set)
+Result generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set)
 {
 	TileFlip tile_flip;
 	uint32_t palette_index;
-	if(!generateTileFlip(tile_flip, palette_index, image_tile, palette_set))
+	const Result result = generateTileFlip(tile_flip, palette_index, image_tile, palette_set);
+	if(result != kSuccess)
 	{
-		return false;
+		return result;
 	}
 	out_tile.initialize(tile_flip, palette_index);
-	return true;
+	return kSuccess;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -91,7 +93,7 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	}
 }
 
-bool writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const Tileset& tileset, const PaletteSet& palette_set)
+Result writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const Tileset& tileset, const PaletteSet& palette_set)
 {
 	const uint32_t tile_row_count = tileset.size() / tile_column_count + (tileset.size() % tile_column_count == 0 ? 0 : 1);
 	const int32_t image_width = static_cast<int32_t>(tile_column_count * kTileSize);
@@ -118,6 +120,6 @@ bool writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const T
 		pixels, sizeof(ColorRGBA) * image_width);
 
 	delete [] pixels;
-	return result != 0;
+	return result != 0 ? kSuccess : kError_CouldNotWriteTilesetToFile;
 }
 

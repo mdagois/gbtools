@@ -200,19 +200,20 @@ Image::~Image()
 	m_pixels = nullptr;
 }
 
-bool Image::read(const char* filename)
+Result Image::read(const char* filename)
 {
 	assert(filename != nullptr);
+	constexpr int32_t kChannelCount = 4;
 	int32_t num_channels = 0;
 	int32_t width = 0;
 	int32_t height = 0;
-	m_pixels = reinterpret_cast<ColorRGBA*>(stbi_load(filename, &width, &height, &num_channels, 4));
+	m_pixels = reinterpret_cast<ColorRGBA*>(stbi_load(filename, &width, &height, &num_channels, kChannelCount));
 	assert(width > 0);
 	assert(height > 0);
 	m_width = static_cast<uint32_t>(width);
 	m_height = static_cast<uint32_t>(height);
 	m_filename = filename;
-	return m_pixels != nullptr;
+	return m_pixels == nullptr ? kError_CouldNotReadFile : kSuccess;
 }
 
 uint32_t Image::getWidth() const

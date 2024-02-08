@@ -41,7 +41,7 @@ public:
 	Image();
 	virtual ~Image();
 
-	bool read(const char* filename);
+	Result read(const char* filename);
 
 	uint32_t getWidth() const;
 	uint32_t getHeight() const;

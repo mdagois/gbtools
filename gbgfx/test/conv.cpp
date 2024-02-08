@@ -9,7 +9,7 @@ int main(int argc, const char** argv)
 	const char* image_filename = "test/demo.png";
 
 	Image image;
-	if(!image.read(image_filename))
+	if(kSuccess != image.read(image_filename))
 	{
 		cout << "Cannot read file" << endl;
 		return 1;
@@ -45,7 +45,7 @@ int main(int argc, const char** argv)
 	for(uint32_t i = 0; i < image_tiles.size(); ++i)
 	{
 		Tile tile;
-		if(!generateTile(tile, image_tiles[i], palette_set))
+		if(kSuccess != generateTile(tile, image_tiles[i], palette_set))
 		{
 			cout << "Cannot generate tile (" << i << ") from image tile and palette set" << endl;
 			return 1;
@@ -66,7 +66,7 @@ int main(int argc, const char** argv)
 		cout << "\tsize = " << palette_set[i].size() << endl;
 	}
 
-	if(!writeTilesetToPNG("test/demo_tileset.png", 16, tileset, palette_set))
+	if(kSuccess != writeTilesetToPNG("test/demo_tileset.png", 16, tileset, palette_set))
 	{
 		cout << "Could not write tileset" << endl;
 		return 1;
