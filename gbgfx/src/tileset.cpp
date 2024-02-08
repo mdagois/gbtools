@@ -101,18 +101,6 @@ uint32_t Tile::getPaletteIndex() const
 // Tileset
 ////////////////////////////////////////////////////////////////////////////////
 
-bool Tileset::FlipToIndexKey::operator<(const Tileset::FlipToIndexKey& other) const
-{
-	//for(uint32_t i = 0; i < kPixelsPerTile; ++i)
-	//{
-	//	if(flip.color_indices[i] < other.flip.color_indices[i])
-	//	{
-	//		return true;
-	//	}
-	//}
-	return palette_index < other.palette_index;
-}
-
 Tileset::Tileset()
 {
 }
@@ -123,20 +111,12 @@ Tileset::~Tileset()
 
 void Tileset::push(const Tile& tile)
 {
-	TileFlipIndex value;
-	value.index = m_tiles.size();
-
 	m_tiles.push_back(tile);
+}
 
-	FlipToIndexKey key;
-	key.palette_index = tile.getPaletteIndex();
-	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
-	{
-		const TileFlipType flip_type = static_cast<TileFlipType>(i);
-		key.flip = tile.getTileFlip(flip_type);
-		value.flip_type = flip_type;
-		m_flip_to_index.insert(std::pair<FlipToIndexKey, TileFlipIndex>(key, value));
-	}
+const Tile& Tileset::operator[](int32_t index) const
+{
+	return m_tiles[index];
 }
 
 uint32_t Tileset::size() const
