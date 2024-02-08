@@ -2,6 +2,7 @@
 
 //TODO Turn Result into object
 //TODO Add error message 
+//TODO Add namespace
 
 enum Result : uint32_t
 {
