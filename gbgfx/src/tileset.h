@@ -31,6 +31,8 @@ public:
 	virtual ~Tile();
 
 	void initialize(const TileFlip& tile_flip, uint32_t palette_index);
+	const TileFlip& getTileFlip(TileFlipType type) const;
+	uint32_t getPaletteIndex() const;
 
 private:
 	TileFlip m_flips[kTileFlipType_Count];
@@ -57,7 +59,16 @@ public:
 	uint32_t size() const;
 
 private:
+	struct FlipToIndexKey
+	{
+		TileFlip flip;
+		uint32_t palette_index;
+
+		bool operator<(const FlipToIndexKey& other) const;
+	};
+
+private:
 	std::vector<Tile> m_tiles;
-	std::map<TileFlip, TileFlipIndex> m_flip_to_index;
+	std::map<FlipToIndexKey, TileFlipIndex> m_flip_to_index;
 };
 

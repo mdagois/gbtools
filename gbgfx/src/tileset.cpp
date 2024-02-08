@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "tileset.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,9 +86,32 @@ void Tile::initialize(const TileFlip& tile_flip, uint32_t palette_index)
 	m_palette_index = palette_index;
 }
 
+const TileFlip& Tile::getTileFlip(TileFlipType type) const
+{
+	assert(type < kTileFlipType_Count);
+	return m_flips[type];
+}
+
+uint32_t Tile::getPaletteIndex() const
+{
+	return m_palette_index;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Tileset
 ////////////////////////////////////////////////////////////////////////////////
+
+bool Tileset::FlipToIndexKey::operator<(const Tileset::FlipToIndexKey& other) const
+{
+	//for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	//{
+	//	if(flip.color_indices[i] < other.flip.color_indices[i])
+	//	{
+	//		return true;
+	//	}
+	//}
+	return palette_index < other.palette_index;
+}
 
 Tileset::Tileset()
 {
@@ -98,8 +123,20 @@ Tileset::~Tileset()
 
 void Tileset::push(const Tile& tile)
 {
+	TileFlipIndex value;
+	value.index = m_tiles.size();
+
 	m_tiles.push_back(tile);
-	//TODO Fill the map
+
+	FlipToIndexKey key;
+	key.palette_index = tile.getPaletteIndex();
+	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
+	{
+		const TileFlipType flip_type = static_cast<TileFlipType>(i);
+		key.flip = tile.getTileFlip(flip_type);
+		value.flip_type = flip_type;
+		m_flip_to_index.insert(std::pair<FlipToIndexKey, TileFlipIndex>(key, value));
+	}
 }
 
 uint32_t Tileset::size() const
