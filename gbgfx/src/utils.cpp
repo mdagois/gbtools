@@ -73,6 +73,22 @@ bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet&
 	return true;
 }
 
+static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip, const Palette& palette)
+{
+	const uint8_t* indices = flip.color_indices;
+	for(uint32_t j = 0; j < kTileSize; ++j)
+	{
+		for(uint32_t i = 0; i < kTileSize; ++i)
+		{
+			assert(indices[i] < kColorsPerPalette);
+			out_pixels[i] = palette[indices[i]];
+		}
+
+		indices += kTileSize;
+		out_pixels += pitch;
+	}
+}
+
 bool writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const Tileset& tileset, const PaletteSet& palette_set)
 {
 	const uint32_t tile_row_count = tileset.size() / tile_column_count + (tileset.size() % tile_column_count == 0 ? 0 : 1);
@@ -81,14 +97,25 @@ bool writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const T
 
 	constexpr int32_t kChannelCount = 4;
 
-	ColorRGBA* data = new ColorRGBA[image_width * image_height];
+	ColorRGBA* pixels = new ColorRGBA[image_width * image_height];
+
+	for(uint32_t i = 0; i < tileset.size(); ++i)
+	{
+		const Tile& tile = tileset[i];
+		const uint32_t palette_index = tile.getPaletteIndex();
+		const Palette& palette = palette_set[palette_index];
+		const TileFlip& flip = tile.getTileFlip(kTileFlipType_None);
+		const uint32_t tile_row = i / tile_column_count;
+		const uint32_t tile_column = i % tile_column_count;
+		blitTile(pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize), image_width, flip, palette);
+	}
 
 	const int result = stbi_write_png(
 		filename,
 		image_width, image_height, kChannelCount,
-		data, sizeof(ColorRGBA) * image_width);
+		pixels, sizeof(ColorRGBA) * image_width);
 
-	delete [] data;
+	delete [] pixels;
 	return result != 0;
 }
 
