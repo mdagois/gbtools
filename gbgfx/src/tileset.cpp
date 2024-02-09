@@ -6,6 +6,11 @@
 // Tile
 ////////////////////////////////////////////////////////////////////////////////
 
+bool operator==(const TileFlip& lhs, const TileFlip& rhs)
+{
+	return memcmp(&lhs, &rhs, sizeof(TileFlip)) == 0;
+}
+
 static void flipRow(uint8_t* out, const uint8_t* in)
 {
 	out[0] = in[7];

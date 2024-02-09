@@ -81,7 +81,7 @@ int main(int argc, const char** argv)
 			"test/demo_tileset_both.png",
 		};
 		static_assert(sizeof(filenames) / sizeof(filenames[0]) == kTileFlipType_Count);
-		if(kSuccess != writeTilesetToPNG(filenames[i], 16, tileset, static_cast<TileFlipType>(i), palette_set))
+		if(kSuccess != writeTilesetToPNG(filenames[i], 16, tileset, static_cast<TileFlipType>(i), palette_set, i == 0))
 		{
 			cout << "Could not write tileset" << endl;
 			return 1;

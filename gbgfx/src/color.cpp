@@ -6,8 +6,6 @@
 // RGBA
 ////////////////////////////////////////////////////////////////////////////////
 
-static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};
-
 bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs)
 {
     return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;

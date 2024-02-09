@@ -77,6 +77,11 @@ Result generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSe
 
 ////////////////////////////////////////////////////////////////////////////////
 
+enum : uint32_t
+{
+	kChannelCount = 4,
+};
+
 static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip, const Palette& palette)
 {
 	const uint8_t* indices = flip.color_indices;
@@ -93,9 +98,24 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	}
 }
 
+static bool findTileFlipInTileset(const Tileset& tileset, uint32_t tile_count, const TileFlip& tile_flip, uint32_t palette_index)
+{
+	assert(tile_count <= tileset.size());
+	for(uint32_t i = 0; i < tile_count; ++i)
+	{
+		const Tile& tile = tileset[i];
+		if(palette_index == tile.getPaletteIndex() && tile_flip == tile.getTileFlip(kTileFlipType_None))
+		{
+			return true;
+		}
+	}
+	return false;
+}
+
 Result writeTilesetToPNG(
 	const char* filename, uint32_t tile_column_count,
-	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set)
+	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
+	bool clear_doubles)
 {
 	assert(flip_type < kTileFlipType_Count);
 
@@ -103,7 +123,13 @@ Result writeTilesetToPNG(
 	const int32_t image_width = static_cast<int32_t>(tile_column_count * kTileSize);
 	const int32_t image_height = static_cast<int32_t>(tile_row_count * kTileSize);
 
-	constexpr int32_t kChannelCount = 4;
+	TileFlip empty_flip;
+	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	{
+		empty_flip.color_indices[i] = 0;
+	}
+	Palette empty_palette;
+	empty_palette.push(kRGBA_Magenta);
 
 	ColorRGBA* pixels = new ColorRGBA[image_width * image_height];
 
@@ -113,9 +139,17 @@ Result writeTilesetToPNG(
 		const uint32_t palette_index = tile.getPaletteIndex();
 		const Palette& palette = palette_set[palette_index];
 		const TileFlip& flip = tile.getTileFlip(flip_type);
+
+		const Palette* blit_palette = &palette;
+		const TileFlip* blit_flip = &flip;
+		if(clear_doubles && findTileFlipInTileset(tileset, i, flip, palette_index))
+		{
+			blit_palette = &empty_palette;
+			blit_flip = &empty_flip;
+		}
 		const uint32_t tile_row = i / tile_column_count;
 		const uint32_t tile_column = i % tile_column_count;
-		blitTile(pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize), image_width, flip, palette);
+		blitTile(pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize), image_width, *blit_flip, *blit_palette);
 	}
 
 	const int result = stbi_write_png(

@@ -24,6 +24,8 @@ struct TileFlip
 	uint8_t color_indices[kPixelsPerTile];
 };
 
+bool operator==(const TileFlip& lhs, const TileFlip& rhs);
+
 class Tile
 {
 public:

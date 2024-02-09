@@ -15,6 +15,7 @@ struct ColorRGBA
 };
 
 static ColorRGBA kRGBA_Invalid = {0x00U, 0x00U, 0x00U, 0x00U};
+static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};
 
 bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs);
 bool operator!=(const ColorRGBA& lhs, const ColorRGBA& rhs);
