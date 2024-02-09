@@ -23,8 +23,13 @@ int main(int argc, const char** argv)
 	PaletteSet palette_set;
 	uint32_t tile_count = 0;
 	if(kSuccess != image.iterateTiles(
+#if 1
+		0, kIterateAllRows, kTileSize, kTileSize,
+		false,
+#else
 		0, kIterateAllRows, kTileSize * 2, kTileSize * 2,
 		true,
+#endif
 		[&image_tiles, &palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
@@ -66,10 +71,21 @@ int main(int argc, const char** argv)
 		cout << "\tsize = " << palette_set[i].size() << endl;
 	}
 
-	if(kSuccess != writeTilesetToPNG("test/demo_tileset.png", 16, tileset, palette_set))
+	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
 	{
-		cout << "Could not write tileset" << endl;
-		return 1;
+		static const char* filenames[] =
+		{
+			"test/demo_tileset_none.png",
+			"test/demo_tileset_horizontal.png",
+			"test/demo_tileset_vertical.png",
+			"test/demo_tileset_both.png",
+		};
+		static_assert(sizeof(filenames) / sizeof(filenames[0]) == kTileFlipType_Count);
+		if(kSuccess != writeTilesetToPNG(filenames[i], 16, tileset, static_cast<TileFlipType>(i), palette_set))
+		{
+			cout << "Could not write tileset" << endl;
+			return 1;
+		}
 	}
 
 	return 0;

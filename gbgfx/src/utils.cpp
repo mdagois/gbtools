@@ -93,8 +93,12 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	}
 }
 
-Result writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const Tileset& tileset, const PaletteSet& palette_set)
+Result writeTilesetToPNG(
+	const char* filename, uint32_t tile_column_count,
+	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set)
 {
+	assert(flip_type < kTileFlipType_Count);
+
 	const uint32_t tile_row_count = tileset.size() / tile_column_count + (tileset.size() % tile_column_count == 0 ? 0 : 1);
 	const int32_t image_width = static_cast<int32_t>(tile_column_count * kTileSize);
 	const int32_t image_height = static_cast<int32_t>(tile_row_count * kTileSize);
@@ -108,7 +112,7 @@ Result writeTilesetToPNG(const char* filename, uint32_t tile_column_count, const
 		const Tile& tile = tileset[i];
 		const uint32_t palette_index = tile.getPaletteIndex();
 		const Palette& palette = palette_set[palette_index];
-		const TileFlip& flip = tile.getTileFlip(kTileFlipType_None);
+		const TileFlip& flip = tile.getTileFlip(flip_type);
 		const uint32_t tile_row = i / tile_column_count;
 		const uint32_t tile_column = i % tile_column_count;
 		blitTile(pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize), image_width, flip, palette);
