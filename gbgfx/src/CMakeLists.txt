@@ -4,6 +4,7 @@ add_library(
 	gbgfx
 	STATIC
 	color.h color.cpp
+	export.h export.cpp
 	image.h image.cpp
 	palette.h palette.cpp
 	result.h
