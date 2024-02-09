@@ -88,6 +88,14 @@ int main(int argc, const char** argv)
 		}
 	}
 
+	{
+		TilesetData tileset_data;
+		tileset_data.initialize(tileset);
+		FILE* file = fopen("test/tileset.chr", "wb");
+		fwrite(tileset_data.getData(), tileset_data.getDataSize(), 1, file);
+		fclose(file);
+	}
+
 	tileset.removeDoubles(false);
 	cout << "Tile count: " << tileset.size() << endl;
 	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_0.png", 16, tileset, kTileFlipType_None, palette_set, true))

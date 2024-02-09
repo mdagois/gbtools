@@ -1,4 +1,5 @@
 build
-*.swp
 test/demo_tileset_*.png
+*.chr
+*.swp
 
