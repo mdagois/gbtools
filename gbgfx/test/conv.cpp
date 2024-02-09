@@ -89,6 +89,14 @@ int main(int argc, const char** argv)
 	}
 
 	{
+		PaletteSetData palette_set_data;
+		palette_set_data.initialize(palette_set);
+		FILE* file = fopen("test/palette.pal", "wb");
+		fwrite(palette_set_data.getData(), palette_set_data.getDataSize(), 1, file);
+		fclose(file);
+	}
+
+	{
 		TilesetData tileset_data;
 		tileset_data.initialize(tileset);
 		FILE* file = fopen("test/tileset.chr", "wb");

@@ -1,5 +1,6 @@
 build
 test/demo_tileset_*.png
 *.chr
+*.pal
 *.swp
 

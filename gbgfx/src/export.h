@@ -3,7 +3,31 @@
 #include <vector>
 
 #include "constants.h"
+#include "palette.h"
 #include "tileset.h"
+
+////////////////////////////////////////////////////////////////////////////////
+
+class PaletteSetData
+{
+public:
+	PaletteSetData();
+	virtual ~PaletteSetData();
+
+	bool initialize(const PaletteSet& palette_set);
+
+	const uint8_t* getData() const;
+	uint32_t getDataSize() const;
+
+private:
+	struct PaletteData
+	{
+		ColorBGR555 colors[kColorsPerPalette];
+	};
+
+private:
+	std::vector<PaletteData> m_data;
+};
 
 ////////////////////////////////////////////////////////////////////////////////
 

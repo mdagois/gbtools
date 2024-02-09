@@ -2,6 +2,46 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+PaletteSetData::PaletteSetData()
+{
+}
+
+PaletteSetData::~PaletteSetData()
+{
+}
+
+bool PaletteSetData::initialize(const PaletteSet& palette_set)
+{
+	for(uint32_t p = 0; p < palette_set.size(); ++p)
+	{
+		const Palette& palette = palette_set[p];
+		PaletteData data;
+		uint32_t c = 0;
+		for(; c < palette.size(); ++c)
+		{
+			data.colors[c] = convertColor(palette[c]);
+		}
+		for(; c < kColorsPerPalette; ++c)
+		{
+			data.colors[c] = kBGR555_Invalid;
+		}
+		m_data.push_back(data);
+	}
+	return true;
+}
+
+const uint8_t* PaletteSetData::getData() const
+{
+	return reinterpret_cast<const uint8_t*>(m_data.data());
+}
+
+uint32_t PaletteSetData::getDataSize() const
+{
+	return static_cast<uint32_t>(m_data.size() * sizeof(PaletteData));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 TilesetData::TilesetData()
 {
 }
