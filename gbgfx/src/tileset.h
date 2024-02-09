@@ -25,6 +25,7 @@ struct TileFlip
 };
 
 bool operator==(const TileFlip& lhs, const TileFlip& rhs);
+bool operator<(const TileFlip& lhs, const TileFlip& rhs);
 
 class Tile
 {
@@ -54,6 +55,7 @@ public:
 	void push(const Tile& tile);
 	const Tile& operator[](int32_t index) const;
 	uint32_t size() const;
+	void removeDoubles(bool compare_flips);
 
 private:
 	std::vector<Tile> m_tiles;

@@ -1,4 +1,5 @@
 #include <cassert>
+#include <set>
 
 #include "tileset.h"
 
@@ -9,6 +10,11 @@
 bool operator==(const TileFlip& lhs, const TileFlip& rhs)
 {
 	return memcmp(&lhs, &rhs, sizeof(TileFlip)) == 0;
+}
+
+bool operator<(const TileFlip& lhs, const TileFlip& rhs)
+{
+	return memcmp(&lhs, &rhs, sizeof(TileFlip)) < 0;
 }
 
 static void flipRow(uint8_t* out, const uint8_t* in)
@@ -127,5 +133,48 @@ const Tile& Tileset::operator[](int32_t index) const
 uint32_t Tileset::size() const
 {
 	return static_cast<uint32_t>(m_tiles.size());
+}
+
+void Tileset::removeDoubles(bool compare_flips)
+{
+	struct CheckEntry
+	{
+		TileFlip flip;
+		uint32_t palette_index;
+
+		bool operator<(const CheckEntry& other) const
+		{
+			return
+				palette_index < other.palette_index ||
+				flip < other.flip;
+		}
+	};
+	std::set<CheckEntry> check_set;
+
+	auto tileIt = m_tiles.begin();
+	while(tileIt != m_tiles.end())
+	{
+		const Tile& tile = *tileIt;
+		CheckEntry entry;
+		entry.palette_index = tile.getPaletteIndex();
+		entry.flip = tile.getTileFlip(kTileFlipType_None);
+		if(check_set.find(entry) != check_set.end())
+		{
+			tileIt = m_tiles.erase(tileIt);
+			continue;
+		}
+
+		check_set.insert(entry);
+		if(compare_flips)
+		{
+			entry.flip = tile.getTileFlip(kTileFlipType_Horizontal);
+			check_set.insert(entry);
+			entry.flip = tile.getTileFlip(kTileFlipType_Vertical);
+			check_set.insert(entry);
+			entry.flip = tile.getTileFlip(kTileFlipType_Both);
+			check_set.insert(entry);
+		}
+		++tileIt;
+	}
 }
 

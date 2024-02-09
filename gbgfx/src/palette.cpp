@@ -149,14 +149,14 @@ void PaletteSet::push(const Palette& palette)
 	m_palettes.push_back(palette);
 }
 
-uint32_t PaletteSet::size() const
-{
-	return static_cast<uint32_t>(m_palettes.size());
-}
-
 const Palette& PaletteSet::operator[](int32_t index) const
 {
 	return m_palettes[index];
+}
+
+uint32_t PaletteSet::size() const
+{
+	return static_cast<uint32_t>(m_palettes.size());
 }
 
 void PaletteSet::optimize()

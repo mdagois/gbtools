@@ -47,8 +47,8 @@ public:
 	virtual ~PaletteSet();
 
 	void push(const Palette& palette);
-	uint32_t size() const;
 	const Palette& operator[](int32_t index) const;
+	uint32_t size() const;
 	void optimize();
 	uint32_t findCompatiblePaletteIndex(const Palette& palette) const;
 

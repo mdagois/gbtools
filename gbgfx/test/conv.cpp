@@ -88,6 +88,22 @@ int main(int argc, const char** argv)
 		}
 	}
 
+	tileset.removeDoubles(false);
+	cout << "Tile count: " << tileset.size() << endl;
+	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt0.png", 16, tileset, kTileFlipType_None, palette_set, true))
+	{
+		cout << "Could not write tileset" << endl;
+		return 1;
+	}
+
+	tileset.removeDoubles(true);
+	cout << "Tile count: " << tileset.size() << endl;
+	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt1.png", 16, tileset, kTileFlipType_None, palette_set, true))
+	{
+		cout << "Could not write tileset" << endl;
+		return 1;
+	}
+
 	return 0;
 }
 

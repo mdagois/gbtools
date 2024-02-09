@@ -98,13 +98,16 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	}
 }
 
-static bool findTileFlipInTileset(const Tileset& tileset, uint32_t tile_count, const TileFlip& tile_flip, uint32_t palette_index)
+static bool findTileFlipInTileset(
+	const Tileset& tileset, uint32_t tile_count,
+	const TileFlip& tile_flip, TileFlipType flip_type,
+	uint32_t palette_index)
 {
 	assert(tile_count <= tileset.size());
 	for(uint32_t i = 0; i < tile_count; ++i)
 	{
 		const Tile& tile = tileset[i];
-		if(palette_index == tile.getPaletteIndex() && tile_flip == tile.getTileFlip(kTileFlipType_None))
+		if(palette_index == tile.getPaletteIndex() && tile_flip == tile.getTileFlip(flip_type))
 		{
 			return true;
 		}
@@ -142,7 +145,7 @@ Result writeTilesetToPNG(
 
 		const Palette* blit_palette = &palette;
 		const TileFlip* blit_flip = &flip;
-		if(clear_doubles && findTileFlipInTileset(tileset, i, flip, palette_index))
+		if(clear_doubles && findTileFlipInTileset(tileset, i, flip, flip_type, palette_index))
 		{
 			blit_palette = &empty_palette;
 			blit_flip = &empty_flip;
