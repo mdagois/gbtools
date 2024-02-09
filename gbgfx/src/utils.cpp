@@ -136,23 +136,33 @@ Result writeTilesetToPNG(
 
 	ColorRGBA* pixels = new ColorRGBA[image_width * image_height];
 
-	for(uint32_t i = 0; i < tileset.size(); ++i)
+	const uint32_t tile_remainder = tileset.size() % tile_column_count;
+	const uint32_t image_tile_count = tileset.size() + (tile_remainder == 0 ? 0 : (tile_column_count - tile_remainder));
+	assert(image_tile_count % tile_column_count == 0);
+	for(uint32_t i = 0; i < image_tile_count; ++i)
 	{
-		const Tile& tile = tileset[i];
-		const uint32_t palette_index = tile.getPaletteIndex();
-		const Palette& palette = palette_set[palette_index];
-		const TileFlip& flip = tile.getTileFlip(flip_type);
-
-		const Palette* blit_palette = &palette;
-		const TileFlip* blit_flip = &flip;
-		if(clear_doubles && findTileFlipInTileset(tileset, i, flip, flip_type, palette_index))
+		const Palette* blit_palette = &empty_palette;
+		const TileFlip* blit_flip = &empty_flip;
+		if(i < tileset.size())
 		{
-			blit_palette = &empty_palette;
-			blit_flip = &empty_flip;
+			const Tile& tile = tileset[i];
+			const uint32_t palette_index = tile.getPaletteIndex();
+			const Palette& palette = palette_set[palette_index];
+			const TileFlip& flip = tile.getTileFlip(flip_type);
+			if(!clear_doubles || !findTileFlipInTileset(tileset, i, flip, flip_type, palette_index))
+			{
+				blit_palette = &palette;
+				blit_flip = &flip;
+			}
 		}
+		assert(blit_palette != nullptr);
+		assert(blit_flip != nullptr);
+
 		const uint32_t tile_row = i / tile_column_count;
 		const uint32_t tile_column = i % tile_column_count;
-		blitTile(pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize), image_width, *blit_flip, *blit_palette);
+		blitTile(
+			pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize),
+			image_width, *blit_flip, *blit_palette);
 	}
 
 	const int result = stbi_write_png(
