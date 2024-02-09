@@ -75,10 +75,10 @@ int main(int argc, const char** argv)
 	{
 		static const char* filenames[] =
 		{
-			"test/demo_tileset_none.png",
-			"test/demo_tileset_horizontal.png",
-			"test/demo_tileset_vertical.png",
-			"test/demo_tileset_both.png",
+			"test/demo_tileset_0.png",
+			"test/demo_tileset_1.png",
+			"test/demo_tileset_2.png",
+			"test/demo_tileset_3.png",
 		};
 		static_assert(sizeof(filenames) / sizeof(filenames[0]) == kTileFlipType_Count);
 		if(kSuccess != writeTilesetToPNG(filenames[i], 16, tileset, static_cast<TileFlipType>(i), palette_set, i == 0))
@@ -90,7 +90,7 @@ int main(int argc, const char** argv)
 
 	tileset.removeDoubles(false);
 	cout << "Tile count: " << tileset.size() << endl;
-	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt0.png", 16, tileset, kTileFlipType_None, palette_set, true))
+	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_0.png", 16, tileset, kTileFlipType_None, palette_set, true))
 	{
 		cout << "Could not write tileset" << endl;
 		return 1;
@@ -98,7 +98,7 @@ int main(int argc, const char** argv)
 
 	tileset.removeDoubles(true);
 	cout << "Tile count: " << tileset.size() << endl;
-	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt1.png", 16, tileset, kTileFlipType_None, palette_set, true))
+	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_1.png", 16, tileset, kTileFlipType_None, palette_set, true))
 	{
 		cout << "Could not write tileset" << endl;
 		return 1;
