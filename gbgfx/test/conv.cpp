@@ -132,8 +132,11 @@ int main(int argc, const char** argv)
 		<< "Loaded [" << image_filename << "] "
 		<< image.getWidth() << "x" << image.getHeight()
 		<< endl;
+
+	Tilemap tilemap;
+	tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize);
 	if(kSuccess != image.iterateTiles(
-		[&tileset, &palette_set](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		[&tilemap, &tileset, &palette_set](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
 			if(kSuccess != generateTile(tile, image_tile, palette_set))
@@ -141,8 +144,23 @@ int main(int argc, const char** argv)
 				cout << "Cannot generate tile (" << x << "," << y << ") from image tile and palette set" << endl;
 				return false;
 			}
-			const uint32_t tile_index = tileset.findTileIndex(tile, false);
-			assert(tile_index != kInvalidTileIndex);
+
+			uint32_t tile_index;
+			uint32_t palette_index;
+			TileFlipType flip_type;
+			if(!tileset.findTileIndex(tile_index, palette_index, flip_type, tile, false))
+			{
+				return false;
+			}
+
+			assert(tile_index < 512);
+			constexpr uint32_t priority = 0;
+			const uint32_t bank = tile_index < 256 ? 0 : 1;
+			tilemap.push(
+				tile_index, palette_index, bank,
+				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
+				flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
+				priority);
 			return true;
 		}))
 	{
