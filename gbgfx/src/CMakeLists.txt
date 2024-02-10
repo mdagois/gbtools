@@ -6,6 +6,7 @@ add_library(
 	color.h color.cpp
 	export.h export.cpp
 	image.h image.cpp
+	options.h options.cpp
 	palette.h palette.cpp
 	result.h
 	tilemap.h tilemap.cpp

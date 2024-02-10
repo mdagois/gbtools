@@ -1,6 +1,8 @@
 #include <algorithm>
 #include <cassert>
 #include <set>
+
+#include "options.h"
 #include "palette.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,7 +84,10 @@ void Palette::push(ColorRGBA color)
 	assert(m_color_count < kColorsPerPalette);
 	m_colors[m_color_count] = color;
 	++m_color_count;
-	sortColors(m_colors, m_color_count);
+	if(getOptions().sort_palettes)
+	{
+		sortColors(m_colors, m_color_count);
+	}
 }
 
 void Palette::clear()

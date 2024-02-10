@@ -1,0 +1,15 @@
+#pragma once
+
+#include <cstdint>
+
+////////////////////////////////////////////////////////////////////////////////
+
+struct Options
+{
+	Options();
+
+	bool sort_palettes;
+};
+
+Options& getOptions();
+

@@ -3,6 +3,7 @@
 //TODO Turn Result into object
 //TODO Add error message 
 //TODO Add namespace
+//TODO Move constants to constants.h
 
 enum Result : uint32_t
 {
