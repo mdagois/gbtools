@@ -21,10 +21,9 @@ int main(int argc, const char** argv)
 
 	std::vector<ImageTile> image_tiles;
 	PaletteSet palette_set;
-	uint32_t tile_count = 0;
 	if(kSuccess != image.iterateTiles(
 #if 1
-		0, kIterateAllRows, kTileSize, kTileSize,
+		8, kIterateAllRows, kTileSize, kTileSize,
 		false,
 #else
 		0, kIterateAllRows, kTileSize * 2, kTileSize * 2,
@@ -46,19 +45,6 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	Tileset tileset;
-	for(uint32_t i = 0; i < image_tiles.size(); ++i)
-	{
-		Tile tile;
-		if(kSuccess != generateTile(tile, image_tiles[i], palette_set))
-		{
-			cout << "Cannot generate tile (" << i << ") from image tile and palette set" << endl;
-			return 1;
-		}
-		tileset.push(tile);
-	}
-
-	cout << "Tile count: " << tileset.size() << endl;
 	cout << "Palette count: " << palette_set.size() << endl;
 	for(uint32_t i = 0; i < palette_set.size(); ++i)
 	{
@@ -69,6 +55,18 @@ int main(int argc, const char** argv)
 	for(uint32_t i = 0; i < palette_set.size(); ++i)
 	{
 		cout << "\tsize = " << palette_set[i].size() << endl;
+	}
+
+	Tileset tileset;
+	for(uint32_t i = 0; i < image_tiles.size(); ++i)
+	{
+		Tile tile;
+		if(kSuccess != generateTile(tile, image_tiles[i], palette_set))
+		{
+			cout << "Cannot generate tile (" << i << ") from image tile and palette set" << endl;
+			return 1;
+		}
+		tileset.push(tile);
 	}
 
 	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
@@ -104,6 +102,8 @@ int main(int argc, const char** argv)
 		fclose(file);
 	}
 
+	cout << "Tile count: " << tileset.size() << endl;
+
 	tileset.removeDoubles(false);
 	cout << "Tile count: " << tileset.size() << endl;
 	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_0.png", 16, tileset, kTileFlipType_None, palette_set, true))
@@ -112,11 +112,41 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
+#if 0
 	tileset.removeDoubles(true);
 	cout << "Tile count: " << tileset.size() << endl;
 	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_1.png", 16, tileset, kTileFlipType_None, palette_set, true))
 	{
 		cout << "Could not write tileset" << endl;
+		return 1;
+	}
+#endif
+
+	image_filename = "test/demo_tlm.png";
+	if(kSuccess != image.read(image_filename))
+	{
+		cout << "Cannot read file" << endl;
+		return 1;
+	}
+	cout
+		<< "Loaded [" << image_filename << "] "
+		<< image.getWidth() << "x" << image.getHeight()
+		<< endl;
+	if(kSuccess != image.iterateTiles(
+		[&tileset, &palette_set](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		{
+			Tile tile;
+			if(kSuccess != generateTile(tile, image_tile, palette_set))
+			{
+				cout << "Cannot generate tile (" << x << "," << y << ") from image tile and palette set" << endl;
+				return false;
+			}
+			const uint32_t tile_index = tileset.findTileIndex(tile, false);
+			assert(tile_index != kInvalidTileIndex);
+			return true;
+		}))
+	{
+		cout << "Error on tilemap" << endl;
 		return 1;
 	}
 

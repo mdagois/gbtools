@@ -178,3 +178,30 @@ void Tileset::removeDoubles(bool compare_flips)
 	}
 }
 
+uint32_t Tileset::findTileIndex(const Tile& tile, bool compare_flips) const
+{
+	const uint32_t palette_index = tile.getPaletteIndex();
+	const TileFlip& flip = tile.getTileFlip(kTileFlipType_None);
+
+	for(uint32_t i = 0; i < m_tiles.size(); ++i)
+	{
+		const Tile& compare_tile = m_tiles[i];
+		if(palette_index != compare_tile.getPaletteIndex())
+		{
+			continue;
+		}
+
+		uint32_t flip_type = kTileFlipType_None;
+		do
+		{
+			if(flip == compare_tile.getTileFlip(static_cast<TileFlipType>(flip_type)))
+			{
+				return i;
+			}
+			++flip_type;
+		} while(compare_flips && flip_type != kTileFlipType_Count);
+	}
+
+	return kInvalidTileIndex;
+}
+

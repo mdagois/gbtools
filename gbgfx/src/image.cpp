@@ -192,17 +192,14 @@ Image::Image()
 
 Image::~Image()
 {
-	if(m_pixels == nullptr)
-	{
-		return;
-	}
-	stbi_image_free(m_pixels);
-	m_pixels = nullptr;
+	unload();
 }
 
 Result Image::read(const char* filename)
 {
 	assert(filename != nullptr);
+	unload();
+
 	constexpr int32_t kChannelCount = 4;
 	int32_t num_channels = 0;
 	int32_t width = 0;
@@ -282,5 +279,15 @@ Result Image::iterateTiles(
 				});
 		});
 	return kSuccess;
+}
+
+void Image::unload()
+{
+	if(m_pixels == nullptr)
+	{
+		return;
+	}
+	stbi_image_free(m_pixels);
+	m_pixels = nullptr;
 }
 

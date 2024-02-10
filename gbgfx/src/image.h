@@ -57,6 +57,9 @@ public:
 		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:
+	void unload();
+
+private:
 	std::string m_filename;
 	ColorRGBA* m_pixels;
 	uint32_t m_width;

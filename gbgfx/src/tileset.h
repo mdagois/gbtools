@@ -46,6 +46,11 @@ private:
 // Tileset
 ////////////////////////////////////////////////////////////////////////////////
 
+enum
+{
+	kInvalidTileIndex = 0xFFFFFFFFU,
+};
+
 class Tileset
 {
 public:
@@ -56,6 +61,7 @@ public:
 	const Tile& operator[](int32_t index) const;
 	uint32_t size() const;
 	void removeDoubles(bool compare_flips);
+	uint32_t findTileIndex(const Tile& tile, bool compare_flips) const;
 
 private:
 	std::vector<Tile> m_tiles;
