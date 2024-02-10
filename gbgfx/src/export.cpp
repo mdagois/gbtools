@@ -5,6 +5,7 @@
 ////////////////////////////////////////////////////////////////////////////////
 
 PaletteSetData::PaletteSetData()
+: m_palette_count(0)
 {
 }
 
@@ -29,7 +30,13 @@ bool PaletteSetData::initialize(const PaletteSet& palette_set)
 		}
 		m_data.push_back(data);
 	}
+	m_palette_count = palette_set.size();
 	return true;
+}
+
+uint32_t PaletteSetData::getPaletteCount() const
+{
+	return m_palette_count;
 }
 
 const uint8_t* PaletteSetData::getData() const
@@ -45,6 +52,7 @@ uint32_t PaletteSetData::getDataSize() const
 ////////////////////////////////////////////////////////////////////////////////
 
 TilesetData::TilesetData()
+: m_tile_count(0)
 {
 }
 
@@ -72,7 +80,13 @@ bool TilesetData::initialize(const Tileset& tileset)
 		}
 		m_data.push_back(data);
 	}
+	m_tile_count = tileset.size();
 	return true;
+}
+
+uint32_t TilesetData::getTileCount() const
+{
+	return m_tile_count;
 }
 
 const uint8_t* TilesetData::getData() const
@@ -88,6 +102,8 @@ uint32_t TilesetData::getDataSize() const
 ////////////////////////////////////////////////////////////////////////////////
 
 TilemapData::TilemapData()
+: m_row_count(0)
+, m_column_count(0)
 {
 }
 
@@ -108,7 +124,19 @@ bool TilemapData::initialize(const Tilemap& tilemap)
 			(entry.flip_vertical ? 0x40 : 0x00) |
 			(entry.priority ? 0x80 : 0x00));
 	}
+	m_row_count = tilemap.getRowCount();
+	m_column_count = tilemap.getColumnCount();
 	return true;
+}
+
+uint32_t TilemapData::getRowCount() const
+{
+	return m_row_count;
+}
+
+uint32_t TilemapData::getColumnCount() const
+{
+	return m_column_count;
 }
 
 const uint8_t* TilemapData::getIndexData() const

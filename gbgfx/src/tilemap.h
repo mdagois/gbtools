@@ -41,6 +41,8 @@ public:
 		bool priority);
 	const TilemapEntry& operator[](int32_t index) const;
 	uint32_t size() const;
+	uint32_t getRowCount() const;
+	uint32_t getColumnCount() const;
 
 private:
 	std::vector<TilemapEntry> m_entries;

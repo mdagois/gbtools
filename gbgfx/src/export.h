@@ -17,6 +17,7 @@ public:
 
 	bool initialize(const PaletteSet& palette_set);
 
+	uint32_t getPaletteCount() const;
 	const uint8_t* getData() const;
 	uint32_t getDataSize() const;
 
@@ -28,6 +29,7 @@ private:
 
 private:
 	std::vector<PaletteData> m_data;
+	uint32_t m_palette_count;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -40,6 +42,7 @@ public:
 
 	bool initialize(const Tileset& tileset);
 
+	uint32_t getTileCount() const;
 	const uint8_t* getData() const;
 	uint32_t getDataSize() const;
 
@@ -57,6 +60,7 @@ private:
 
 private:
 	std::vector<TileData> m_data;
+	uint32_t m_tile_count;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -69,6 +73,8 @@ public:
 
 	bool initialize(const Tilemap& tilemap);
 
+	uint32_t getRowCount() const;
+	uint32_t getColumnCount() const;
 	const uint8_t* getIndexData() const;
 	const uint8_t* getParameterData() const;
 	uint32_t getDataSize() const;
@@ -76,5 +82,7 @@ public:
 private:
 	std::vector<uint8_t> m_indices;
 	std::vector<uint8_t> m_parameters;
+	uint32_t m_row_count;
+	uint32_t m_column_count;
 };
 

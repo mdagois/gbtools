@@ -49,3 +49,13 @@ uint32_t Tilemap::size() const
 	return static_cast<uint32_t>(m_entries.size());
 }
 
+uint32_t Tilemap::getRowCount() const
+{
+	return m_row_count;
+}
+
+uint32_t Tilemap::getColumnCount() const
+{
+	return m_column_count;
+}
+
