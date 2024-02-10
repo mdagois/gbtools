@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 #include <vector>
 
@@ -15,6 +17,16 @@ enum : uint32_t
 // Tilemap
 ////////////////////////////////////////////////////////////////////////////////
 
+struct TilemapEntry
+{
+	uint8_t tile_index;
+	uint8_t palette_index;
+	uint8_t bank;
+	bool flip_horizontal;
+	bool flip_vertical;
+	bool priority;
+};
+
 class Tilemap
 {
 public:
@@ -27,21 +39,11 @@ public:
 		uint8_t palette, uint8_t bank,
 		bool flip_horizontal, bool flip_vertical,
 		bool priority);
+	const TilemapEntry& operator[](int32_t index) const;
+	uint32_t size() const;
 
 private:
-	struct Parameter
-	{
-		uint8_t palette_index;
-		uint8_t bank;
-		bool flip_horizontal;
-		bool flip_vertical;
-		bool priority;
-	};
-
-private:
-	std::vector<uint8_t> m_tile_indices;
-	std::vector<Parameter> m_tile_parameters;
-
+	std::vector<TilemapEntry> m_entries;
 	uint32_t m_row_count;
 	uint32_t m_column_count;
 };

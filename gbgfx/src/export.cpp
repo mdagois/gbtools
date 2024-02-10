@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "export.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -81,5 +83,47 @@ const uint8_t* TilesetData::getData() const
 uint32_t TilesetData::getDataSize() const
 {
 	return static_cast<uint32_t>(m_data.size() * sizeof(TileData));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+TilemapData::TilemapData()
+{
+}
+
+TilemapData::~TilemapData()
+{
+}
+
+bool TilemapData::initialize(const Tilemap& tilemap)
+{
+	for(uint32_t i = 0; i < tilemap.size(); ++i)
+	{
+		const TilemapEntry& entry = tilemap[i];
+		m_indices.push_back(entry.tile_index);
+		m_parameters.push_back(
+			(entry.palette_index & 0x07) |
+			((entry.bank & 0x01) << 3) |
+			(entry.flip_horizontal ? 0x20 : 0x00) |
+			(entry.flip_vertical ? 0x40 : 0x00) |
+			(entry.priority ? 0x80 : 0x00));
+	}
+	return true;
+}
+
+const uint8_t* TilemapData::getIndexData() const
+{
+	return reinterpret_cast<const uint8_t*>(m_indices.data());
+}
+
+const uint8_t* TilemapData::getParameterData() const
+{
+	return reinterpret_cast<const uint8_t*>(m_parameters.data());
+}
+
+uint32_t TilemapData::getDataSize() const
+{
+	assert(m_indices.size() == m_parameters.size());
+	return static_cast<uint32_t>(m_indices.size() * sizeof(uint8_t));
 }
 
