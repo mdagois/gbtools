@@ -134,7 +134,11 @@ int main(int argc, const char** argv)
 		<< endl;
 
 	Tilemap tilemap;
-	tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize);
+	if(!tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
+	{
+		cout << "Error on tilemap initialization" << endl;
+		return 1;
+	}
 	if(kSuccess != image.iterateTiles(
 		[&tilemap, &tileset, &palette_set](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
