@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <vector>
 
 ////////////////////////////////////////////////////////////////////////////////
 // Constants
@@ -22,12 +23,16 @@
 // Tilemap
 ////////////////////////////////////////////////////////////////////////////////
 
-//struct Tilemap
-//{
-//	vector<uint8_t> indices;
-//	vector<uint8_t> parameters;
-//};
-//
+class Tilemap
+{
+public:
+	Tilemap();
+	virtual ~Tilemap();
+
+private:
+	std::vector<uint8_t> m_tile_indices;
+};
+
 //static bool extractTilemaps(Tilemap& out_tilemap, const Tileset& tileset, const PaletteSet& palette_set, const Image& image)
 //{
 //	out_tilemap.indices.clear();

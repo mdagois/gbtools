@@ -49,6 +49,8 @@ public:
 	const ColorRGBA* getPixels() const;
 
 	Result iterateTiles(
+		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
+	Result iterateTiles(
 		uint32_t start_tile_row, uint32_t tile_row_count,
 		uint32_t metatile_width, uint32_t metatile_height,
 		bool use_microtile_8x16,
