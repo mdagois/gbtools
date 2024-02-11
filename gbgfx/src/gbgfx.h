@@ -11,6 +11,5 @@
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Add namespace
 //TODO Headers output
 

@@ -1,6 +1,8 @@
 #include "log.h"
 #include "tilemap.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 
 Tilemap::Tilemap()
@@ -62,5 +64,9 @@ uint32_t Tilemap::getRowCount() const
 uint32_t Tilemap::getColumnCount() const
 {
 	return m_column_count;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 

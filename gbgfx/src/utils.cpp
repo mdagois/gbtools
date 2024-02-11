@@ -7,6 +7,8 @@
 #include "log.h"
 #include "utils.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
@@ -177,5 +179,9 @@ bool writeTilesetToPNG(
 		return false;
 	}
 	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 

@@ -4,6 +4,8 @@
 #include "log.h"
 #include "tileset.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 // Tile
 ////////////////////////////////////////////////////////////////////////////////
@@ -138,7 +140,7 @@ uint32_t Tileset::size() const
 
 void Tileset::removeDoubles(bool compare_flips)
 {
-	const uint32_t tile_count = m_tiles.size();
+	const size_t tile_count = m_tiles.size();
 
 	struct CheckEntry
 	{
@@ -213,5 +215,9 @@ bool Tileset::findTileIndex(
 	}
 
 	return false;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 

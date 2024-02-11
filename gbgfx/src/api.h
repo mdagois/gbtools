@@ -4,6 +4,8 @@
 #include "tilemap.h"
 #include "tileset.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 // Input
 ////////////////////////////////////////////////////////////////////////////////
@@ -29,3 +31,6 @@ bool exportPaletteSet(const PaletteSet& palette_set, const char* output_filename
 bool exportTileset(const Tileset& tileset, const char* output_filename);
 bool exportTilemap(const Tilemap& tilemap, const char* indices_filename, const char* parameter_filename);
 
+////////////////////////////////////////////////////////////////////////////////
+
+}

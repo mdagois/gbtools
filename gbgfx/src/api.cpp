@@ -6,6 +6,8 @@
 #include "log.h"
 #include "utils.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 // Input
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,5 +199,9 @@ bool exportTilemap(const Tilemap& tilemap, const char* indices_filename, const c
 		data.initialize(tilemap) &&
 		(indices_filename == nullptr || writeToFile(data.getIndexData(), data.getDataSize(), indices_filename)) &&
 		(parameter_filename == nullptr || writeToFile(data.getParameterData(), data.getDataSize(), parameter_filename));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 

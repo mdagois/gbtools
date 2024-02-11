@@ -5,6 +5,8 @@
 #include "log.h"
 #include "palette.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool hasColor(const Palette& palette, ColorRGBA color)
@@ -167,7 +169,7 @@ uint32_t PaletteSet::size() const
 
 void PaletteSet::optimize(bool merge_palettes, bool sort_palette_colors)
 {
-	const uint32_t palette_count = m_palettes.size();
+	const size_t palette_count = m_palettes.size();
 	if(merge_palettes && palette_count >= 2)
 	{
 		std::vector<Palette> palettes = m_palettes;
@@ -223,5 +225,9 @@ uint32_t PaletteSet::findCompatiblePaletteIndex(const Palette& palette) const
 		}
 	}
 	return kInvalidPaletteIndex;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 

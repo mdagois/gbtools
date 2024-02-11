@@ -3,6 +3,8 @@
 
 #include "log.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 
 static uint32_t s_log_level = kLogLevel_Error;
@@ -31,5 +33,9 @@ void log(LogLevel level, const char* message)
 	};
 	static_assert(sizeof(headers) / sizeof(headers[0]) == kLogLevel_All + 1);
 	std::cout << headers[level] << message << std::endl;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 

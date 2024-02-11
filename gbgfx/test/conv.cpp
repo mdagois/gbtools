@@ -5,7 +5,7 @@
 
 int main(int argc, const char** argv)
 {
-	using namespace std;
+	using namespace gbgfx;
 
 	////////////////////////////////////////
 
@@ -17,14 +17,14 @@ int main(int argc, const char** argv)
 		false, false, false,
 		"test/demo.png"))
 	{
-		cout << "Could not extract tileset" << endl;
+		std::cout << "Could not extract tileset" << std::endl;
 		return 1;
 	}
 
 	Tilemap tilemap;
 	if(!extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
 	{
-		cout << "Could not extract tilemap" << endl;
+		std::cout << "Could not extract tilemap" << std::endl;
 		return 1;
 	}
 
@@ -32,19 +32,19 @@ int main(int argc, const char** argv)
 
 	if(!exportPaletteSet(palette_set, "test/palette.pal"))
 	{
-		cout << "Could not export palette set" << endl;
+		std::cout << "Could not export palette set" << std::endl;
 		return 1;
 	}
 
 	if(!exportTileset(tileset, "test/tileset.chr"))
 	{
-		cout << "Could not export tileset" << endl;
+		std::cout << "Could not export tileset" << std::endl;
 		return 1;
 	}
 
 	if(!exportTilemap(tilemap, "test/tilemap.idx", "test/tilemap.prm"))
 	{
-		cout << "Could not export tilemap" << endl;
+		std::cout << "Could not export tilemap" << std::endl;
 		return 1;
 	}
 
@@ -62,14 +62,14 @@ int main(int argc, const char** argv)
 		static_assert(sizeof(filenames) / sizeof(filenames[0]) == kTileFlipType_Count);
 		if(!writeTilesetToPNG(filenames[i], 16, tileset, static_cast<TileFlipType>(i), palette_set, i == 0))
 		{
-			cout << "Could not write tileset" << endl;
+			std::cout << "Could not write tileset" << std::endl;
 			return 1;
 		}
 	}
 
 	////////////////////////////////////////
 
-	cout << "Done" << endl;
+	std::cout << "Done" << std::endl;
 	return 0;
 }
 

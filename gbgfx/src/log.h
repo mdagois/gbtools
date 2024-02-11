@@ -2,6 +2,8 @@
 
 #include <sstream>
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 
 #define LOG(level, message) log(level, (std::stringstream() << message).str().c_str())
@@ -20,4 +22,8 @@ enum LogLevel : uint32_t
 
 void setLogLevel(LogLevel level);
 void log(LogLevel level, const char* message);
+
+////////////////////////////////////////////////////////////////////////////////
+
+}
 

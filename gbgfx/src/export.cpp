@@ -2,6 +2,8 @@
 
 #include "export.h"
 
+namespace gbgfx {
+
 ////////////////////////////////////////////////////////////////////////////////
 
 PaletteSetData::PaletteSetData()
@@ -153,5 +155,9 @@ uint32_t TilemapData::getDataSize() const
 {
 	assert(m_indices.size() == m_parameters.size());
 	return static_cast<uint32_t>(m_indices.size() * sizeof(uint8_t));
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 }
 
