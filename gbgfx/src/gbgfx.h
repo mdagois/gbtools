@@ -11,5 +11,3 @@
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Headers output
-

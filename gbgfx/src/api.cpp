@@ -143,7 +143,10 @@ bool extractTilemap(
 // Output
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool writeToFile(const void* data, uint32_t size, const char* output_filename)
+static bool writeToFile(
+	const void* data, uint32_t size,
+	const void* header, uint32_t header_size,
+	const char* output_filename)
 {
 	assert(output_filename != nullptr);
 
@@ -172,33 +175,68 @@ static bool writeToFile(const void* data, uint32_t size, const char* output_file
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool exportPaletteSet(const PaletteSet& palette_set, const char* output_filename)
+bool exportPaletteSet(
+	const PaletteSet& palette_set,
+	const char* output_filename, bool use_header)
 {
 	PaletteSetData data;
+	assert(palette_set.size() < 256);
+	const uint8_t palette_count = palette_set.size();
 	return
 		data.initialize(palette_set) &&
-		writeToFile(data.getData(), data.getDataSize(), output_filename);
+		writeToFile(
+			data.getData(), data.getDataSize(),
+			use_header ? &palette_count : nullptr, sizeof(palette_count),
+			output_filename);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool exportTileset(const Tileset& tileset, const char* output_filename)
+bool exportTileset(
+	const Tileset& tileset,
+	const char* output_filename, bool use_header)
 {
 	TilesetData data;
+	assert(tileset.size() < 65536);
+	const uint16_t tile_count = static_cast<uint16_t>(tileset.size());
 	return
 		data.initialize(tileset) &&
-		writeToFile(data.getData(), data.getDataSize(), output_filename);
+		writeToFile(
+			data.getData(), data.getDataSize(),
+			use_header ? &tile_count : nullptr, sizeof(tile_count),
+			output_filename);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool exportTilemap(const Tilemap& tilemap, const char* indices_filename, const char* parameter_filename)
+bool exportTilemap(
+	const Tilemap& tilemap,
+	const char* indices_filename, const char* parameter_filename, bool use_header)
 {
 	TilemapData data;
+	assert(tilemap.getColumnCount() < 256);
+	assert(tilemap.getRowCount() < 256);
+	const uint8_t header[2] =
+	{
+		static_cast<uint8_t>(tilemap.getColumnCount()),
+		static_cast<uint8_t>(tilemap.getRowCount())
+	};
 	return
 		data.initialize(tilemap) &&
-		(indices_filename == nullptr || writeToFile(data.getIndexData(), data.getDataSize(), indices_filename)) &&
-		(parameter_filename == nullptr || writeToFile(data.getParameterData(), data.getDataSize(), parameter_filename));
+		(
+			indices_filename == nullptr ||
+			writeToFile(
+				data.getIndexData(), data.getDataSize(),
+				use_header ? &header : nullptr, sizeof(header),
+				indices_filename))
+		&&
+		(
+			parameter_filename == nullptr ||
+			writeToFile(
+				data.getParameterData(), data.getDataSize(),
+				use_header ? &header : nullptr, sizeof(header),
+				parameter_filename
+		));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

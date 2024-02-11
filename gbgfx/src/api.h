@@ -27,9 +27,15 @@ bool extractTilemap(
 // Output
 ////////////////////////////////////////////////////////////////////////////////
 
-bool exportPaletteSet(const PaletteSet& palette_set, const char* output_filename);
-bool exportTileset(const Tileset& tileset, const char* output_filename);
-bool exportTilemap(const Tilemap& tilemap, const char* indices_filename, const char* parameter_filename);
+bool exportPaletteSet(
+	const PaletteSet& palette_set,
+	const char* output_filename, bool use_header);
+bool exportTileset(
+	const Tileset& tileset,
+	const char* output_filename, bool use_header);
+bool exportTilemap(
+	const Tilemap& tilemap,
+	const char* indices_filename, const char* parameter_filename, bool use_header);
 
 ////////////////////////////////////////////////////////////////////////////////
 
