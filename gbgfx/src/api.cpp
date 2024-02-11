@@ -163,9 +163,11 @@ static bool writeToFile(
 		fclose(output_file);
 	}
 
-	const size_t written = fwrite(data, size, 1, output_file);
+	const bool written =
+		(header == nullptr || fwrite(header, header_size, 1, output_file) == 1) &&
+		fwrite(data, size, 1, output_file) == 1;
 	fclose(output_file);
-	if(written != 1)
+	if(!written)
 	{
 		LOG_ERROR("Could not write file [" << output_filename << "]");
 		return false;

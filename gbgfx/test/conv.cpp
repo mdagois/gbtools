@@ -30,19 +30,21 @@ int main(int argc, const char** argv)
 
 	////////////////////////////////////////
 
-	if(!exportPaletteSet(palette_set, "test/palette.pal", false))
+	const bool use_headers = false;
+
+	if(!exportPaletteSet(palette_set, "test/palette.pal", use_headers))
 	{
 		std::cout << "Could not export palette set" << std::endl;
 		return 1;
 	}
 
-	if(!exportTileset(tileset, "test/tileset.chr", false))
+	if(!exportTileset(tileset, "test/tileset.chr", use_headers))
 	{
 		std::cout << "Could not export tileset" << std::endl;
 		return 1;
 	}
 
-	if(!exportTilemap(tilemap, "test/tilemap.idx", "test/tilemap.prm", false))
+	if(!exportTilemap(tilemap, "test/tilemap.idx", "test/tilemap.prm", use_headers))
 	{
 		std::cout << "Could not export tilemap" << std::endl;
 		return 1;
