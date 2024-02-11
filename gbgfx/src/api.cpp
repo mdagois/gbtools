@@ -66,6 +66,10 @@ bool extractTileset(
 		out_tileset.removeDoubles(remove_flips);
 	}
 
+	LOG_INFO(
+		"Tile count is " << out_tileset.size()
+		<< " and palette count is " << out_palette_set.size()
+		<< " in [" << image_filename << "]"); 
 	return true;
 }
 
@@ -88,7 +92,7 @@ bool extractTilemap(
 		LOG_ERROR("Could not initialize tilemap from [" << image_filename << "]");
 		return false;
 	}
-	return image.iterateTiles(
+	if(!image.iterateTiles(
 		[&out_tilemap, &tileset, &palette_set, use_flips, image_filename](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
@@ -122,7 +126,15 @@ bool extractTilemap(
 				flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
 				priority);
 			return true;
-		});
+		}))
+	{
+		return false;
+	}
+
+	LOG_INFO(
+		"Tilemap size is " << out_tilemap.getColumnCount() << "x" << out_tilemap.getRowCount()
+		<< " in [" << image_filename << "]"); 
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

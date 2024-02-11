@@ -21,17 +21,12 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	cout << "Tile count: " << tileset.size() << endl;
-	cout << "Palette count: " << palette_set.size() << endl;
-
 	Tilemap tilemap;
 	if(!extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
 	{
 		cout << "Could not extract tilemap" << endl;
 		return 1;
 	}
-
-	cout << "Tilemap size " << tilemap.getColumnCount() << "x" << tilemap.getRowCount() << endl;
 
 	////////////////////////////////////////
 
