@@ -48,11 +48,6 @@ void sortColorsRGBA(ColorRGBA* colors, uint32_t count)
 // BGR555
 ////////////////////////////////////////////////////////////////////////////////
 
-enum : uint16_t
-{
-	kBGR555_Magenta = 0x7C1FU,
-};
-
 double getLuminance(const ColorBGR555 color)
 {
 	const double blue = ((color >> 10) & 0x1F) / 32.0;

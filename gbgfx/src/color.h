@@ -32,6 +32,7 @@ typedef uint16_t ColorBGR555;
 enum : ColorBGR555
 {
 	kBGR555_Invalid = 0x8000U,
+	kBGR555_Magenta = 0x7C1FU,
 };
 
 double getLuminance(const ColorBGR555 color);

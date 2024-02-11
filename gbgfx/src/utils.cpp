@@ -81,11 +81,6 @@ bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet&
 
 ////////////////////////////////////////////////////////////////////////////////
 
-enum : uint32_t
-{
-	kChannelCount = 4,
-};
-
 static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip, const Palette& palette)
 {
 	const uint8_t* indices = flip.color_indices;
@@ -169,6 +164,7 @@ bool writeTilesetToPNG(
 			image_width, *blit_flip, *blit_palette);
 	}
 
+	constexpr int32_t kChannelCount = 4;
 	const int result = stbi_write_png(
 		filename,
 		image_width, image_height, kChannelCount,

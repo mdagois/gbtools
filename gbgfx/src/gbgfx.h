@@ -12,6 +12,5 @@
 #include "utils.h"
 
 //TODO Add namespace
-//TODO Move constants to constants.h
 //TODO Headers output
 
