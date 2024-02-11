@@ -1,6 +1,7 @@
 #include <cassert>
 #include <iostream>
 
+#include "commandline.h"
 #include "gbgfx.h"
 
 /*
@@ -45,6 +46,38 @@ CGB
 int main(int argc, const char** argv)
 {
 	using namespace gbgfx;
+
+	////////////////////////////////////////
+
+	bool help = false;
+	bool test = false;
+	cl::Option cli_options[] =
+	{
+		cl::OptionFlag("h", "print help", 'HELP', &help),
+		cl::OptionFlag("t", "t enabled", 'TENA', &test),
+	};
+
+	cl::Parser cli_parser(
+		argv, argc,
+		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
+		"Test converter");
+
+	uint32_t code;
+	const char* parameter;
+	cl::Error error;
+	while(cli_parser.getNextOption(code, parameter, error));
+
+	if(error != cl::Error::kNone)
+	{
+		std::cout << cli_parser.getLastErrorMessage() << std::endl;
+		return 1;
+	}
+
+	if(help)
+	{
+		cli_parser.printHelp();
+		return 0;
+	}
 
 	////////////////////////////////////////
 
