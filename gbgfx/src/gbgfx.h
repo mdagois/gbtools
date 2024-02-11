@@ -11,15 +11,5 @@
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Maximum VRAM banks *
-//TODO Addressing mode *
-//TODO Palette maximum number
-
-//TODO Palette index offset
-//TODO Output palette
-//TODO Output tilemap parameters
-//TODO Verbosity level
-//TODO Use flip
-
 //TODO Palette color count (for SGB background)
 

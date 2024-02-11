@@ -119,9 +119,9 @@ bool extractTilemap(
 				return false;
 			}
 
-			assert(tile_index < 512);
+			assert(tile_index <= kTileMaxCount);
 			constexpr uint32_t priority = 0;
-			const uint32_t bank = tile_index < 256 ? 0 : 1;
+			const uint32_t bank = tile_index < kTilesPerBank ? 0 : 1;
 			out_tilemap.push(
 				tile_index, palette_index, bank,
 				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,

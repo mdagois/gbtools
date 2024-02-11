@@ -3,6 +3,15 @@
 
 #include "gbgfx.h"
 
+//TODO Palette index offset
+//TODO Output palette
+//TODO Output tilemap parameters
+//TODO Verbosity level
+//TODO Use flip
+//TODO Maximum VRAM banks
+//TODO Addressing mode
+//TODO Palette maximum number
+
 int main(int argc, const char** argv)
 {
 	using namespace gbgfx;

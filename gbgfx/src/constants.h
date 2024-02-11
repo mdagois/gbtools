@@ -13,6 +13,10 @@ enum
 	kInvalidColorIndex = 0xFFU,
 	kInvalidPaletteIndex = 0xFFFFFFFFU,
 
+	kTilesPerBank = 256,
+	kTileBankMaxCount = 2,
+	kTileMaxCount = kTilesPerBank * kTileBankMaxCount,
+
 	kTilemapRowMaxCount = 32,
 	kTilemapColumnMaxCount = 32,
 
