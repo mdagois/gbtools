@@ -1,5 +1,6 @@
 #pragma once
 
+#include "api.h"
 #include "color.h"
 #include "constants.h"
 #include "export.h"

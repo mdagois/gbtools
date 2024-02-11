@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.10.0)
 add_library(
 	gbgfx
 	STATIC
+	api.h api.cpp
 	color.h color.cpp
 	export.h export.cpp
 	image.h image.cpp

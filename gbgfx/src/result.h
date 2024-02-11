@@ -5,6 +5,7 @@
 //TODO Add namespace
 //TODO Move constants to constants.h
 //TODO Add verbose mode with error callback
+//TODO Headers output
 
 enum Result : uint32_t
 {
