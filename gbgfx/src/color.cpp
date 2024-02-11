@@ -26,7 +26,7 @@ double getLuminance(const ColorRGBA color)
 	return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
 }
 
-void sortColors(ColorRGBA* colors, uint32_t count)
+void sortColorsRGBA(ColorRGBA* colors, uint32_t count)
 {
 	std::sort(
 		colors, colors + count,
@@ -61,7 +61,7 @@ double getLuminance(const ColorBGR555 color)
 	return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
 }
 
-void sortColors(ColorBGR555* colors, uint32_t count)
+void sortColorsBGR555(ColorBGR555* colors, uint32_t count)
 {
 	std::sort(
 		colors, colors + count,

@@ -5,7 +5,6 @@
 //TODO Add namespace
 //TODO Move constants to constants.h
 //TODO Add verbose mode with error callback
-//TODO Is options.h really needed?
 
 enum Result : uint32_t
 {

@@ -52,7 +52,7 @@ static bool extractTileset(
 		return false;
 	}
 
-	out_palette_set.optimize();
+	out_palette_set.optimize(true, true);
 
 	for(uint32_t i = 0; i < image_tiles.size(); ++i)
 	{
@@ -139,6 +139,7 @@ int main(int argc, const char** argv)
 	}
 
 	cout << "Tile count: " << tileset.size() << endl;
+	cout << "Palette count: " << palette_set.size() << endl;
 
 	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
 	{
@@ -179,6 +180,7 @@ int main(int argc, const char** argv)
 		cout << "Could not extract tilemap" << endl;
 		return 1;
 	}
+	cout << "Tilemap size " << tilemap.getColumnCount() << "x" << tilemap.getRowCount() << endl;
 
 	return 0;
 }

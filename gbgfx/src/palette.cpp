@@ -2,7 +2,6 @@
 #include <cassert>
 #include <set>
 
-#include "options.h"
 #include "palette.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -84,10 +83,6 @@ void Palette::push(ColorRGBA color)
 	assert(m_color_count < kColorsPerPalette);
 	m_colors[m_color_count] = color;
 	++m_color_count;
-	if(getOptions().sort_palettes)
-	{
-		sortColors(m_colors, m_color_count);
-	}
 }
 
 void Palette::clear()
@@ -130,6 +125,11 @@ uint8_t Palette::findColorIndex(ColorRGBA color) const
 	return kInvalidColorIndex;
 }
 
+void Palette::sortColors()
+{
+	sortColorsRGBA(m_colors, m_color_count);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Palette set
 ////////////////////////////////////////////////////////////////////////////////
@@ -164,42 +164,48 @@ uint32_t PaletteSet::size() const
 	return static_cast<uint32_t>(m_palettes.size());
 }
 
-void PaletteSet::optimize()
+void PaletteSet::optimize(bool merge_palettes, bool sort_palette_colors)
 {
-	if(size() < 2)
+	if(merge_palettes && m_palettes.size() >= 2)
 	{
-		return;
+		std::vector<Palette> palettes = m_palettes;
+		std::sort(
+			palettes.begin(), palettes.end(),
+			[](const Palette& lhs, const Palette& rhs)
+			{
+				return lhs.size() > rhs.size();
+			});
+
+		m_palettes.clear();
+		m_palettes.push_back(palettes.back());
+		palettes.pop_back();
+
+		while(!palettes.empty())
+		{
+			const Palette& palette = palettes.back();
+			bool merged = false;
+			for(uint32_t i = 0; i < m_palettes.size(); ++i)
+			{
+				if(mergePalettes(m_palettes[i], m_palettes[i], palette))
+				{
+					merged = true;
+					break;
+				}
+			}
+			if(!merged)
+			{
+				m_palettes.push_back(palette);
+			}
+			palettes.pop_back();
+		}
 	}
 
-	std::vector<Palette> palettes = m_palettes;
-	std::sort(
-		palettes.begin(), palettes.end(),
-		[](const Palette& lhs, const Palette& rhs)
-		{
-			return lhs.size() > rhs.size();
-		});
-
-	m_palettes.clear();
-	m_palettes.push_back(palettes.back());
-	palettes.pop_back();
-
-	while(!palettes.empty())
+	if(sort_palette_colors)
 	{
-		const Palette& palette = palettes.back();
-		bool merged = false;
 		for(uint32_t i = 0; i < m_palettes.size(); ++i)
 		{
-			if(mergePalettes(m_palettes[i], m_palettes[i], palette))
-			{
-				merged = true;
-				break;
-			}
+			m_palettes[i].sortColors();
 		}
-		if(!merged)
-		{
-			m_palettes.push_back(palette);
-		}
-		palettes.pop_back();
 	}
 }
 

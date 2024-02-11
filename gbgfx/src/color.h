@@ -21,7 +21,7 @@ bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs);
 bool operator!=(const ColorRGBA& lhs, const ColorRGBA& rhs);
 bool operator<(const ColorRGBA& lhs, const ColorRGBA& rhs);
 double getLuminance(const ColorRGBA color);
-void sortColors(ColorRGBA* colors, uint32_t count);
+void sortColorsRGBA(ColorRGBA* colors, uint32_t count);
 
 ////////////////////////////////////////////////////////////////////////////////
 // BGR555
@@ -35,7 +35,7 @@ enum : ColorBGR555
 };
 
 double getLuminance(const ColorBGR555 color);
-void sortColors(ColorBGR555* colors, uint32_t count);
+void sortColorsBGR555(ColorBGR555* colors, uint32_t count);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Conversion
