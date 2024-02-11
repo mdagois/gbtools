@@ -1,5 +1,3 @@
-//TODO Remove std::cout
-#include <iostream>
 #include <cassert>
 
 #include "api.h"
@@ -13,18 +11,7 @@
 
 static bool readImage(Image& out_image, const char* filename)
 {
-	if(kSuccess != out_image.read(filename))
-	{
-		std::cout
-			<< "Cannot read file [" << filename << "]"
-			<< std::endl;
-		return false;
-	}
-	std::cout
-		<< "Loaded [" << filename << "] "
-		<< out_image.getWidth() << "x" << out_image.getHeight()
-		<< std::endl;
-	return true;
+	return kSuccess == out_image.read(filename);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

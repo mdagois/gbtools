@@ -65,6 +65,7 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
+	cout << "Done" << endl;
 	return 0;
 }
 
