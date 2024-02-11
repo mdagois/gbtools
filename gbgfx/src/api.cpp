@@ -9,13 +9,6 @@
 // Input
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool readImage(Image& out_image, const char* filename)
-{
-	return kSuccess == out_image.read(filename);
-}
-
-////////////////////////////////////////////////////////////////////////////////
-
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
@@ -24,20 +17,20 @@ bool extractTileset(
 	const char* image_filename)
 {
 	Image image;
-	if(!readImage(image, image_filename))
+	if(!image.read(image_filename))
 	{
 		return false;
 	}
 
 	std::vector<ImageTile> image_tiles;
-	if(kSuccess != image.iterateTiles(
+	if(!image.iterateTiles(
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
 		use_microtile_8x16,
 		[&image_tiles, &out_palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
-			if(kSuccess != extractTilePalette(palette, tile))
+			if(!extractTilePalette(palette, tile))
 			{
 				return false;
 			}
@@ -54,7 +47,7 @@ bool extractTileset(
 	for(uint32_t i = 0; i < image_tiles.size(); ++i)
 	{
 		Tile tile;
-		if(kSuccess != generateTile(tile, image_tiles[i], out_palette_set))
+		if(!generateTile(tile, image_tiles[i], out_palette_set))
 		{
 			return false;
 		}
@@ -78,7 +71,7 @@ bool extractTilemap(
 	const char* image_filename)
 {
 	Image image;
-	if(!readImage(image, image_filename))
+	if(!image.read(image_filename))
 	{
 		return false;
 	}
@@ -87,11 +80,11 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	if(kSuccess != image.iterateTiles(
+	if(!image.iterateTiles(
 		[&out_tilemap, &tileset, &palette_set, use_flips](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
-			if(kSuccess != generateTile(tile, image_tile, palette_set))
+			if(!generateTile(tile, image_tile, palette_set))
 			{
 				return false;
 			}

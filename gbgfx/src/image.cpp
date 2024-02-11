@@ -4,6 +4,7 @@
 #include "third_party/stb_image.h"
 
 #include "image.h"
+#include "log.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Image tile
@@ -195,7 +196,7 @@ Image::~Image()
 	unload();
 }
 
-Result Image::read(const char* filename)
+bool Image::read(const char* filename)
 {
 	assert(filename != nullptr);
 	unload();
@@ -210,7 +211,12 @@ Result Image::read(const char* filename)
 	m_width = static_cast<uint32_t>(width);
 	m_height = static_cast<uint32_t>(height);
 	m_filename = filename;
-	return m_pixels == nullptr ? kError_CouldNotReadFile : kSuccess;
+	if(m_pixels == nullptr)
+	{
+		LOG_ERROR("Could not read the image file [" << filename << "]");
+		return false;
+	}
+	return true;
 }
 
 uint32_t Image::getWidth() const
@@ -233,13 +239,13 @@ const ColorRGBA* Image::getPixels() const
 	return m_pixels;
 }
 
-Result Image::iterateTiles(
+bool Image::iterateTiles(
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
 	return iterateTiles(0, kIterateAllRows, kTileSize, kTileSize, false, tile_callback);
 }
 
-Result Image::iterateTiles(
+bool Image::iterateTiles(
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool use_microtile_8x16,
@@ -247,19 +253,23 @@ Result Image::iterateTiles(
 {
 	if(metatile_width == 0 && metatile_height == 0)
 	{
-		return kError_MetatileDimensionsMustNotBeZero;
+		LOG_ERROR("Metatile dimensions must not be zero [" << m_filename << "]");
+		return false;
 	}
 	if(use_microtile_8x16 && ((metatile_height % (kTileSize * 2)) != 0))
 	{
-		return kError_MetatileHeightMustBeMultipleOf16;
+		LOG_ERROR("Metatiles' height must be a multiple of 16 when using 8x16 microtiles [" << m_filename << "]");
+		return false;
 	}
 	if((getWidth() % metatile_width != 0) || (getHeight() % metatile_height != 0))
 	{
-		return kError_ImageDimensionsMustBeMultiplesOfMetatileDimensions;
+		LOG_ERROR("Image dimension must be a multiple of the metatile dimension [" << m_filename << "]");
+		return false;
 	}
 	if((metatile_height % kTileSize) != 0 || (metatile_height % kTileSize) != 0)
 	{
-		return kError_MetatileDimensionsMustBeMultiplesOfTileSize;
+		LOG_ERROR("Metatile dimension must be a multiple of the microtile dimension [" << m_filename << "]");
+		return false;
 	}
 	
 	ImageArea full_image(
@@ -278,7 +288,7 @@ Result Image::iterateTiles(
 					return microtile_area.iterateTiles(tile_callback);
 				});
 		});
-	return kSuccess;
+	return true;
 }
 
 void Image::unload()

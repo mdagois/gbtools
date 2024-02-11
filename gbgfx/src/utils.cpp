@@ -4,11 +4,12 @@
 #include "third_party/stb_image_write.h"
 
 #include "constants.h"
+#include "log.h"
 #include "utils.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
+bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 {
 	std::set<ColorRGBA> colors;
 	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
@@ -17,34 +18,36 @@ Result extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 	}
 	if(colors.size() > kColorsPerPalette)
 	{
-		return kError_TooManyColorInPalette;
+		LOG_ERROR("Too many colors in palette");
+		return false;
 	}
 
 	for(ColorRGBA color : colors)
 	{
 		out_tile_palette.push(color);
 	}
-	return kSuccess;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static Result generateTileFlip(
+static bool generateTileFlip(
 	TileFlip& out_tile_flip, uint32_t& out_palette_index,
 	const ImageTile& image_tile, const PaletteSet& palette_set)
 {
 	{
 		Palette tile_palette;
-		const Result result = extractTilePalette(tile_palette, image_tile);
-		if(result != kSuccess)
+		if(!extractTilePalette(tile_palette, image_tile))
 		{
-			return result;
+			LOG_ERROR("Could not extract palette");
+			return false;
 		}
 
 		const uint32_t palette_index = palette_set.findCompatiblePaletteIndex(tile_palette);
 		if(palette_index == kInvalidPaletteIndex)
 		{
-			return kError_CouldNotFindCompatiblePalette;
+			LOG_ERROR("Could not find a compatible palette");
+			return false;
 		}
 		out_palette_index = palette_index;
 	}
@@ -55,24 +58,25 @@ static Result generateTileFlip(
 		const uint8_t color_index = palette.findColorIndex(image_tile[i]);
 		if(color_index == kInvalidColorIndex)
 		{
-			return kError_CouldNotFindColorInPalette;
+			LOG_ERROR("Could not find color in palette");
+			return false;
 		}
 		out_tile_flip.color_indices[i] = color_index;
 	}
-	return kSuccess;
+	return true;
 }
 
-Result generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set)
+bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set)
 {
 	TileFlip tile_flip;
 	uint32_t palette_index;
-	const Result result = generateTileFlip(tile_flip, palette_index, image_tile, palette_set);
-	if(result != kSuccess)
+	if(!generateTileFlip(tile_flip, palette_index, image_tile, palette_set))
 	{
-		return result;
+		LOG_ERROR("Could not generate tile flip");
+		return false;
 	}
 	out_tile.initialize(tile_flip, palette_index);
-	return kSuccess;
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -115,7 +119,7 @@ static bool findTileFlipInTileset(
 	return false;
 }
 
-Result writeTilesetToPNG(
+bool writeTilesetToPNG(
 	const char* filename, uint32_t tile_column_count,
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
 	bool clear_doubles)
@@ -171,6 +175,11 @@ Result writeTilesetToPNG(
 		pixels, sizeof(ColorRGBA) * image_width);
 
 	delete [] pixels;
-	return result != 0 ? kSuccess : kError_CouldNotWriteTilesetToFile;
+	if(result == 0)
+	{
+		LOG_ERROR("Could not write file [" << filename << "]");
+		return false;
+	}
+	return true;
 }
 

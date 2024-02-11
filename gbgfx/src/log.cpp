@@ -30,6 +30,6 @@ void log(LogLevel level, const char* message)
 		"[INFO]  ",
 	};
 	static_assert(sizeof(headers) / sizeof(headers[0]) == kLogLevel_All + 1);
-	std::cout << headers[level] << message;
+	std::cout << headers[level] << message << std::endl;
 }
 
