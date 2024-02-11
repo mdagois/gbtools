@@ -1,73 +1,144 @@
 #include <cassert>
 #include <iostream>
+
 #include "gbgfx.h"
 
-using namespace std;
-
-int main(int argc, const char** argv)
+static bool readImage(Image& out_image, const char* filename)
 {
-	const char* image_filename = "test/demo.png";
-
-	Image image;
-	if(kSuccess != image.read(image_filename))
+	if(kSuccess != out_image.read(filename))
 	{
-		cout << "Cannot read file" << endl;
-		return 1;
+		std::cout
+			<< "Cannot read file [" << filename << "]"
+			<< std::endl;
+		return false;
 	}
-	cout
-		<< "Loaded [" << image_filename << "] "
-		<< image.getWidth() << "x" << image.getHeight()
-		<< endl;
+	std::cout
+		<< "Loaded [" << filename << "] "
+		<< out_image.getWidth() << "x" << out_image.getHeight()
+		<< std::endl;
+	return true;
+}
+
+static bool extractTileset(
+	Tileset& out_tileset, PaletteSet& out_palette_set,
+	uint32_t start_tile_row, uint32_t tile_row_count,
+	uint32_t metatile_width, uint32_t metatile_height,
+	bool use_microtile_8x16, bool remove_doubles, bool remove_flips,
+	const char* image_filename)
+{
+	Image image;
+	if(!readImage(image, image_filename))
+	{
+		return false;
+	}
 
 	std::vector<ImageTile> image_tiles;
-	PaletteSet palette_set;
 	if(kSuccess != image.iterateTiles(
-#if 1
-		8, kIterateAllRows, kTileSize, kTileSize,
-		false,
-#else
-		0, kIterateAllRows, kTileSize * 2, kTileSize * 2,
-		true,
-#endif
-		[&image_tiles, &palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
+		start_tile_row, tile_row_count,
+		metatile_width, metatile_height,
+		use_microtile_8x16,
+		[&image_tiles, &out_palette_set](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
 			if(kSuccess != extractTilePalette(palette, tile))
 			{
-				assert(false);
+				return false;
 			}
-			palette_set.push(palette);
+			out_palette_set.push(palette);
 			image_tiles.push_back(tile);
 			return true;
 		}))
 	{
-		cout << "Error on tile" << endl;
-		return 1;
+		return false;
 	}
 
-	cout << "Palette count: " << palette_set.size() << endl;
-	for(uint32_t i = 0; i < palette_set.size(); ++i)
-	{
-		cout << "\tsize = " << palette_set[i].size() << endl;
-	}
-	palette_set.optimize();
-	cout << "Palette count: " << palette_set.size() << endl;
-	for(uint32_t i = 0; i < palette_set.size(); ++i)
-	{
-		cout << "\tsize = " << palette_set[i].size() << endl;
-	}
+	out_palette_set.optimize();
 
-	Tileset tileset;
 	for(uint32_t i = 0; i < image_tiles.size(); ++i)
 	{
 		Tile tile;
-		if(kSuccess != generateTile(tile, image_tiles[i], palette_set))
+		if(kSuccess != generateTile(tile, image_tiles[i], out_palette_set))
 		{
-			cout << "Cannot generate tile (" << i << ") from image tile and palette set" << endl;
-			return 1;
+			return false;
 		}
-		tileset.push(tile);
+		out_tileset.push(tile);
 	}
+
+	if(remove_doubles)
+	{
+		out_tileset.removeDoubles(remove_flips);
+	}
+
+	return true;
+}
+
+static bool extractTilemap(
+	Tilemap& out_tilemap,
+	const Tileset& tileset, const PaletteSet& palette_set,
+	bool use_flips,
+	const char* image_filename)
+{
+	Image image;
+	if(!readImage(image, image_filename))
+	{
+		return false;
+	}
+
+	if(!out_tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
+	{
+		return false;
+	}
+	if(kSuccess != image.iterateTiles(
+		[&out_tilemap, &tileset, &palette_set, use_flips](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		{
+			Tile tile;
+			if(kSuccess != generateTile(tile, image_tile, palette_set))
+			{
+				return false;
+			}
+
+			uint32_t tile_index;
+			uint32_t palette_index;
+			TileFlipType flip_type;
+			if(!tileset.findTileIndex(tile_index, palette_index, flip_type, tile, use_flips))
+			{
+				return false;
+			}
+
+			assert(tile_index < 512);
+			constexpr uint32_t priority = 0;
+			const uint32_t bank = tile_index < 256 ? 0 : 1;
+			out_tilemap.push(
+				tile_index, palette_index, bank,
+				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
+				flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
+				priority);
+			return true;
+		}))
+	{
+		return false;
+	}
+
+	return true;
+}
+
+int main(int argc, const char** argv)
+{
+	using namespace std;
+
+	Tileset tileset;
+	PaletteSet palette_set;
+	if(!extractTileset(
+		tileset, palette_set,
+		8, kIterateAllRows, kTileSize, kTileSize,
+		false, false, false,
+		"test/demo.png"))
+	{
+		cout << "Could not extract tileset" << endl;
+		return 1;
+	}
+
+	cout << "Tile count: " << tileset.size() << endl;
 
 	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
 	{
@@ -102,73 +173,10 @@ int main(int argc, const char** argv)
 		fclose(file);
 	}
 
-	cout << "Tile count: " << tileset.size() << endl;
-
-	tileset.removeDoubles(false);
-	cout << "Tile count: " << tileset.size() << endl;
-	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_0.png", 16, tileset, kTileFlipType_None, palette_set, true))
-	{
-		cout << "Could not write tileset" << endl;
-		return 1;
-	}
-
-#if 0
-	tileset.removeDoubles(true);
-	cout << "Tile count: " << tileset.size() << endl;
-	if(kSuccess != writeTilesetToPNG("test/demo_tileset_opt_1.png", 16, tileset, kTileFlipType_None, palette_set, true))
-	{
-		cout << "Could not write tileset" << endl;
-		return 1;
-	}
-#endif
-
-	image_filename = "test/demo_tlm.png";
-	if(kSuccess != image.read(image_filename))
-	{
-		cout << "Cannot read file" << endl;
-		return 1;
-	}
-	cout
-		<< "Loaded [" << image_filename << "] "
-		<< image.getWidth() << "x" << image.getHeight()
-		<< endl;
-
 	Tilemap tilemap;
-	if(!tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
+	if(!extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
 	{
-		cout << "Error on tilemap initialization" << endl;
-		return 1;
-	}
-	if(kSuccess != image.iterateTiles(
-		[&tilemap, &tileset, &palette_set](const ImageTile& image_tile, uint32_t x, uint32_t y)
-		{
-			Tile tile;
-			if(kSuccess != generateTile(tile, image_tile, palette_set))
-			{
-				cout << "Cannot generate tile (" << x << "," << y << ") from image tile and palette set" << endl;
-				return false;
-			}
-
-			uint32_t tile_index;
-			uint32_t palette_index;
-			TileFlipType flip_type;
-			if(!tileset.findTileIndex(tile_index, palette_index, flip_type, tile, false))
-			{
-				return false;
-			}
-
-			assert(tile_index < 512);
-			constexpr uint32_t priority = 0;
-			const uint32_t bank = tile_index < 256 ? 0 : 1;
-			tilemap.push(
-				tile_index, palette_index, bank,
-				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
-				flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
-				priority);
-			return true;
-		}))
-	{
-		cout << "Error on tilemap" << endl;
+		cout << "Could not extract tilemap" << endl;
 		return 1;
 	}
 
