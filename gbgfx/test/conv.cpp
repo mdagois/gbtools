@@ -7,6 +7,8 @@ int main(int argc, const char** argv)
 {
 	using namespace std;
 
+	////////////////////////////////////////
+
 	Tileset tileset;
 	PaletteSet palette_set;
 	if(!extractTileset(
@@ -21,6 +23,37 @@ int main(int argc, const char** argv)
 
 	cout << "Tile count: " << tileset.size() << endl;
 	cout << "Palette count: " << palette_set.size() << endl;
+
+	Tilemap tilemap;
+	if(!extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
+	{
+		cout << "Could not extract tilemap" << endl;
+		return 1;
+	}
+
+	cout << "Tilemap size " << tilemap.getColumnCount() << "x" << tilemap.getRowCount() << endl;
+
+	////////////////////////////////////////
+
+	if(!exportPaletteSet(palette_set, "test/palette.pal"))
+	{
+		cout << "Could not export palette set" << endl;
+		return 1;
+	}
+
+	if(!exportTileset(tileset, "test/tileset.chr"))
+	{
+		cout << "Could not export tileset" << endl;
+		return 1;
+	}
+
+	if(!exportTilemap(tilemap, "test/tilemap.idx", "test/tilemap.prm"))
+	{
+		cout << "Could not export tilemap" << endl;
+		return 1;
+	}
+
+	////////////////////////////////////////
 
 	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
 	{
@@ -39,31 +72,7 @@ int main(int argc, const char** argv)
 		}
 	}
 
-	if(!exportPaletteSet(palette_set, "test/palette.pal"))
-	{
-		cout << "Could not export palette set" << endl;
-		return 1;
-	}
-
-	if(!exportTileset(tileset, "test/tileset.chr"))
-	{
-		cout << "Could not export tileset" << endl;
-		return 1;
-	}
-
-	Tilemap tilemap;
-	if(!extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
-	{
-		cout << "Could not extract tilemap" << endl;
-		return 1;
-	}
-	cout << "Tilemap size " << tilemap.getColumnCount() << "x" << tilemap.getRowCount() << endl;
-
-	if(!exportTilemap(tilemap, "test/tilemap.idx", "test/tilemap.prm"))
-	{
-		cout << "Could not export tilemap" << endl;
-		return 1;
-	}
+	////////////////////////////////////////
 
 	cout << "Done" << endl;
 	return 0;
