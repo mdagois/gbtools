@@ -216,6 +216,7 @@ bool Image::read(const char* filename)
 		LOG_ERROR("Could not read the image file [" << filename << "]");
 		return false;
 	}
+	LOG_INFO("Read image [" << filename << "] " << getWidth() << "x" << getHeight());
 	return true;
 }
 

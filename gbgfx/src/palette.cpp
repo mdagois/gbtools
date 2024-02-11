@@ -2,6 +2,7 @@
 #include <cassert>
 #include <set>
 
+#include "log.h"
 #include "palette.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -166,7 +167,8 @@ uint32_t PaletteSet::size() const
 
 void PaletteSet::optimize(bool merge_palettes, bool sort_palette_colors)
 {
-	if(merge_palettes && m_palettes.size() >= 2)
+	const uint32_t palette_count = m_palettes.size();
+	if(merge_palettes && palette_count >= 2)
 	{
 		std::vector<Palette> palettes = m_palettes;
 		std::sort(
@@ -198,6 +200,8 @@ void PaletteSet::optimize(bool merge_palettes, bool sort_palette_colors)
 			}
 			palettes.pop_back();
 		}
+
+		LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
 	}
 
 	if(sort_palette_colors)

@@ -1,3 +1,4 @@
+#include "log.h"
 #include "tilemap.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -16,6 +17,10 @@ bool Tilemap::initialize(uint8_t tile_row_count, uint8_t tile_column_count)
 {
 	if(tile_row_count > kTilemapRowMaxCount || tile_column_count > kTilemapColumnMaxCount)
 	{
+		LOG_ERROR(
+			"Tilemap is (" << tile_column_count << "x" << tile_row_count
+			<< "), which is beyond the maximum of ("
+			<< kTilemapColumnMaxCount << "x" << kTilemapRowMaxCount << ")");
 		return false;
 	}
 	m_row_count = tile_row_count;

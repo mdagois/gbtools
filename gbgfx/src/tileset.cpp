@@ -1,6 +1,7 @@
 #include <cassert>
 #include <set>
 
+#include "log.h"
 #include "tileset.h"
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -137,6 +138,8 @@ uint32_t Tileset::size() const
 
 void Tileset::removeDoubles(bool compare_flips)
 {
+	const uint32_t tile_count = m_tiles.size();
+
 	struct CheckEntry
 	{
 		TileFlip flip;
@@ -176,6 +179,8 @@ void Tileset::removeDoubles(bool compare_flips)
 		}
 		++tileIt;
 	}
+
+	LOG_INFO("Tileset shrinked from " << tile_count << " tiles to " << m_tiles.size() << " tiles");
 }
 
 bool Tileset::findTileIndex(
