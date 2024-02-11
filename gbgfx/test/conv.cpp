@@ -3,14 +3,44 @@
 
 #include "gbgfx.h"
 
-//TODO Palette index offset
-//TODO Output palette
-//TODO Output tilemap parameters
-//TODO Verbosity level
-//TODO Use flip
-//TODO Maximum VRAM banks
-//TODO Addressing mode
-//TODO Palette maximum number
+/*
+TODO
+
+struct
+{
+	uint32_t palette_offset_index;
+	uint32_t verbosity_level;
+	uint32_t palette_max_count;
+	bool output_palette;
+	bool output_tilemap_parameters;
+	bool remove_double_tiles;
+	bool use_tile_flips;
+	bool use_tile_bank;
+	bool use_8800_addressing_mode;
+};
+
+DMG
+	palette_offset_index		0
+	verbosity_level				1
+	palette_max_count			1|2
+	output_palette				must support
+	output_tilemap_parameters	n/a
+	remove_double_tiles			supported
+	use_tile_flips				n/a
+	use_tile_bank				n/a
+	use_8800_addressing_mode	supported
+	
+CGB
+	palette_offset_index		0
+	verbosity_level				1
+	palette_max_count			8
+	output_palette				supported
+	output_tilemap_parameters	supported
+	remove_double_tiles			supported
+	use_tile_flips				supported
+	use_tile_bank				supported
+	use_8800_addressing_mode	supported
+*/
 
 int main(int argc, const char** argv)
 {
