@@ -44,7 +44,9 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	if(!exportTilemap(tilemap, "test/tilemap.idx", "test/tilemap.prm", use_headers))
+	if(!exportTilemap(
+		tilemap, "test/tilemap.idx", "test/tilemap.prm",
+		use_headers, 0, 128))
 	{
 		std::cout << "Could not export tilemap" << std::endl;
 		return 1;

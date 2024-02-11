@@ -35,7 +35,8 @@ bool exportTileset(
 	const char* output_filename, bool use_header);
 bool exportTilemap(
 	const Tilemap& tilemap,
-	const char* indices_filename, const char* parameter_filename, bool use_header);
+	const char* indices_filename, const char* parameter_filename,
+	bool use_header, uint8_t palette_index_offset, uint8_t tile_index_offset);
 
 ////////////////////////////////////////////////////////////////////////////////
 

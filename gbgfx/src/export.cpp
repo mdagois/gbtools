@@ -113,14 +113,16 @@ TilemapData::~TilemapData()
 {
 }
 
-bool TilemapData::initialize(const Tilemap& tilemap)
+bool TilemapData::initialize(
+	const Tilemap& tilemap,
+	uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
 	for(uint32_t i = 0; i < tilemap.size(); ++i)
 	{
 		const TilemapEntry& entry = tilemap[i];
-		m_indices.push_back(entry.tile_index);
+		m_indices.push_back(entry.tile_index + tile_index_offset);
 		m_parameters.push_back(
-			(entry.palette_index & 0x07) |
+			((entry.palette_index + palette_index_offset) & 0x07) |
 			((entry.bank & 0x01) << 3) |
 			(entry.flip_horizontal ? 0x20 : 0x00) |
 			(entry.flip_vertical ? 0x40 : 0x00) |

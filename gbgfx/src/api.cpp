@@ -213,7 +213,8 @@ bool exportTileset(
 
 bool exportTilemap(
 	const Tilemap& tilemap,
-	const char* indices_filename, const char* parameter_filename, bool use_header)
+	const char* indices_filename, const char* parameter_filename,
+	bool use_header, uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
 	TilemapData data;
 	assert(tilemap.getColumnCount() < 256);
@@ -224,7 +225,7 @@ bool exportTilemap(
 		static_cast<uint8_t>(tilemap.getRowCount())
 	};
 	return
-		data.initialize(tilemap) &&
+		data.initialize(tilemap, palette_index_offset, tile_index_offset) &&
 		(
 			indices_filename == nullptr ||
 			writeToFile(

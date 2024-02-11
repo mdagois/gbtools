@@ -73,7 +73,9 @@ public:
 	TilemapData();
 	virtual ~TilemapData();
 
-	bool initialize(const Tilemap& tilemap);
+	bool initialize(
+		const Tilemap& tilemap,
+		uint8_t palette_index_offset, uint8_t tile_index_offset);
 
 	uint32_t getRowCount() const;
 	uint32_t getColumnCount() const;
