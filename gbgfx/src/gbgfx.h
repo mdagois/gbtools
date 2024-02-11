@@ -5,6 +5,7 @@
 #include "constants.h"
 #include "export.h"
 #include "image.h"
+#include "log.h"
 #include "palette.h"
 #include "result.h"
 #include "tilemap.h"
