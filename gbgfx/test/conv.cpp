@@ -268,14 +268,14 @@ static bool exportData(const Options& options)
 
 	if(palette_set.size() > static_cast<uint32_t>(options.output.palette_max_count))
 	{
-		LOG_ERROR(
+		GBGFX_LOG_ERROR(
 			"Too many palettes (" << palette_set.size() << " > "
 			<< options.output.palette_max_count << ")");
 		return false;
 	}
 	if(tileset.size() > static_cast<uint32_t>(options.output.tile_max_count))
 	{
-		LOG_ERROR(
+		GBGFX_LOG_ERROR(
 			"Too many tiles (" << tileset.size() << " > "
 			<< options.output.tile_max_count << ")");
 		return false;

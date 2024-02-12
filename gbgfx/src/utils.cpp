@@ -20,7 +20,7 @@ bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 	}
 	if(colors.size() > kColorsPerPalette)
 	{
-		LOG_ERROR("Too many colors in palette");
+		GBGFX_LOG_ERROR("Too many colors in palette");
 		return false;
 	}
 
@@ -41,14 +41,14 @@ static bool generateTileFlip(
 		Palette tile_palette;
 		if(!extractTilePalette(tile_palette, image_tile))
 		{
-			LOG_ERROR("Could not extract palette");
+			GBGFX_LOG_ERROR("Could not extract palette");
 			return false;
 		}
 
 		const uint32_t palette_index = palette_set.findCompatiblePaletteIndex(tile_palette);
 		if(palette_index == kInvalidPaletteIndex)
 		{
-			LOG_ERROR("Could not find a compatible palette");
+			GBGFX_LOG_ERROR("Could not find a compatible palette");
 			return false;
 		}
 		out_palette_index = palette_index;
@@ -60,7 +60,7 @@ static bool generateTileFlip(
 		const uint8_t color_index = palette.findColorIndex(image_tile[i]);
 		if(color_index == kInvalidColorIndex)
 		{
-			LOG_ERROR("Could not find color in palette");
+			GBGFX_LOG_ERROR("Could not find color in palette");
 			return false;
 		}
 		out_tile_flip.color_indices[i] = color_index;
@@ -74,7 +74,7 @@ bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet&
 	uint32_t palette_index;
 	if(!generateTileFlip(tile_flip, palette_index, image_tile, palette_set))
 	{
-		LOG_ERROR("Could not generate tile flip");
+		GBGFX_LOG_ERROR("Could not generate tile flip");
 		return false;
 	}
 	out_tile.initialize(tile_flip, palette_index);
@@ -175,7 +175,7 @@ bool writeTilesetToPNG(
 	delete [] pixels;
 	if(result == 0)
 	{
-		LOG_ERROR("Could not write file [" << filename << "]");
+		GBGFX_LOG_ERROR("Could not write file [" << filename << "]");
 		return false;
 	}
 	return true;

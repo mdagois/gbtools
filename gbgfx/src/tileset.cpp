@@ -182,7 +182,7 @@ void Tileset::removeDoubles(bool compare_flips)
 		++tileIt;
 	}
 
-	LOG_INFO("Tileset shrinked from " << tile_count << " tiles to " << m_tiles.size() << " tiles");
+	GBGFX_LOG_INFO("Tileset shrinked from " << tile_count << " tiles to " << m_tiles.size() << " tiles");
 }
 
 bool Tileset::findTileIndex(

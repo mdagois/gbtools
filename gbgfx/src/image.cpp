@@ -210,14 +210,14 @@ bool Image::read(const char* filename)
 	m_pixels = reinterpret_cast<ColorRGBA*>(stbi_load(filename, &width, &height, &num_channels, kChannelCount));
 	if(m_pixels == nullptr)
 	{
-		LOG_ERROR("Could not read the image file [" << filename << "]");
+		GBGFX_LOG_ERROR("Could not read the image file [" << filename << "]");
 		return false;
 	}
 
 	m_width = static_cast<uint32_t>(width);
 	m_height = static_cast<uint32_t>(height);
 	m_filename = filename;
-	LOG_INFO("Read image [" << filename << "] " << getWidth() << "x" << getHeight());
+	GBGFX_LOG_INFO("Read image [" << filename << "] " << getWidth() << "x" << getHeight());
 	return true;
 }
 
@@ -255,27 +255,27 @@ bool Image::iterateTiles(
 {
 	if(metatile_width == 0 && metatile_height == 0)
 	{
-		LOG_ERROR("Metatile dimensions must not be zero [" << m_filename << "]");
+		GBGFX_LOG_ERROR("Metatile dimensions must not be zero [" << m_filename << "]");
 		return false;
 	}
 	if(use_microtile_8x16 && ((metatile_height % (kTileSize * 2)) != 0))
 	{
-		LOG_ERROR("Metatiles' height must be a multiple of 16 when using 8x16 microtiles [" << m_filename << "]");
+		GBGFX_LOG_ERROR("Metatiles' height must be a multiple of 16 when using 8x16 microtiles [" << m_filename << "]");
 		return false;
 	}
 	if((getWidth() % metatile_width != 0) || (getHeight() % metatile_height != 0))
 	{
-		LOG_ERROR("Image dimension must be a multiple of the metatile dimension [" << m_filename << "]");
+		GBGFX_LOG_ERROR("Image dimension must be a multiple of the metatile dimension [" << m_filename << "]");
 		return false;
 	}
 	if((metatile_height % kTileSize) != 0 || (metatile_height % kTileSize) != 0)
 	{
-		LOG_ERROR("Metatile dimension must be a multiple of the microtile dimension [" << m_filename << "]");
+		GBGFX_LOG_ERROR("Metatile dimension must be a multiple of the microtile dimension [" << m_filename << "]");
 		return false;
 	}
 	if(start_tile_row >= getHeight() / kTileSize)
 	{
-		LOG_ERROR("The start tile row must be between 0 and " << getHeight() / kTileSize - 1 << " [" << m_filename << "]");
+		GBGFX_LOG_ERROR("The start tile row must be between 0 and " << getHeight() / kTileSize - 1 << " [" << m_filename << "]");
 		return false;
 	}
 	

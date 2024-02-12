@@ -6,10 +6,10 @@ namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define LOG(level, message) gbgfx::log(level, (std::stringstream() << message).str().c_str())
-#define LOG_ERROR(message) LOG(gbgfx::kLogLevel_Error, message)
-#define LOG_WARN(message) LOG(gbgfx::kLogLevel_Warn, message)
-#define LOG_INFO(message) LOG(gbgfx::kLogLevel_Info, message)
+#define GBGFX_LOG(level, message) gbgfx::log(level, (std::stringstream() << message).str().c_str())
+#define GBGFX_LOG_ERROR(message) GBGFX_LOG(gbgfx::kLogLevel_Error, message)
+#define GBGFX_LOG_WARN(message) GBGFX_LOG(gbgfx::kLogLevel_Warn, message)
+#define GBGFX_LOG_INFO(message) GBGFX_LOG(gbgfx::kLogLevel_Info, message)
 
 enum LogLevel : uint32_t
 {

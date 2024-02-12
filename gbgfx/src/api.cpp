@@ -36,7 +36,7 @@ bool extractTileset(
 			Palette palette;
 			if(!extractTilePalette(palette, tile))
 			{
-				LOG_ERROR(
+				GBGFX_LOG_ERROR(
 					"Could not extract palette from metatile ("
 					<< x << "," << y << ") in [" << image_filename << "]");
 				return false;
@@ -56,7 +56,7 @@ bool extractTileset(
 		Tile tile;
 		if(!generateTile(tile, image_tiles[i], out_palette_set))
 		{
-			LOG_ERROR(
+			GBGFX_LOG_ERROR(
 				"Could not generate tile ("
 				<< i << ") in [" << image_filename << "]");
 			return false;
@@ -69,7 +69,7 @@ bool extractTileset(
 		out_tileset.removeDoubles(remove_flips);
 	}
 
-	LOG_INFO(
+	GBGFX_LOG_INFO(
 		"Tile count is " << out_tileset.size()
 		<< " and palette count is " << out_palette_set.size()
 		<< " in [" << image_filename << "]"); 
@@ -92,7 +92,7 @@ bool extractTilemap(
 
 	if(!out_tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
 	{
-		LOG_ERROR("Could not initialize tilemap from [" << image_filename << "]");
+		GBGFX_LOG_ERROR("Could not initialize tilemap from [" << image_filename << "]");
 		return false;
 	}
 	if(!image.iterateTiles(
@@ -101,7 +101,7 @@ bool extractTilemap(
 			Tile tile;
 			if(!generateTile(tile, image_tile, palette_set))
 			{
-				LOG_ERROR(
+				GBGFX_LOG_ERROR(
 					"Could not generate tile ("
 					<< x << "," << y << ") in ["
 					<< image_filename << "]");
@@ -113,7 +113,7 @@ bool extractTilemap(
 			TileFlipType flip_type;
 			if(!tileset.findTileIndex(tile_index, palette_index, flip_type, tile, use_flips))
 			{
-				LOG_ERROR(
+				GBGFX_LOG_ERROR(
 					"Could not find tile ("
 					<< x << "," << y << ") in tileset in ["
 					<< image_filename << "]");
@@ -134,7 +134,7 @@ bool extractTilemap(
 		return false;
 	}
 
-	LOG_INFO(
+	GBGFX_LOG_INFO(
 		"Tilemap size is " << out_tilemap.getColumnCount() << "x" << out_tilemap.getRowCount()
 		<< " in [" << image_filename << "]"); 
 	return true;
@@ -154,7 +154,7 @@ static bool writeToFile(
 	FILE* output_file = fopen(output_filename, "wb");
 	if(output_file == nullptr)
 	{
-		LOG_ERROR("Could not open file [" << output_filename << "]");
+		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
 		return false;
 	}
 	assert(output_file != nullptr);
@@ -170,7 +170,7 @@ static bool writeToFile(
 	fclose(output_file);
 	if(!written)
 	{
-		LOG_ERROR("Could not write file [" << output_filename << "]");
+		GBGFX_LOG_ERROR("Could not write file [" << output_filename << "]");
 		return false;
 	}
 	return true;

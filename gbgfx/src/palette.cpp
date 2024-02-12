@@ -203,7 +203,7 @@ void PaletteSet::optimize(bool merge_palettes, bool sort_palette_colors)
 			palettes.pop_back();
 		}
 
-		LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
+		GBGFX_LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
 	}
 
 	if(sort_palette_colors)
