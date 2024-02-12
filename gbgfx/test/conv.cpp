@@ -5,49 +5,18 @@
 #include "commandline.h"
 #include "gbgfx.h"
 
+////////////////////////////////////////////////////////////////////////////////
+
 namespace gfx = ::gbgfx;
-
-/*
-TODO
-
-struct
-{
-	uint32_t palette_offset_index;
-	uint32_t palette_max_count;
-	bool output_palette;
-	bool output_tileset;
-	bool output_tilemap_parameters;
-	bool use_tile_bank;
-	bool use_8800_addressing_mode;
-};
-
-DMG
-	palette_offset_index		0
-	palette_max_count			1|2
-	output_palette				must support
-	output_tilemap_parameters	n/a
-	use_tile_flips				n/a
-	use_tile_bank				n/a
-	use_8800_addressing_mode	supported
-	
-CGB
-	palette_offset_index		0
-	palette_max_count			8
-	output_palette				supported
-	output_tilemap_parameters	supported
-	use_tile_flips				supported
-	use_tile_bank				supported
-	use_8800_addressing_mode	supported
-*/
 
 ////////////////////////////////////////////////////////////////////////////////
 // Options
 ////////////////////////////////////////////////////////////////////////////////
 
-enum Mode : int32_t
+enum Hardware : int32_t
 {
-	kModeDmg,
-	kModeCgb,
+	kHardwareDmg,
+	kHardwareCgb,
 };
 
 enum TileRemoval : int32_t
@@ -59,7 +28,7 @@ enum TileRemoval : int32_t
 
 struct Options
 {
-	Mode mode = kModeDmg;
+	Hardware hardware = kHardwareDmg;
 
 	struct
 	{
@@ -87,6 +56,7 @@ struct Options
 		uint32_t palette_max_count = 256;
 		bool output_palette = true;
 		bool output_tileset = true;
+		bool output_tilemap_indices = true;
 		bool output_tilemap_parameters = true;
 		bool use_tile_bank = false;
 		bool use_8800_addressing_mode = false;
@@ -107,10 +77,10 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 
 	out_ret = 0;
 
-	const Mapping mode_mapping[] =
+	const Mapping hardware_mapping[] =
 	{
-		{ "dmg", kModeDmg },
-		{ "cgb", kModeCgb },
+		{ "dmg", kHardwareDmg },
+		{ "cgb", kHardwareCgb },
 	};
 
 	const Mapping tile_removal_mapping[] =
@@ -122,18 +92,23 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 
 	Option cli_options[] =
 	{
-		// mode
+		// hardware
 		OptionStringToInteger(
-			"m", "Set conversion mode", true, 'MODE', reinterpret_cast<int32_t*>(&out_options.mode),
-			mode_mapping, sizeof(mode_mapping) / sizeof(mode_mapping[0])),
+			"hw", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
+			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
 
 		// tileset
+		OptionInteger("sr", "Starting tile row", false, 'STRO', &out_options.tileset.start_tile_row),
+		OptionInteger("rc", "Tile row count", false, 'ROWC', &out_options.tileset.tile_row_count),
+		OptionInteger("mw", "Metatile pixel width", false, 'METW', &out_options.tileset.metatile_width),
+		OptionInteger("mh", "Metatile pixel height", false, 'METH', &out_options.tileset.metatile_height),
+		OptionFlag("8x16", "Use this for 8x16 sprite tiles", '8x16', &out_options.tileset.use_microtile_8x16),
 		OptionStringToInteger(
 			"tr", "Set tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
 
 		// tilemap
-		OptionFlag("flip", "Use flips when exporting tilemaps", 'FLIP', &out_options.tilemap.use_flips),
+		OptionFlag("fl", "Use flips when exporting tilemaps", 'FLIP', &out_options.tilemap.use_flips),
 
 		// output
 		OptionFlag("bh", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
@@ -146,7 +121,7 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 	Parser cli_parser(
 		argv, argc,
 		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
-		"-m <mode> [options] <tileset_png> [tilemap_png...]");
+		"-hw <hardware> [options] <tileset_png> [tilemap_png...]");
 
 	uint32_t code;
 	const char* parameter;
@@ -270,9 +245,11 @@ static bool exportData(const Options& options)
 		std::cout << "Could not export tilemap" << std::endl;
 		return false;
 	}
+#endif
 
 	////////////////////////////////////////
 
+#if 0
 	for(uint32_t i = 0; i < gfx::kTileFlipType_Count; ++i)
 	{
 		static const char* filenames[] =
@@ -315,7 +292,6 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	std::cout << "Done" << std::endl;
 	return 0;
 }
 

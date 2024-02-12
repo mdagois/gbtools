@@ -11,5 +11,6 @@
 #include "tileset.h"
 #include "utils.h"
 
+//TODO Support forcing the palette
 //TODO Palette color count (for SGB background)
 
