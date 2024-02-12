@@ -14,7 +14,8 @@ bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool use_microtile_8x16, bool remove_doubles, bool remove_flips,
+	bool use_microtile_8x16,
+	bool remove_doubles, bool remove_flips,
 	const char* image_filename);
 
 bool extractTilemap(

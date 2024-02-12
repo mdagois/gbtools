@@ -208,16 +208,15 @@ bool Image::read(const char* filename)
 	int32_t width = 0;
 	int32_t height = 0;
 	m_pixels = reinterpret_cast<ColorRGBA*>(stbi_load(filename, &width, &height, &num_channels, kChannelCount));
-	assert(width > 0);
-	assert(height > 0);
-	m_width = static_cast<uint32_t>(width);
-	m_height = static_cast<uint32_t>(height);
-	m_filename = filename;
 	if(m_pixels == nullptr)
 	{
 		LOG_ERROR("Could not read the image file [" << filename << "]");
 		return false;
 	}
+
+	m_width = static_cast<uint32_t>(width);
+	m_height = static_cast<uint32_t>(height);
+	m_filename = filename;
 	LOG_INFO("Read image [" << filename << "] " << getWidth() << "x" << getHeight());
 	return true;
 }
