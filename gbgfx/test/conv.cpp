@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include <iostream>
+#include <string>
 #include <vector>
 
 #include "commandline.h"
@@ -33,7 +34,7 @@ struct Options
 
 	struct
 	{
-		const char* filename = nullptr;
+		const char* png_filename = nullptr;
 		int32_t start_tile_row = 0;
 		int32_t tile_row_count = gfx::kIterateAllRows;
 		int32_t metatile_width = gfx::kTileSize;
@@ -46,7 +47,7 @@ struct Options
 
 	struct
 	{
-		std::vector<const char*> filenames;
+		std::vector<const char*> png_filenames;
 		bool use_flips = false;
 	}
 	tilemap;
@@ -68,6 +69,39 @@ struct Options
 	bool verbose = false;
 	bool help = false;
 };
+
+static void applyHardwareLimits(Options& options)
+{
+	auto applyLimit = [](int32_t& value, int32_t maximum)
+	{
+		value = std::max(0, std::min(value, maximum));
+	};
+
+	switch(options.hardware)
+	{
+		case kHardwareDmg:
+			if(options.tileset.tile_removal == kTileRemoval_Flips)
+			{
+				options.tileset.tile_removal = kTileRemoval_Doubles;
+			}
+			options.tilemap.use_flips = false;
+			applyLimit(options.output.palette_max_count, options.tileset.is_sprite ? 2 : 1);
+			applyLimit(options.output.tile_max_count, gfx::kTilesPerBank);
+			options.output.skip_export_palette = true;
+			break;
+		case kHardwareCgb:
+			applyLimit(options.output.palette_max_count, 8);
+			applyLimit(options.output.tile_max_count, gfx::kTileMaxCount);
+			break;
+		default:
+			break;
+	}
+
+	if(options.tileset.is_sprite)
+	{
+		options.output.use_8800_addressing_mode = false;
+	}
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // CLI
@@ -143,10 +177,10 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 			case kRemainingCode:
 			{
 				const char** arguments = cli_parser.getRemainingArguments();
-				out_options.tileset.filename = arguments[0];
+				out_options.tileset.png_filename = arguments[0];
 				for(int32_t i = 1; i < cli_parser.getRemainingArgumentCount(); ++i)
 				{
-					out_options.tilemap.filenames.push_back(arguments[i]);
+					out_options.tilemap.png_filenames.push_back(arguments[i]);
 				}
 			}
 			default:
@@ -169,46 +203,11 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 		return false;
 	}
 
-	if(out_options.tileset.filename == nullptr)
+	if(out_options.tileset.png_filename == nullptr)
 	{
 		cli_parser.printHelp();
 		return false;
 	}
-
-	////////////////////////////////////////
-
-	auto applyLimit = [](int32_t& value, int32_t maximum)
-	{
-		value = std::max(0, std::min(value, maximum));
-	};
-	switch(out_options.hardware)
-	{
-		case kHardwareDmg:
-			if(out_options.tileset.tile_removal == kTileRemoval_Flips)
-			{
-				out_options.tileset.tile_removal = kTileRemoval_Doubles;
-			}
-			out_options.tilemap.use_flips = false;
-			applyLimit(out_options.output.palette_max_count, out_options.tileset.is_sprite ? 2 : 1);
-			applyLimit(out_options.output.tile_max_count, gfx::kTilesPerBank);
-			out_options.output.skip_export_palette = true;
-			break;
-		case kHardwareCgb:
-			applyLimit(out_options.output.palette_max_count, 8);
-			applyLimit(out_options.output.tile_max_count, gfx::kTileMaxCount);
-			break;
-		default:
-			break;
-	}
-
-	if(out_options.tileset.is_sprite)
-	{
-		out_options.output.use_8800_addressing_mode = false;
-	}
-
-	////////////////////////////////////////
-
-	gfx::setLogLevel(out_options.verbose ? gfx::kLogLevel_Info : gfx::kLogLevel_Error);
 
 	return true;
 }
@@ -219,7 +218,7 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 
 static bool loadDataFromImages(
 	gfx::Tileset& out_tileset, gfx::PaletteSet& out_palette_set,
-	std::vector<gfx::Tilemap> out_tilemaps,
+	std::vector<gfx::Tilemap>& out_tilemaps,
 	const Options& options)
 {
 	if(!gfx::extractTileset(
@@ -229,31 +228,36 @@ static bool loadDataFromImages(
 		options.tileset.use_microtile_8x16,
 		options.tileset.tile_removal != kTileRemoval_None,
 		options.tileset.tile_removal == kTileRemoval_Flips,
-		options.tileset.filename))
+		options.tileset.png_filename))
 	{
 		std::cout
-			<< "Could not extract tileset from [" << options.tileset.filename << "]"
+			<< "Could not extract tileset from [" << options.tileset.png_filename << "]"
 			<< std::endl;
 		return false;
 	}
 
 	out_tilemaps.clear();
-	for(auto filename : options.tilemap.filenames)
+	for(auto png_filename : options.tilemap.png_filenames)
 	{
 		const size_t size = out_tilemaps.size();
 		out_tilemaps.resize(size + 1);
 		if(!gfx::extractTilemap(
 			out_tilemaps[size], out_tileset, out_palette_set,
-			options.tilemap.use_flips, filename))
+			options.tilemap.use_flips, png_filename))
 		{
 			std::cout
-				<< "Could not extract tilemap from [" << filename << "]"
+				<< "Could not extract tilemap from [" << png_filename << "]"
 				<< std::endl;
 			return false;
 		}
 	}
 
 	return true;
+}
+
+static std::string getOutputFilename(const char* input_filename, const char* output_extension)
+{
+	return std::string(input_filename).append(output_extension);
 }
 
 static bool exportData(const Options& options)
@@ -283,33 +287,43 @@ static bool exportData(const Options& options)
 
 	////////////////////////////////////////
 
-#if 0
 	if(	!options.output.skip_export_palette &&
-		!gfx::exportPaletteSet(palette_set, "test/palette.pal", options.output.add_binary_headers))
+		!gfx::exportPaletteSet(
+			palette_set,
+			getOutputFilename(options.tileset.png_filename, ".pal").c_str(),
+			options.output.add_binary_headers))
 	{
 		std::cout << "Could not export palette set" << std::endl;
 		return false;
 	}
 
 	if(	!options.output.skip_export_tileset &&
-		!gfx::exportTileset(tileset, "test/tileset.chr", options.output.add_binary_headers))
+		!gfx::exportTileset(
+			tileset,
+			getOutputFilename(options.tileset.png_filename, ".chr").c_str(),
+			options.output.add_binary_headers))
 	{
 		std::cout << "Could not export tileset" << std::endl;
 		return false;
 	}
 
-	//TODO Iterate
-	if(	!options.output.skip_export_tilemaps &&
-		!gfx::exportTilemap(
-			tilemap, "test/tilemap.idx", "test/tilemap.prm",
-			options.output.add_binary_headers,
-			options.output.palette_offset_index,
-			options.output.use_8800_addressing_mode ? 128 : 0))
+	assert(tilemaps.size() == options.tilemap.png_filenames.size()); 
+	for(size_t i = 0; i < tilemaps.size(); ++i)
 	{
-		std::cout << "Could not export tilemap" << std::endl;
-		return false;
+		const char* png_filename = options.tilemap.png_filenames[i];
+		if(	!options.output.skip_export_tilemaps &&
+			!gfx::exportTilemap(
+				tilemaps[i],
+				getOutputFilename(png_filename, ".idx").c_str(),
+				getOutputFilename(png_filename, ".prm").c_str(),
+				options.output.add_binary_headers,
+				options.output.palette_offset_index,
+				options.output.use_8800_addressing_mode ? 128 : 0))
+		{
+			std::cout << "Could not export tilemap" << std::endl;
+			return false;
+		}
 	}
-#endif
 
 	////////////////////////////////////////
 
@@ -350,6 +364,9 @@ int main(int argc, const char** argv)
 	{
 		return ret;
 	}
+
+	applyHardwareLimits(options);
+	gfx::setLogLevel(options.verbose ? gfx::kLogLevel_Info : gfx::kLogLevel_Error);
 
 	if(!exportData(options))
 	{
