@@ -11,6 +11,7 @@
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Support forcing the palette
-//TODO Palette color count (for SGB background)
+//TODO Support forcing the palette set instead of extracting it
+//TODO Support SGB screen tiles (maybe already done)
+//TODO Support palette with 16 colors for SGB border
 
