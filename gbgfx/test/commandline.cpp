@@ -358,15 +358,39 @@ bool Parser::isDigit(const char* str)
 	return true;
 }
 
+static const char* shortenExecutableName(const char* name)
+{
+	assert(name != nullptr);
+
+	const char* shortest = name;
+	size_t shortest_len = strlen(shortest);
+
+	const char* slash = strrchr(name, '/');
+	if(slash != nullptr && strlen(slash) < shortest_len)
+	{
+		shortest = slash + 1;
+		shortest_len = strlen(shortest);
+	}
+
+	const char* backslash = strrchr(name, '\\');
+	if(backslash != nullptr && strlen(backslash) < shortest_len)
+	{
+		shortest = backslash + 1;
+	}
+
+	return shortest;
+}
+
 void Parser::printHelp() const
 {
+	const char* short_name = shortenExecutableName(m_arguments[0]);
 	if(m_description == nullptr)
 	{
-		printf("%s\n", m_arguments[0]);
+		printf("%s\n", short_name);
 	}
 	else
 	{
-		printf("%s: %s\n", m_arguments[0], m_description);
+		printf("%s: %s\n", short_name, m_description);
 	}
 	for(uint32_t i = 0; i < m_option_count; ++i)
 	{
@@ -388,10 +412,10 @@ void Parser::printHelp() const
 			required = "<required>";
 		}
 
-		const uint32_t OPTION_SPACE = m_option_name_max_len + 2;
-		const uint32_t ARG_SPACE = 10;
-		const uint32_t TOTAL_SPACE = OPTION_SPACE + ARG_SPACE + ARG_SPACE;
-		printf("  -%-*s %-*s %-*s%s\n", OPTION_SPACE, option.name, ARG_SPACE, arg, ARG_SPACE, required, desc);
+		const uint32_t kOptionSpace = m_option_name_max_len + 2;
+		const uint32_t kArgSpace = 10;
+		const uint32_t kTotalSpace = kOptionSpace + kArgSpace + kArgSpace;
+		printf("  -%-*s %-*s %-*s%s\n", kOptionSpace, option.name, kArgSpace, arg, kArgSpace, required, desc);
 		if(option.option_type == OptionType::kStringToInteger)
 		{
 			for(uint32_t j = 0; j < option.string_to_integer.mapping_count; ++j)
@@ -403,7 +427,7 @@ void Parser::printHelp() const
 					{
 						printf("\n");
 					}
-					printf("     %-*s", TOTAL_SPACE, "");
+					printf("     %-*s", kTotalSpace, "");
 				}
 				const char* pattern = (j == option.string_to_integer.mapping_count - 1) ? "%s" : "%s, ";
 				printf(pattern, mapping.key);
