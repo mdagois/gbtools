@@ -261,15 +261,14 @@ const char* Parser::getLastErrorMessage()
 	const char* message[] =
 	{
 		"None", // kNone
-		"No argument specified", // kNoArgumentSpecified
-		"No option specified", // kNoOptionSpecified
-		"Lonely hiphen detected", // kSingleHiphenDetected
-		"Unknown option", // kUnknownOption
-		"Cannot fetch the parameter", // kCannotFetchParameter
-		"Invalid parameter", // kInvalidParameter
-		"No valid mapping", // kNoValidMapping
-		"Required option not specified", // kRequiredOptionNotSpecified
-		"Internal error", // kInternalError
+		"No argument was specified", // kNoArgumentSpecified
+		"A hiphen not followed by an option was detected", // kSingleHiphenDetected
+		"The option is unknown", // kUnknownOption
+		"The parameter cannot be fetched", // kCannotFetchParameter
+		"The parameter is invalid", // kInvalidParameter
+		"The parameter does not match any acceptable value", // kNoValidMapping
+		"A required option was not provided", // kRequiredOptionNotSpecified
+		"An internal error occurred", // kInternalError
 	};
 	static_assert(sizeof(message) / sizeof(message[0]) == static_cast<size_t>(Error::kCount));
 
@@ -399,7 +398,7 @@ void Parser::printHelp() const
 		const char* arg = "";
  		if(option.parameter_type == ParameterType::kRequired)
 		{
-			arg = "<parameter>";
+			arg = "<param>";
 		}
 		const char* desc = "";
 		if(option.description != nullptr)
@@ -409,7 +408,7 @@ void Parser::printHelp() const
 		const char* required = "";
 		if(option.required)
 		{
-			required = "<required>";
+			required = "<req>";
 		}
 
 		const uint32_t kOptionSpace = m_option_name_max_len + 2;
@@ -429,12 +428,11 @@ void Parser::printHelp() const
 					}
 					printf("     %-*s", kTotalSpace, "");
 				}
-				const char* pattern = (j == option.string_to_integer.mapping_count - 1) ? "%s" : "%s, ";
+				const char* pattern = (j == option.string_to_integer.mapping_count - 1) ? "%s" : "%s | ";
 				printf(pattern, mapping.key);
 			}
 			printf("\n");
 		}
-		printf("\n");
 	}
 }
 

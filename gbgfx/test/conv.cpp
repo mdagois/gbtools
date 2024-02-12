@@ -138,10 +138,10 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 		OptionInteger("rc", "Tile row count", false, 'ROWC', &out_options.tileset.tile_row_count),
 		OptionInteger("mw", "Metatile pixel width", false, 'METW', &out_options.tileset.metatile_width),
 		OptionInteger("mh", "Metatile pixel height", false, 'METH', &out_options.tileset.metatile_height),
-		OptionFlag("sp", "The tile are sprites", 'SPRI', &out_options.tileset.is_sprite),
-		OptionFlag("8x16", "Organize as 8x16 sprite tiles", '8x16', &out_options.tileset.use_microtile_8x16),
+		OptionFlag("sp", "Treat as sprite tiles", 'SPRI', &out_options.tileset.is_sprite),
+		OptionFlag("8x16", "Set sprite size to 8x16", '8x16', &out_options.tileset.use_microtile_8x16),
 		OptionStringToInteger(
-			"tr", "Set tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
+			"tr", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
 
 		// tilemap
@@ -151,11 +151,11 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 		OptionInteger("po", "Palette index offset", false, 'PALO', &out_options.output.palette_offset_index),
 		OptionInteger("pc", "Palette max count", false, 'PAMC', &out_options.output.palette_max_count),
 		OptionInteger("tc", "Tile max count", false, 'TILC', &out_options.output.tile_max_count),
-		OptionFlag("8800", "Use $8800 address mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
+		OptionFlag("8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
 		OptionFlag("bh", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
-		OptionFlag("ep", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
-		OptionFlag("et", "Skip export of the tileset", 'SKIT', &out_options.output.skip_export_tileset),
-		OptionFlag("em", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
+		OptionFlag("ps", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
+		OptionFlag("ts", "Skip export of the tileset", 'SKIT', &out_options.output.skip_export_tileset),
+		OptionFlag("ms", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
 
 		// misc
 		OptionFlag("v", "Enable verbose mode", 'VERB', &out_options.verbose),

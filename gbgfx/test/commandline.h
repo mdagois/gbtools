@@ -28,7 +28,6 @@ enum class Error : uint32_t
 {
 	kNone,
 	kNoArgumentSpecified,
-	kNoOptionSpecified,
 	kSingleHiphenDetected,
 	kUnknownOption,
 	kCannotFetchParameter,
