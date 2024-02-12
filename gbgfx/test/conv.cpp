@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <cassert>
 #include <iostream>
 #include <vector>
@@ -37,6 +38,7 @@ struct Options
 		int32_t tile_row_count = gfx::kIterateAllRows;
 		int32_t metatile_width = gfx::kTileSize;
 		int32_t metatile_height = gfx::kTileSize;
+		bool is_sprite = false;
 		bool use_microtile_8x16 = false;
 		TileRemoval tile_removal = kTileRemoval_None;
 	}
@@ -51,15 +53,15 @@ struct Options
 
 	struct
 	{
-		bool add_binary_headers = false;
-		uint32_t palette_offset_index = 0;
-		uint32_t palette_max_count = 256;
-		bool output_palette = true;
-		bool output_tileset = true;
-		bool output_tilemap_indices = true;
-		bool output_tilemap_parameters = true;
-		bool use_tile_bank = false;
+		int32_t palette_offset_index = 0;
+		int32_t palette_max_count = gfx::kPaletteMaxCount;
+		int32_t tile_max_count = gfx::kTileMaxCount;
 		bool use_8800_addressing_mode = false;
+		bool add_binary_headers = false;
+
+		bool skip_export_palette = false;
+		bool skip_export_tileset = false;
+		bool skip_export_tilemaps = false;
 	}
 	output;
 
@@ -102,7 +104,8 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 		OptionInteger("rc", "Tile row count", false, 'ROWC', &out_options.tileset.tile_row_count),
 		OptionInteger("mw", "Metatile pixel width", false, 'METW', &out_options.tileset.metatile_width),
 		OptionInteger("mh", "Metatile pixel height", false, 'METH', &out_options.tileset.metatile_height),
-		OptionFlag("8x16", "Use this for 8x16 sprite tiles", '8x16', &out_options.tileset.use_microtile_8x16),
+		OptionFlag("sp", "The tile are sprites", 'SPRI', &out_options.tileset.is_sprite),
+		OptionFlag("8x16", "Organize as 8x16 sprite tiles", '8x16', &out_options.tileset.use_microtile_8x16),
 		OptionStringToInteger(
 			"tr", "Set tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
@@ -111,7 +114,14 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 		OptionFlag("fl", "Use flips when exporting tilemaps", 'FLIP', &out_options.tilemap.use_flips),
 
 		// output
+		OptionInteger("po", "Palette index offset", false, 'PALO', &out_options.output.palette_offset_index),
+		OptionInteger("pc", "Palette max count", false, 'PAMC', &out_options.output.palette_max_count),
+		OptionInteger("tc", "Tile max count", false, 'TILC', &out_options.output.tile_max_count),
+		OptionFlag("8800", "Use $8800 address mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
 		OptionFlag("bh", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
+		OptionFlag("ep", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
+		OptionFlag("et", "Skip export of the tileset", 'SKIT', &out_options.output.skip_export_tileset),
+		OptionFlag("em", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
 
 		// misc
 		OptionFlag("v", "Enable verbose mode", 'VERB', &out_options.verbose),
@@ -164,6 +174,39 @@ static bool parseCliOptions(Options& out_options, int& out_ret, int argc, const 
 		cli_parser.printHelp();
 		return false;
 	}
+
+	////////////////////////////////////////
+
+	auto applyLimit = [](int32_t& value, int32_t maximum)
+	{
+		value = std::max(0, std::min(value, maximum));
+	};
+	switch(out_options.hardware)
+	{
+		case kHardwareDmg:
+			if(out_options.tileset.tile_removal == kTileRemoval_Flips)
+			{
+				out_options.tileset.tile_removal = kTileRemoval_Doubles;
+			}
+			out_options.tilemap.use_flips = false;
+			applyLimit(out_options.output.palette_max_count, out_options.tileset.is_sprite ? 2 : 1);
+			applyLimit(out_options.output.tile_max_count, gfx::kTilesPerBank);
+			out_options.output.skip_export_palette = true;
+			break;
+		case kHardwareCgb:
+			applyLimit(out_options.output.palette_max_count, 8);
+			applyLimit(out_options.output.tile_max_count, gfx::kTileMaxCount);
+			break;
+		default:
+			break;
+	}
+
+	if(out_options.tileset.is_sprite)
+	{
+		out_options.output.use_8800_addressing_mode = false;
+	}
+
+	////////////////////////////////////////
 
 	gfx::setLogLevel(out_options.verbose ? gfx::kLogLevel_Info : gfx::kLogLevel_Error);
 
@@ -223,24 +266,45 @@ static bool exportData(const Options& options)
 		return false;
 	}
 
+	if(palette_set.size() > static_cast<uint32_t>(options.output.palette_max_count))
+	{
+		LOG_ERROR(
+			"Too many palettes (" << palette_set.size() << " > "
+			<< options.output.palette_max_count << ")");
+		return false;
+	}
+	if(tileset.size() > static_cast<uint32_t>(options.output.tile_max_count))
+	{
+		LOG_ERROR(
+			"Too many tiles (" << tileset.size() << " > "
+			<< options.output.tile_max_count << ")");
+		return false;
+	}
+
 	////////////////////////////////////////
 
 #if 0
-	if(!gfx::exportPaletteSet(palette_set, "test/palette.pal", options.output.add_binary_headers))
+	if(	!options.output.skip_export_palette &&
+		!gfx::exportPaletteSet(palette_set, "test/palette.pal", options.output.add_binary_headers))
 	{
 		std::cout << "Could not export palette set" << std::endl;
 		return false;
 	}
 
-	if(!gfx::exportTileset(tileset, "test/tileset.chr", options.output.add_binary_headers))
+	if(	!options.output.skip_export_tileset &&
+		!gfx::exportTileset(tileset, "test/tileset.chr", options.output.add_binary_headers))
 	{
 		std::cout << "Could not export tileset" << std::endl;
 		return false;
 	}
 
-	if(!gfx::exportTilemap(
-		tilemap, "test/tilemap.idx", "test/tilemap.prm",
-		options.output.add_binary_headers, 0, 128))
+	//TODO Iterate
+	if(	!options.output.skip_export_tilemaps &&
+		!gfx::exportTilemap(
+			tilemap, "test/tilemap.idx", "test/tilemap.prm",
+			options.output.add_binary_headers,
+			options.output.palette_offset_index,
+			options.output.use_8800_addressing_mode ? 128 : 0))
 	{
 		std::cout << "Could not export tilemap" << std::endl;
 		return false;

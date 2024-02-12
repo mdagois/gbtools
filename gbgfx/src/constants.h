@@ -12,6 +12,7 @@ enum
 	kColorsPerPalette = 4,
 	kInvalidColorIndex = 0xFFU,
 	kInvalidPaletteIndex = 0xFFFFFFFFU,
+	kPaletteMaxCount = 8,
 
 	kTilesPerBank = 256,
 	kTileBankMaxCount = 2,
