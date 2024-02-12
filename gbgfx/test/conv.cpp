@@ -1,5 +1,6 @@
 #include <cassert>
 #include <iostream>
+#include <vector>
 
 #include "commandline.h"
 #include "gbgfx.h"
@@ -43,49 +44,127 @@ CGB
 	use_8800_addressing_mode	supported
 */
 
-int main(int argc, const char** argv)
+////////////////////////////////////////////////////////////////////////////////
+// Options
+////////////////////////////////////////////////////////////////////////////////
+
+enum Mode : int32_t
 {
-	using namespace gbgfx;
+	kModeDmg,
+	kModeCgb,
+};
 
-	////////////////////////////////////////
+struct Options
+{
+	Options();
 
-	bool help = false;
-	bool test = false;
-	cl::Option cli_options[] =
+	Mode mode;
+	bool verbose;
+	bool help;
+
+	const char* tileset_filename;
+	std::vector<const char*> tilemap_filenames;
+};
+
+Options::Options()
+: mode(kModeDmg)
+, verbose(false)
+, help(false)
+, tileset_filename(nullptr)
+{
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// CLI
+////////////////////////////////////////////////////////////////////////////////
+
+bool parseCliOptions(Options& out_options, int& out_ret, int argc, const char** argv)
+{
+	using namespace cli;
+
+	out_ret = 0;
+
+	const Mapping mode_mapping[] =
 	{
-		cl::OptionFlag("h", "print help", 'HELP', &help),
-		cl::OptionFlag("t", "t enabled", 'TENA', &test),
+		{ "dmg", kModeDmg },
+		{ "cgb", kModeCgb },
 	};
 
-	cl::Parser cli_parser(
+	Option cli_options[] =
+	{
+		OptionStringToInteger(
+			"m", "Set conversion mode", true, 'MODE', reinterpret_cast<int32_t*>(&out_options.mode),
+			mode_mapping, sizeof(mode_mapping) / sizeof(mode_mapping[0])),
+		OptionFlag("v", "Enable verbose mode", 'VERB', &out_options.verbose),
+		OptionFlag("h", "Show help", 'HELP', &out_options.help),
+	};
+
+	Parser cli_parser(
 		argv, argc,
 		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
-		"Test converter");
+		"-m <mode> [options] <tileset_png> [tilemap_png...]");
 
 	uint32_t code;
 	const char* parameter;
-	cl::Error error;
-	while(cli_parser.getNextOption(code, parameter, error));
-
-	if(error != cl::Error::kNone)
+	Error error;
+	while(cli_parser.getNextOption(code, parameter, error))
 	{
-		std::cout << cli_parser.getLastErrorMessage() << std::endl;
-		return 1;
+		switch(code)
+		{
+			case kRemainingCode:
+			{
+				const char** arguments = cli_parser.getRemainingArguments();
+				out_options.tileset_filename = arguments[0];
+				for(int32_t i = 1; i < cli_parser.getRemainingArgumentCount(); ++i)
+				{
+					out_options.tilemap_filenames.push_back(arguments[i]);
+				}
+			}
+			default:
+			{
+				break;
+			}
+		}
 	}
 
-	if(help)
+	if(out_options.tileset_filename == nullptr || out_options.help)
 	{
 		cli_parser.printHelp();
-		return 0;
+		return false;
+	}
+
+	if(error != Error::kNone)
+	{
+		std::cout << cli_parser.getLastErrorMessage() << std::endl;
+		out_ret = 1;
+		return false;
+	}
+
+	gbgfx::setLogLevel(out_options.verbose ? gbgfx::kLogLevel_Info : gbgfx::kLogLevel_Error);
+
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// main
+////////////////////////////////////////////////////////////////////////////////
+
+int main(int argc, const char** argv)
+{
+	Options options;
+	int ret = 0;
+	if(!parseCliOptions(options, ret, argc, argv))
+	{
+		return ret;
 	}
 
 	////////////////////////////////////////
 
-	Tileset tileset;
-	PaletteSet palette_set;
-	if(!extractTileset(
+	gbgfx::Tileset tileset;
+	gbgfx::PaletteSet palette_set;
+	if(!gbgfx::extractTileset(
 		tileset, palette_set,
-		8, kIterateAllRows, kTileSize, kTileSize,
+		8, gbgfx::kIterateAllRows, gbgfx::kTileSize, gbgfx::kTileSize,
 		false, false, false,
 		"test/demo.png"))
 	{
@@ -93,8 +172,8 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	Tilemap tilemap;
-	if(!extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
+	gbgfx::Tilemap tilemap;
+	if(!gbgfx::extractTilemap(tilemap, tileset, palette_set, false, "test/demo_tlm.png"))
 	{
 		std::cout << "Could not extract tilemap" << std::endl;
 		return 1;
@@ -104,19 +183,19 @@ int main(int argc, const char** argv)
 
 	const bool use_headers = false;
 
-	if(!exportPaletteSet(palette_set, "test/palette.pal", use_headers))
+	if(!gbgfx::exportPaletteSet(palette_set, "test/palette.pal", use_headers))
 	{
 		std::cout << "Could not export palette set" << std::endl;
 		return 1;
 	}
 
-	if(!exportTileset(tileset, "test/tileset.chr", use_headers))
+	if(!gbgfx::exportTileset(tileset, "test/tileset.chr", use_headers))
 	{
 		std::cout << "Could not export tileset" << std::endl;
 		return 1;
 	}
 
-	if(!exportTilemap(
+	if(!gbgfx::exportTilemap(
 		tilemap, "test/tilemap.idx", "test/tilemap.prm",
 		use_headers, 0, 128))
 	{
@@ -126,7 +205,7 @@ int main(int argc, const char** argv)
 
 	////////////////////////////////////////
 
-	for(uint32_t i = 0; i < kTileFlipType_Count; ++i)
+	for(uint32_t i = 0; i < gbgfx::kTileFlipType_Count; ++i)
 	{
 		static const char* filenames[] =
 		{
@@ -135,8 +214,11 @@ int main(int argc, const char** argv)
 			"test/demo_tileset_2.png",
 			"test/demo_tileset_3.png",
 		};
-		static_assert(sizeof(filenames) / sizeof(filenames[0]) == kTileFlipType_Count);
-		if(!writeTilesetToPNG(filenames[i], 16, tileset, static_cast<TileFlipType>(i), palette_set, i == 0))
+		static_assert(sizeof(filenames) / sizeof(filenames[0]) == gbgfx::kTileFlipType_Count);
+		if(!gbgfx::writeTilesetToPNG(
+			filenames[i], 16,
+			tileset, static_cast<gbgfx::TileFlipType>(i),
+			palette_set, i == 0))
 		{
 			std::cout << "Could not write tileset" << std::endl;
 			return 1;

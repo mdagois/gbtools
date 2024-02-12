@@ -5,7 +5,7 @@
 
 #include "commandline.h"
 
-namespace cl {
+namespace cli {
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -271,11 +271,11 @@ const char* Parser::getLastErrorMessage()
 		"Required option not specified", // kRequiredOptionNotSpecified
 		"Internal error", // kInternalError
 	};
-	static_assert(sizeof(message) / sizeof(message[0]) == static_cast<size_t>(cl::Error::kCount));
+	static_assert(sizeof(message) / sizeof(message[0]) == static_cast<size_t>(Error::kCount));
 
 	if(m_last_error == Error::kRequiredOptionNotSpecified)
 	{
-#define ERROR_MANAGEMENT_ERROR "Error management error"
+#define ERROR_MANAGEMENT_ERROR "Error handling issue"
 		int32_t message_len = sprintf_s(m_error_message, sizeof(m_error_message), "%s:", message[static_cast<size_t>(m_last_error)]);
 		if(message_len <= 0)
 		{
@@ -390,7 +390,7 @@ void Parser::printHelp() const
 	}
 	else
 	{
-		printf("%s: %s\n", short_name, m_description);
+		printf("%s %s\n", short_name, m_description);
 	}
 	for(uint32_t i = 0; i < m_option_count; ++i)
 	{
