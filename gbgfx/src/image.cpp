@@ -273,6 +273,11 @@ bool Image::iterateTiles(
 		LOG_ERROR("Metatile dimension must be a multiple of the microtile dimension [" << m_filename << "]");
 		return false;
 	}
+	if(start_tile_row >= getHeight() / kTileSize)
+	{
+		LOG_ERROR("The start tile row must be between 0 and " << getHeight() / kTileSize - 1 << " [" << m_filename << "]");
+		return false;
+	}
 	
 	ImageArea full_image(
 		m_pixels,
