@@ -15,11 +15,30 @@ namespace gbgfx {
 // Input
 ////////////////////////////////////////////////////////////////////////////////
 
+
+static bool areSingleColorTiles(const std::vector<ImageTile>& tiles)
+{
+	assert(tiles.size() > 0);
+	const ColorRGBA& single_color = tiles[0][0];
+	for(size_t t = 0; t < tiles.size(); ++t)
+	{
+		const ImageTile& tile = tiles[t];
+		for(uint32_t c = 0; c < tile.size(); ++c)
+		{
+			if(tile[c] != single_color)
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool use_microtile_8x16,
+	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
 	const char* image_filename)
 {
@@ -29,12 +48,15 @@ bool extractTileset(
 		return false;
 	}
 
+	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
+	std::vector<ImageTile> metatile_tiles;
 	std::vector<ImageTile> image_tiles;
 	if(!image.iterateTiles(
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
 		use_microtile_8x16,
-		[&image_tiles, &out_palette_set, image_filename](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&metatile_tiles, &image_tiles, &out_palette_set,
+		 image_filename, tiles_per_metatile, skip_single_color_metatiles](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
 			if(!extractTilePalette(palette, tile))
@@ -45,7 +67,18 @@ bool extractTileset(
 				return false;
 			}
 			out_palette_set.push(palette);
-			image_tiles.push_back(tile);
+			metatile_tiles.push_back(tile);
+			if(metatile_tiles.size() == tiles_per_metatile)
+			{
+				if(!skip_single_color_metatiles || !areSingleColorTiles(metatile_tiles))
+				{
+					for(auto& metatile_tile : metatile_tiles)
+					{
+						image_tiles.push_back(metatile_tile);
+					}
+				}
+				metatile_tiles.clear();
+			}
 			return true;
 		}))
 	{

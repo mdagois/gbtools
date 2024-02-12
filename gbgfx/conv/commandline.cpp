@@ -303,7 +303,7 @@ const char* Parser::getLastErrorMessage()
 		}
 		else
 		{
-			sprintf_s(m_error_message, sizeof(m_error_message), "%s (near [%s])", message[static_cast<size_t>(m_last_error)], faulty_argument);
+			sprintf_s(m_error_message, sizeof(m_error_message), "%s (%s)", message[static_cast<size_t>(m_last_error)], faulty_argument);
 		}
 	}
 	return m_error_message;

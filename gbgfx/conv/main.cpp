@@ -20,6 +20,7 @@ static bool loadDataFromImages(
 		out_tileset, out_palette_set,
 		options.tileset.start_tile_row, options.tileset.tile_row_count,
 		options.tileset.metatile_width, options.tileset.metatile_height,
+		options.tileset.skip_single_color_metatiles,
 		options.tileset.use_microtile_8x16,
 		options.tileset.tile_removal != kTileRemoval_None,
 		options.tileset.tile_removal == kTileRemoval_Flips,

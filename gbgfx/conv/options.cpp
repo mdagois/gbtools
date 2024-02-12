@@ -70,6 +70,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionInteger("mw", "Metatile pixel width", false, 'METW', &out_options.tileset.metatile_width),
 		OptionInteger("mh", "Metatile pixel height", false, 'METH', &out_options.tileset.metatile_height),
 		OptionFlag("sp", "Treat as sprite tiles", 'SPRI', &out_options.tileset.is_sprite),
+		OptionFlag("sk", "Skip single color metatiles", 'SSME', &out_options.tileset.skip_single_color_metatiles),
 		OptionFlag("8x16", "Set sprite size to 8x16", '8x16', &out_options.tileset.use_microtile_8x16),
 		OptionStringToInteger(
 			"tr", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),

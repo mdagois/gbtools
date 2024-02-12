@@ -36,6 +36,7 @@ struct Options
 		int32_t metatile_width = gbgfx::kTileSize;
 		int32_t metatile_height = gbgfx::kTileSize;
 		bool is_sprite = false;
+		bool skip_single_color_metatiles = false;
 		bool use_microtile_8x16 = false;
 		TileRemoval tile_removal = kTileRemoval_None;
 	}

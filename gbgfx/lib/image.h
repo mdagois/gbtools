@@ -22,6 +22,7 @@ public:
 
 	ColorRGBA& operator[](int32_t index);
 	const ColorRGBA operator[](int32_t index) const;
+	uint32_t size() const;
 
 private:
 	ColorRGBA m_pixels[kPixelsPerTile];
