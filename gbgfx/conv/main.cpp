@@ -15,6 +15,7 @@ static bool loadDataFromImages(
 	std::vector<gbgfx::Tilemap>& out_tilemaps,
 	const Options& options)
 {
+	GBGFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.png_filename << "]");
 	if(!gbgfx::extractTileset(
 		out_tileset, out_palette_set,
 		options.tileset.start_tile_row, options.tileset.tile_row_count,
@@ -31,6 +32,7 @@ static bool loadDataFromImages(
 	out_tilemaps.clear();
 	for(auto png_filename : options.tilemap.png_filenames)
 	{
+		GBGFX_LOG_INFO("Extracting tilemap from [" << png_filename << "]");
 		const size_t size = out_tilemaps.size();
 		out_tilemaps.resize(size + 1);
 		if(!gbgfx::extractTilemap(
@@ -52,6 +54,7 @@ static std::string getOutputFilename(const char* input_filename, const char* out
 
 static bool exportData(const Options& options)
 {
+	GBGFX_LOG_INFO("Loading images");
 	gbgfx::Tileset tileset;
 	gbgfx::PaletteSet palette_set;
 	std::vector<gbgfx::Tilemap> tilemaps;
@@ -77,35 +80,41 @@ static bool exportData(const Options& options)
 
 	////////////////////////////////////////
 
-	if(	!options.output.skip_export_palette &&
-		!gbgfx::exportPaletteSet(
-			palette_set,
-			getOutputFilename(options.tileset.png_filename, ".pal").c_str(),
-			options.output.add_binary_headers))
+	if(!options.output.skip_export_palette)
 	{
-		GBGFX_LOG_ERROR("Could not export palette set");
-		return false;
+		const std::string filename = getOutputFilename(options.tileset.png_filename, ".pal");
+		GBGFX_LOG_INFO("Exporting palette set to [" << filename << "]");
+		if(!gbgfx::exportPaletteSet(
+			palette_set, filename.c_str(), options.output.add_binary_headers))
+		{
+			GBGFX_LOG_ERROR("Could not export palette set");
+			return false;
+		}
 	}
 
-	if(	!options.output.skip_export_tileset &&
-		!gbgfx::exportTileset(
-			tileset,
-			getOutputFilename(options.tileset.png_filename, ".chr").c_str(),
-			options.output.add_binary_headers))
+	if(!options.output.skip_export_tileset)
 	{
-		GBGFX_LOG_ERROR("Could not export tileset");
-		return false;
+		const std::string filename = getOutputFilename(options.tileset.png_filename, ".chr");
+		GBGFX_LOG_INFO("Exporting tileset to [" << filename << "]");
+		if(!gbgfx::exportTileset(
+			tileset, filename.c_str(), options.output.add_binary_headers))
+		{
+			GBGFX_LOG_ERROR("Could not export tileset");
+			return false;
+		}
 	}
 
 	assert(tilemaps.size() == options.tilemap.png_filenames.size()); 
 	for(size_t i = 0; i < tilemaps.size(); ++i)
 	{
 		const char* png_filename = options.tilemap.png_filenames[i];
+		const std::string idx_filename = getOutputFilename(png_filename, ".idx");
+		const std::string prm_filename = getOutputFilename(png_filename, ".prm");
+		GBGFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
 		if(	!options.output.skip_export_tilemaps &&
 			!gbgfx::exportTilemap(
 				tilemaps[i],
-				getOutputFilename(png_filename, ".idx").c_str(),
-				getOutputFilename(png_filename, ".prm").c_str(),
+				idx_filename.c_str(), prm_filename.c_str(),
 				options.output.add_binary_headers,
 				options.output.palette_offset_index,
 				options.output.use_8800_addressing_mode ? 128 : 0))
@@ -117,16 +126,23 @@ static bool exportData(const Options& options)
 
 	////////////////////////////////////////
 
-	if(options.debug.print_palette)
+	if(options.debug.generate_palette_png)
 	{
-		//TODO
+		const std::string filename = getOutputFilename(options.tileset.png_filename, ".pal.png");
+		GBGFX_LOG_INFO("Generating palette set PNG to [" << filename << "]");
+		if(!gbgfx::writePaletteSetToPNG(filename.c_str(), palette_set))
+		{
+			GBGFX_LOG_ERROR("Could not write palette set PNG [" << filename << "]");
+			return false;
+		}
 	}
 
-	if(options.debug.print_tileset)
+	if(options.debug.generate_tileset_png)
 	{
 		constexpr uint32_t kTileColumnCount = 16;
 		constexpr bool kClearDoubles = false;
 		const std::string filename = getOutputFilename(options.tileset.png_filename, ".chr.png");
+		GBGFX_LOG_INFO("Generating tileset PNG to [" << filename << "]");
 		if(!gbgfx::writeTilesetToPNG(
 			filename.c_str(), kTileColumnCount,
 			tileset, gbgfx::kTileFlipType_None,

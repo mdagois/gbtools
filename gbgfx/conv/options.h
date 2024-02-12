@@ -64,8 +64,8 @@ struct Options
 
 	struct
 	{
-		bool print_palette = false;
-		bool print_tileset = false;
+		bool generate_palette_png = false;
+		bool generate_tileset_png = false;
 	}
 	debug;
 

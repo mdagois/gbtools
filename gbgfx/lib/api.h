@@ -47,6 +47,7 @@ bool writeTilesetToPNG(
 	const char* filename, uint32_t tile_column_count,
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
 	bool clear_doubles);
+bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set);
 
 ////////////////////////////////////////////////////////////////////////////////
 

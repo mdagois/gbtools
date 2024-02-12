@@ -348,6 +348,45 @@ bool writeTilesetToPNG(
 	return true;
 }
 
+bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
+{
+	const uint32_t palette_count = palette_set.size();
+	if(palette_count == 0)
+	{
+		return true;
+	}
+
+	const uint32_t total_color_count = kColorsPerPalette * palette_count;
+	ColorRGBA* pixels = new ColorRGBA[total_color_count];
+	for(uint32_t p = 0; p < palette_count; ++p)
+	{
+		const Palette& palette = palette_set[p];
+		uint32_t c = 0;
+		for(; c < palette.size(); ++c)
+		{
+			pixels[p * kColorsPerPalette + c] = palette[c];
+		}
+		for(; c < kColorsPerPalette; ++c)
+		{
+			pixels[p * kColorsPerPalette + c] = kRGBA_Magenta;
+		}
+	}
+
+	constexpr int32_t kChannelCount = 4;
+	const int result = stbi_write_png(
+		filename,
+		kColorsPerPalette, palette_count, kChannelCount,
+		pixels, sizeof(ColorRGBA) * total_color_count);
+
+	delete [] pixels;
+	if(result == 0)
+	{
+		GBGFX_LOG_ERROR("Could not write file [" << filename << "]");
+		return false;
+	}
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 
 }

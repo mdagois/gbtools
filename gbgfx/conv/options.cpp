@@ -89,8 +89,8 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("ms", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
 
 		// debug
-		OptionFlag("pp", "Generate a PNG file of the palette", 'GENP', &out_options.debug.print_palette),
-		OptionFlag("pt", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.print_tileset),
+		OptionFlag("gp", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),
+		OptionFlag("gt", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.generate_tileset_png),
 
 		// misc
 		OptionFlag("v", "Enable verbose mode", 'VERB', &out_options.verbose),
