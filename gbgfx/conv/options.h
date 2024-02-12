@@ -62,6 +62,13 @@ struct Options
 	}
 	output;
 
+	struct
+	{
+		bool print_palette = false;
+		bool print_tileset = false;
+	}
+	debug;
+
 	bool verbose = false;
 	bool help = false;
 };

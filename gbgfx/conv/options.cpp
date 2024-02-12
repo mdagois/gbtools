@@ -1,5 +1,3 @@
-#include <iostream>
-
 #include "commandline.h"
 #include "options.h"
 
@@ -90,6 +88,10 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("ts", "Skip export of the tileset", 'SKIT', &out_options.output.skip_export_tileset),
 		OptionFlag("ms", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
 
+		// debug
+		OptionFlag("pp", "Generate a PNG file of the palette", 'GENP', &out_options.debug.print_palette),
+		OptionFlag("pt", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.print_tileset),
+
 		// misc
 		OptionFlag("v", "Enable verbose mode", 'VERB', &out_options.verbose),
 		OptionFlag("h", "Show help", 'HELP', &out_options.help),
@@ -132,7 +134,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	if(error != Error::kNone)
 	{
-		std::cout << cli_parser.getLastErrorMessage() << std::endl;
+		GBGFX_LOG_ERROR(cli_parser.getLastErrorMessage());
 		return false;
 	}
 

@@ -1,6 +1,5 @@
 #include <algorithm>
 #include <cassert>
-#include <iostream>
 #include <string>
 #include <vector>
 
@@ -25,9 +24,7 @@ static bool loadDataFromImages(
 		options.tileset.tile_removal == kTileRemoval_Flips,
 		options.tileset.png_filename))
 	{
-		std::cout
-			<< "Could not extract tileset from [" << options.tileset.png_filename << "]"
-			<< std::endl;
+		GBGFX_LOG_ERROR("Could not extract tileset from [" << options.tileset.png_filename << "]");
 		return false;
 	}
 
@@ -40,9 +37,7 @@ static bool loadDataFromImages(
 			out_tilemaps[size], out_tileset, out_palette_set,
 			options.tilemap.use_flips, png_filename))
 		{
-			std::cout
-				<< "Could not extract tilemap from [" << png_filename << "]"
-				<< std::endl;
+			GBGFX_LOG_ERROR("Could not extract tilemap from [" << png_filename << "]");
 			return false;
 		}
 	}
@@ -88,7 +83,7 @@ static bool exportData(const Options& options)
 			getOutputFilename(options.tileset.png_filename, ".pal").c_str(),
 			options.output.add_binary_headers))
 	{
-		std::cout << "Could not export palette set" << std::endl;
+		GBGFX_LOG_ERROR("Could not export palette set");
 		return false;
 	}
 
@@ -98,7 +93,7 @@ static bool exportData(const Options& options)
 			getOutputFilename(options.tileset.png_filename, ".chr").c_str(),
 			options.output.add_binary_headers))
 	{
-		std::cout << "Could not export tileset" << std::endl;
+		GBGFX_LOG_ERROR("Could not export tileset");
 		return false;
 	}
 
@@ -115,34 +110,32 @@ static bool exportData(const Options& options)
 				options.output.palette_offset_index,
 				options.output.use_8800_addressing_mode ? 128 : 0))
 		{
-			std::cout << "Could not export tilemap" << std::endl;
+			GBGFX_LOG_ERROR("Could not export tilemap");
 			return false;
 		}
 	}
 
 	////////////////////////////////////////
 
-#if 0
-	for(uint32_t i = 0; i < gbgfx::kTileFlipType_Count; ++i)
+	if(options.debug.print_palette)
 	{
-		static const char* filenames[] =
-		{
-			"test/demo_tileset_0.png",
-			"test/demo_tileset_1.png",
-			"test/demo_tileset_2.png",
-			"test/demo_tileset_3.png",
-		};
-		static_assert(sizeof(filenames) / sizeof(filenames[0]) == gbgfx::kTileFlipType_Count);
+		//TODO
+	}
+
+	if(options.debug.print_tileset)
+	{
+		constexpr uint32_t kTileColumnCount = 16;
+		constexpr bool kClearDoubles = false;
+		const std::string filename = getOutputFilename(options.tileset.png_filename, ".chr.png");
 		if(!gbgfx::writeTilesetToPNG(
-			filenames[i], 16,
-			tileset, static_cast<gbgfx::TileFlipType>(i),
-			palette_set, i == 0))
+			filename.c_str(), kTileColumnCount,
+			tileset, gbgfx::kTileFlipType_None,
+			palette_set, kClearDoubles))
 		{
-			std::cout << "Could not write tileset" << std::endl;
+			GBGFX_LOG_ERROR("Could not write tileset PNG [" << filename << "]");
 			return false;
 		}
 	}
-#endif
 
 	return true;
 }
