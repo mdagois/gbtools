@@ -7,7 +7,7 @@ build_directory = build
 debug_description = build with debug features and extra checks enabled
 release_description = deliverable build
 
-compile_options = -Werror -Weverything -Hl
+compile_options = -Werror -Weverything
 debug_compile_options = -DBUILD_DEBUG
 release_compile_options = -DBUILD_RELEASE
 

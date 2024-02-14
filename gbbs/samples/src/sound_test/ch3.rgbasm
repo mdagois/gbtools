@@ -5,21 +5,21 @@ include "shared.rgbinc"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 rsreset
-NOTE_FREQUENCY_CH124			rb 2
-NOTE_FREQUENCY_CH3				rb 2
-NOTE_TILE_INDICES				rb 3
-sizeof_NOTE						rb 0
+def NOTE_FREQUENCY_CH124			rb 2
+def NOTE_FREQUENCY_CH3				rb 2
+def NOTE_TILE_INDICES				rb 3
+def sizeof_NOTE						rb 0
 
-OCTAVE_NOTES_COUNT				equ 12
-NOTES_COUNT						equ (7 * OCTAVE_NOTES_COUNT)
+def OCTAVE_NOTES_COUNT				equ 12
+def NOTES_COUNT						equ (7 * OCTAVE_NOTES_COUNT)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Waveform
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-WAVEFORM_SAMPLES_COUNT			equ (32)
-WAVEFORM_BYTES_PER_SAMPLE		equ (2)
-WAVEFORM_BYTE_LENGTH			equ (WAVEFORM_SAMPLES_COUNT / WAVEFORM_BYTES_PER_SAMPLE)
+def WAVEFORM_SAMPLES_COUNT			equ (32)
+def WAVEFORM_BYTES_PER_SAMPLE		equ (2)
+def WAVEFORM_BYTE_LENGTH			equ (WAVEFORM_SAMPLES_COUNT / WAVEFORM_BYTES_PER_SAMPLE)
 
 section "ch3_waveform", rom0
 
@@ -244,13 +244,13 @@ UpdateWaveformColumn:
 
 rsset _HRAM
 
-HRAM_TEMP						rb 8
+def HRAM_TEMP						rb 8
 
-HRAM_END						rb 0
+def HRAM_END						rb 0
 
 ; sanity checks
-HRAM_USAGE						equ (HRAM_END - _HRAM)
-print "CH3 HRAM usage: {d:HRAM_USAGE} bytes\n"
+def HRAM_USAGE						equ (HRAM_END - _HRAM)
+println "CH3 HRAM usage: {d:HRAM_USAGE} bytes"
 assert HRAM_USAGE <= $0040, "Too many bytes used in HRAM"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -258,30 +258,30 @@ assert HRAM_USAGE <= $0040, "Too many bytes used in HRAM"
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 rsreset
-CONTROL_FLAG_PLAY_SOUND			rb 1
-CONTROL_FLAG_WAVEFORM_EDIT_MODE	rb 1
-CONTROL_FLAGS_COUNT				rb 0
+def CONTROL_FLAG_PLAY_SOUND			rb 1
+def CONTROL_FLAG_WAVEFORM_EDIT_MODE	rb 1
+def CONTROL_FLAGS_COUNT				rb 0
 assert CONTROL_FLAGS_COUNT < 8, "Too many control flags declared"
 
 rsset WRAM_CHANNEL_START
-WRAM_CONTROL_FLAGS				rb 1
-WRAM_SELECTION_INDEX			rb 1
-WRAM_CH3_REGISTER				rb 5
+def WRAM_CONTROL_FLAGS				rb 1
+def WRAM_SELECTION_INDEX			rb 1
+def WRAM_CH3_REGISTER				rb 5
 
-WRAM_NOTE_NUMBER				rb 1
-WRAM_LENGTH_INDEX				rb 1
-WRAM_USE_LENGTH_FLAG			rb 1
-WRAM_VOLUME						rb 1
+def WRAM_NOTE_NUMBER				rb 1
+def WRAM_LENGTH_INDEX				rb 1
+def WRAM_USE_LENGTH_FLAG			rb 1
+def WRAM_VOLUME						rb 1
 
-WRAM_WAVEFORM					rb WAVEFORM_BYTE_LENGTH
-WRAM_WAVEFORM_SELECTOR_COLUMN	rb 1
-WRAM_WAVEFORM_COLUMN_UPDATE		rb 1
+def WRAM_WAVEFORM					rb WAVEFORM_BYTE_LENGTH
+def WRAM_WAVEFORM_SELECTOR_COLUMN	rb 1
+def WRAM_WAVEFORM_COLUMN_UPDATE		rb 1
 
-WRAM_END						rb 0
+def WRAM_END						rb 0
 
 ; sanity checks
-WRAM_USAGE						equ (WRAM_END - _RAM)
-print "CH3 WRAM usage: {d:WRAM_USAGE} bytes\n"
+def WRAM_USAGE						equ (WRAM_END - _RAM)
+println "CH3 WRAM usage: {d:WRAM_USAGE} bytes"
 assert WRAM_USAGE <= $2000, "Too many bytes used in WRAM"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -320,20 +320,20 @@ dw UpdateWaveform
 UpdateFunc_End:
 
 ; line numbers
-LINE_NOTE						equ (2)
-LINE_LENGTH						equ (3)
-LINE_USE_LENGTH					equ (4)
-LINE_VOLUME						equ (5)
-LINE_WAVEFORM					equ (6)
+def LINE_NOTE						equ (2)
+def LINE_LENGTH						equ (3)
+def LINE_USE_LENGTH					equ (4)
+def LINE_VOLUME						equ (5)
+def LINE_WAVEFORM					equ (6)
 
 ; selection indices
 rsreset
-SELECTION_NOTE					rb 1
-SELECTION_LENGTH				rb 1
-SELECTION_USE_LENGTH			rb 1
-SELECTION_VOLUME				rb 1
-SELECTION_WAVEFORM				rb 1
-SELECTIONS_COUNT				rb 0
+def SELECTION_NOTE					rb 1
+def SELECTION_LENGTH				rb 1
+def SELECTION_USE_LENGTH			rb 1
+def SELECTION_VOLUME				rb 1
+def SELECTION_WAVEFORM				rb 1
+def SELECTIONS_COUNT				rb 0
 assert SELECTIONS_COUNT == ((UpdateFunc_End - UpdateFunc) / 2), "The number of selections is not in sync with the number of update functions"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -588,7 +588,7 @@ UpdateVolume:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-WAVEFORM_SELECTOR_BASE_TILE_ADDRESS			equ (_SCRN0 + (7 * SCRN_VX_B) + 2)
+def WAVEFORM_SELECTOR_BASE_TILE_ADDRESS			equ (_SCRN0 + (7 * SCRN_VX_B) + 2)
 
 macro ShowSelectorTile
 	ld hl, WAVEFORM_SELECTOR_BASE_TILE_ADDRESS
@@ -793,7 +793,7 @@ InitializeCH3:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-SAMPLE_COLUMN_BASE_TILE_ADDRESS			equ (_SCRN0 + SCRN_VX_B * 9 + 2)
+def SAMPLE_COLUMN_BASE_TILE_ADDRESS			equ (_SCRN0 + SCRN_VX_B * 9 + 2)
 
 UpdateCH3:
 	halt
