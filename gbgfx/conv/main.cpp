@@ -55,7 +55,7 @@ static std::string getOutputFilename(const char* input_filename, const char* out
 
 static bool exportData(const Options& options)
 {
-	GBGFX_LOG_INFO("Loading images");
+	GBGFX_LOG_INFO("Exporting data");
 	gbgfx::Tileset tileset;
 	gbgfx::PaletteSet palette_set;
 	std::vector<gbgfx::Tilemap> tilemaps;
@@ -71,7 +71,7 @@ static bool exportData(const Options& options)
 			<< options.output.palette_max_count << ")");
 		return false;
 	}
-	if(tileset.size() > static_cast<uint32_t>(options.output.tile_max_count))
+	if(!options.tileset.is_sprite && tileset.size() > static_cast<uint32_t>(options.output.tile_max_count))
 	{
 		GBGFX_LOG_ERROR(
 			"Too many tiles (" << tileset.size() << " > "
