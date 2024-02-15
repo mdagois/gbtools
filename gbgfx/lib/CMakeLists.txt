@@ -13,4 +13,5 @@ add_library(
 	tileset.h tileset.cpp
 	utils.h utils.cpp)
 target_compile_definitions(gbgfx PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_features(gbgfx PRIVATE cxx_std_17)
 
