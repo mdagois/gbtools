@@ -21,6 +21,7 @@ void applyHardwareLimits(Options& options)
 			applyLimit(options.output.palette_max_count, options.tileset.is_sprite ? 2 : 1);
 			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.skip_export_palette = true;
+			options.output.skip_export_parameters = true;
 			options.output.skip_export_attributes = true;
 			break;
 		case kHardwareCgb:
@@ -36,6 +37,7 @@ void applyHardwareLimits(Options& options)
 			options.tilemap.use_flips = false;
 			applyLimit(options.output.palette_max_count, 4);
 			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
+			options.output.skip_export_parameters = true;
 			break;
 		default:
 			break;
@@ -100,7 +102,6 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("skip-export-palette", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
 		OptionFlag("skip-export-tileset", "Skip export of the tileset", 'SKIT', &out_options.output.skip_export_tileset),
 		OptionFlag("skip-export-tilemap", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
-		OptionFlag("skip-export-attribute", "Skip export of the attributes", 'SKIA', &out_options.output.skip_export_attributes),
 
 		// debug
 		OptionFlag("generate-png-palette", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),

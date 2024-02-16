@@ -112,11 +112,14 @@ static bool exportData(const Options& options)
 		const char* png_filename = options.tilemap.png_filenames[i];
 		const std::string idx_filename = getOutputFilename(png_filename, ".idx");
 		const std::string prm_filename = getOutputFilename(png_filename, ".prm");
+		const std::string atr_filename = getOutputFilename(png_filename, ".atr");
 		GBGFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
 		if(	!options.output.skip_export_tilemaps &&
 			!gbgfx::exportTilemap(
 				tilemaps[i],
-				idx_filename.c_str(), prm_filename.c_str(),
+				idx_filename.c_str(),
+				options.output.skip_export_parameters ? nullptr : prm_filename.c_str(),
+				options.output.skip_export_attributes ? nullptr : atr_filename.c_str(),
 				options.output.add_binary_headers,
 				options.output.palette_offset_index,
 				options.output.use_8800_addressing_mode ? 128 : 0))

@@ -253,7 +253,9 @@ bool exportTileset(
 
 bool exportTilemap(
 	const Tilemap& tilemap,
-	const char* indices_filename, const char* parameter_filename,
+	const char* indices_filename,
+	const char* parameters_filename,
+	const char* attributes_filename,
 	bool use_header, uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
 	TilemapData data;
@@ -265,21 +267,31 @@ bool exportTilemap(
 		static_cast<uint8_t>(tilemap.getRowCount())
 	};
 	return
-		data.initialize(tilemap, palette_index_offset, tile_index_offset) &&
+		data.initialize(tilemap, palette_index_offset, tile_index_offset)
+		&&
 		(
 			indices_filename == nullptr ||
 			writeToFile(
-				data.getIndexData(), data.getDataSize(),
+				data.getIndexData(), data.getIndexDataSize(),
 				use_header ? &header : nullptr, sizeof(header),
-				indices_filename))
+				indices_filename)
+		)
 		&&
 		(
-			parameter_filename == nullptr ||
+			parameters_filename == nullptr ||
 			writeToFile(
-				data.getParameterData(), data.getDataSize(),
+				data.getParameterData(), data.getParameterDataSize(),
 				use_header ? &header : nullptr, sizeof(header),
-				parameter_filename
-		));
+				parameters_filename)
+		)
+		&&
+		(
+			attributes_filename == nullptr ||
+			writeToFile(
+				data.getAttributeData(), data.getAttributeDataSize(),
+				use_header ? &header : nullptr, sizeof(header),
+				attributes_filename)
+		);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

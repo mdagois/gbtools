@@ -81,11 +81,15 @@ public:
 	uint32_t getColumnCount() const;
 	const uint8_t* getIndexData() const;
 	const uint8_t* getParameterData() const;
-	uint32_t getDataSize() const;
+	const uint8_t* getAttributeData() const;
+	uint32_t getIndexDataSize() const;
+	uint32_t getParameterDataSize() const;
+	uint32_t getAttributeDataSize() const;
 
 private:
 	std::vector<uint8_t> m_indices;
 	std::vector<uint8_t> m_parameters;
+	std::vector<uint8_t> m_attributes;
 	uint32_t m_row_count;
 	uint32_t m_column_count;
 };
