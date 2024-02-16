@@ -1,6 +1,7 @@
 #include <algorithm>
 #include <cassert>
 #include "color.h"
+#include "constants.h"
 
 namespace gbgfx {
 
@@ -34,11 +35,11 @@ void sortColorsRGBA(ColorRGBA* colors, uint32_t count)
 		colors, colors + count,
 		[](const ColorRGBA lhs, const ColorRGBA rhs)
 		{
-			if(lhs.a == 0)
+			if(lhs.a == kSharedColorAlpha)
 			{
 				return true;
 			}
-			if(rhs.a == 0)
+			if(rhs.a == kSharedColorAlpha)
 			{
 				return false;
 			}

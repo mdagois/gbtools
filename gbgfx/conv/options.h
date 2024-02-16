@@ -13,6 +13,7 @@ enum Hardware : int32_t
 {
 	kHardwareDmg,
 	kHardwareCgb,
+	kHardwareSgb,
 };
 
 enum TileRemoval : int32_t
@@ -60,6 +61,7 @@ struct Options
 		bool skip_export_palette = false;
 		bool skip_export_tileset = false;
 		bool skip_export_tilemaps = false;
+		bool skip_export_attributes = false;
 	}
 	output;
 

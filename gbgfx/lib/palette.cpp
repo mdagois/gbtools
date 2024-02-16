@@ -129,6 +129,19 @@ uint8_t Palette::findColorIndex(ColorRGBA color) const
 	return kInvalidColorIndex;
 }
 
+void Palette::makeFirstColor(ColorRGBA color)
+{
+	for(uint32_t i = 0; i < m_color_count; ++i)
+	{
+		if(color == m_colors[i])
+		{
+			m_colors[i].a = kSharedColorAlpha;
+			return;
+		}
+	}
+	assert(false);
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Palette set
 ////////////////////////////////////////////////////////////////////////////////
@@ -168,46 +181,116 @@ uint32_t PaletteSet::size() const
 	return static_cast<uint32_t>(m_palettes.size());
 }
 
-void PaletteSet::optimize()
+bool PaletteSet::optimize(bool share_first_color)
 {
 	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
-	if(palette_count < 2)
+
+	if(share_first_color)
 	{
-		return;
-	}
-
-	std::vector<Palette> palettes = m_palettes;
-	std::sort(
-		palettes.begin(), palettes.end(),
-		[](const Palette& lhs, const Palette& rhs)
+		std::vector<const Palette*> four_color_palettes;
+		for(const Palette& palette : m_palettes)
 		{
-			return lhs.size() > rhs.size();
-		});
-
-	m_palettes.clear();
-	m_palettes.push_back(palettes.back());
-	palettes.pop_back();
-
-	while(!palettes.empty())
-	{
-		const Palette& palette = palettes.back();
-		bool merged = false;
-		for(uint32_t i = 0; i < m_palettes.size(); ++i)
-		{
-			if(mergePalettes(m_palettes[i], m_palettes[i], palette))
+			if(palette.size() == kColorsPerPalette)
 			{
-				merged = true;
-				break;
+				four_color_palettes.push_back(&palette);
 			}
 		}
-		if(!merged)
+		if(four_color_palettes.empty())
 		{
-			m_palettes.push_back(palette);
+			for(Palette& palette : m_palettes)
+			{
+				palette.push(kRGBA_Magenta);
+			}
 		}
+		else
+		{
+			std::vector<ColorRGBA> first_color_candidates;
+			for(const Palette* palette : four_color_palettes)
+			{
+				for(uint32_t c = 0; c < palette->size(); ++c)
+				{
+					first_color_candidates.push_back((*palette)[c]);
+				}
+			}
+			sortColorsRGBA(first_color_candidates.data(), static_cast<uint32_t>(first_color_candidates.size()));
+
+			uint32_t count = 0;
+			ColorRGBA candidate_color;
+			bool first_color_found = false;
+			for(ColorRGBA color : first_color_candidates)
+			{
+				if(count == 0 || color != candidate_color)
+				{
+					count = 1;
+					candidate_color = color;
+				}
+				else
+				{
+					++count;
+				}
+				if(count == static_cast<uint32_t>(four_color_palettes.size()))
+				{
+					first_color_found = true;
+					break;
+				}
+			}
+
+			if(!first_color_found)
+			{
+				GBGFX_LOG_ERROR("Cannot find a shared first color");
+				return false;
+			}
+
+			for(Palette& palette : m_palettes)
+			{
+				if(palette.size() == kColorsPerPalette)
+				{
+					palette.makeFirstColor(candidate_color);
+				}
+				else
+				{
+					palette.push(candidate_color);
+				}
+			}
+		}
+	}
+
+	if(palette_count >= 2)
+	{
+		std::vector<Palette> palettes = m_palettes;
+		std::sort(
+			palettes.begin(), palettes.end(),
+			[](const Palette& lhs, const Palette& rhs)
+			{
+				return lhs.size() > rhs.size();
+			});
+
+		m_palettes.clear();
+		m_palettes.push_back(palettes.back());
 		palettes.pop_back();
+
+		while(!palettes.empty())
+		{
+			const Palette& palette = palettes.back();
+			bool merged = false;
+			for(uint32_t i = 0; i < m_palettes.size(); ++i)
+			{
+				if(mergePalettes(m_palettes[i], m_palettes[i], palette))
+				{
+					merged = true;
+					break;
+				}
+			}
+			if(!merged)
+			{
+				m_palettes.push_back(palette);
+			}
+			palettes.pop_back();
+		}
 	}
 
 	GBGFX_LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
+	return true;
 }
 
 uint32_t PaletteSet::findCompatiblePaletteIndex(const Palette& palette) const

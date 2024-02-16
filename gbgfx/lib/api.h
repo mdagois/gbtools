@@ -16,6 +16,7 @@ bool extractTileset(
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
+	bool palettes_share_first_color,
 	const char* image_filename);
 
 bool extractTilemap(

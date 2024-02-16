@@ -15,7 +15,6 @@ namespace gbgfx {
 // Input
 ////////////////////////////////////////////////////////////////////////////////
 
-
 static bool areSingleColorTiles(const std::vector<ImageTile>& tiles)
 {
 	assert(tiles.size() > 0);
@@ -40,6 +39,7 @@ bool extractTileset(
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
+	bool palettes_share_first_color,
 	const char* image_filename)
 {
 	Image image;
@@ -85,7 +85,10 @@ bool extractTileset(
 		return false;
 	}
 
-	out_palette_set.optimize();
+	if(!out_palette_set.optimize(palettes_share_first_color))
+	{
+		return false;
+	}
 
 	for(uint32_t i = 0; i < image_tiles.size(); ++i)
 	{
