@@ -34,6 +34,14 @@ void sortColorsRGBA(ColorRGBA* colors, uint32_t count)
 		colors, colors + count,
 		[](const ColorRGBA lhs, const ColorRGBA rhs)
 		{
+			if(lhs.a == 0)
+			{
+				return true;
+			}
+			if(rhs.a == 0)
+			{
+				return false;
+			}
 			if(lhs == kRGBA_Magenta || rhs == kRGBA_Invalid)
 			{
 				return true;

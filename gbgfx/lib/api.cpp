@@ -85,7 +85,7 @@ bool extractTileset(
 		return false;
 	}
 
-	out_palette_set.optimize(true, true);
+	out_palette_set.optimize();
 
 	for(uint32_t i = 0; i < image_tiles.size(); ++i)
 	{

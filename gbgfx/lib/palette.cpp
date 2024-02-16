@@ -86,6 +86,7 @@ void Palette::push(ColorRGBA color)
 	assert(m_color_count < kColorsPerPalette);
 	m_colors[m_color_count] = color;
 	++m_color_count;
+	sortColorsRGBA(m_colors, m_color_count);
 }
 
 void Palette::clear()
@@ -128,11 +129,6 @@ uint8_t Palette::findColorIndex(ColorRGBA color) const
 	return kInvalidColorIndex;
 }
 
-void Palette::sortColors()
-{
-	sortColorsRGBA(m_colors, m_color_count);
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 // Palette set
 ////////////////////////////////////////////////////////////////////////////////
@@ -153,6 +149,11 @@ void PaletteSet::push(const Palette& palette)
 		{
 			return;
 		}
+		if(palette.contains(m_palettes[i]))
+		{
+			m_palettes[i] = palette;
+			return;
+		}
 	}
 	m_palettes.push_back(palette);
 }
@@ -167,52 +168,46 @@ uint32_t PaletteSet::size() const
 	return static_cast<uint32_t>(m_palettes.size());
 }
 
-void PaletteSet::optimize(bool merge_palettes, bool sort_palette_colors)
+void PaletteSet::optimize()
 {
-	const size_t palette_count = m_palettes.size();
-	if(merge_palettes && palette_count >= 2)
+	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
+	if(palette_count < 2)
 	{
-		std::vector<Palette> palettes = m_palettes;
-		std::sort(
-			palettes.begin(), palettes.end(),
-			[](const Palette& lhs, const Palette& rhs)
-			{
-				return lhs.size() > rhs.size();
-			});
-
-		m_palettes.clear();
-		m_palettes.push_back(palettes.back());
-		palettes.pop_back();
-
-		while(!palettes.empty())
-		{
-			const Palette& palette = palettes.back();
-			bool merged = false;
-			for(uint32_t i = 0; i < m_palettes.size(); ++i)
-			{
-				if(mergePalettes(m_palettes[i], m_palettes[i], palette))
-				{
-					merged = true;
-					break;
-				}
-			}
-			if(!merged)
-			{
-				m_palettes.push_back(palette);
-			}
-			palettes.pop_back();
-		}
-
-		GBGFX_LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
+		return;
 	}
 
-	if(sort_palette_colors)
+	std::vector<Palette> palettes = m_palettes;
+	std::sort(
+		palettes.begin(), palettes.end(),
+		[](const Palette& lhs, const Palette& rhs)
+		{
+			return lhs.size() > rhs.size();
+		});
+
+	m_palettes.clear();
+	m_palettes.push_back(palettes.back());
+	palettes.pop_back();
+
+	while(!palettes.empty())
 	{
+		const Palette& palette = palettes.back();
+		bool merged = false;
 		for(uint32_t i = 0; i < m_palettes.size(); ++i)
 		{
-			m_palettes[i].sortColors();
+			if(mergePalettes(m_palettes[i], m_palettes[i], palette))
+			{
+				merged = true;
+				break;
+			}
 		}
+		if(!merged)
+		{
+			m_palettes.push_back(palette);
+		}
+		palettes.pop_back();
 	}
+
+	GBGFX_LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
 }
 
 uint32_t PaletteSet::findCompatiblePaletteIndex(const Palette& palette) const
