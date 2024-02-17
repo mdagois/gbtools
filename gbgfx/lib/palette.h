@@ -16,6 +16,8 @@ class Palette
 public:
 	static uint32_t getColorMaxCount();
 	static void setColorMaxCount(uint32_t count);
+	static bool getUseTransparentColor();
+	static void setUseTransparentColor(bool enable);
 
 public:
 	Palette();
@@ -31,6 +33,7 @@ public:
 
 private:
 	static uint32_t s_color_max_count;
+	static bool s_use_transparent_color;
 
 private:
 	ColorRGBA m_colors[kColorsPerPalette_Max];

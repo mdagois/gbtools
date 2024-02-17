@@ -14,6 +14,7 @@ enum Hardware : int32_t
 	kHardwareDmg,
 	kHardwareCgb,
 	kHardwareSgb,
+	kHardwareSfc,
 };
 
 enum TileRemoval : int32_t

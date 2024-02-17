@@ -69,6 +69,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 ////////////////////////////////////////////////////////////////////////////////
 
 uint32_t Palette::s_color_max_count = kColorsPerPalette_GB;
+bool Palette::s_use_transparent_color = false;
 
 uint32_t Palette::getColorMaxCount()
 {
@@ -81,12 +82,26 @@ void Palette::setColorMaxCount(uint32_t count)
 	s_color_max_count = count;
 }
 
+bool Palette::getUseTransparentColor()
+{
+	return s_use_transparent_color;
+}
+
+void Palette::setUseTransparentColor(bool enable)
+{
+	s_use_transparent_color = enable;
+}
+
 Palette::Palette()
 : m_color_count(0)
 {
 	for(int32_t i = 0; i < kColorsPerPalette_Max; ++i)
 	{
 		m_colors[i] = kRGBA_Invalid;
+	}
+	if(s_use_transparent_color)
+	{
+		push(kRGBA_Magenta);
 	}
 }
 

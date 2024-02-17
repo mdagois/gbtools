@@ -10,6 +10,8 @@ void applyHardwareLimits(Options& options)
 		value = std::max(0, std::min(value, maximum));
 	};
 
+	gbgfx::Palette::setColorMaxCount(gbgfx::kColorsPerPalette_GB);
+	gbgfx::Palette::setUseTransparentColor(false);
 	switch(options.hardware)
 	{
 		case kHardwareDmg:
@@ -17,7 +19,9 @@ void applyHardwareLimits(Options& options)
 			{
 				options.tileset.tile_removal = kTileRemoval_Doubles;
 			}
+
 			options.tilemap.use_flips = false;
+
 			applyLimit(options.output.palette_max_count, options.tileset.is_sprite ? 2 : 1);
 			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.skip_export_palette = true;
@@ -34,10 +38,27 @@ void applyHardwareLimits(Options& options)
 			{
 				options.tileset.tile_removal = kTileRemoval_Doubles;
 			}
+
 			options.tilemap.use_flips = false;
+
 			applyLimit(options.output.palette_max_count, 4);
 			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.skip_export_parameters = true;
+			break;
+		case kHardwareSfc:
+			gbgfx::Palette::setColorMaxCount(gbgfx::kColorsPerPalette_SFC);
+			gbgfx::Palette::setUseTransparentColor(true);
+			
+			options.tileset.is_sprite = false;
+			options.tileset.skip_single_color_metatiles = false;
+			options.tileset.use_microtile_8x16 = false;
+
+			options.output.palette_offset_index = 4;
+			applyLimit(options.output.palette_max_count, 3);
+			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
+			options.output.use_8800_addressing_mode = false;
+
+			options.output.skip_export_attributes = true;
 			break;
 		default:
 			break;
