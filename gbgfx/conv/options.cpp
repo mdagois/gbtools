@@ -3,62 +3,39 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void applyHardwareLimits(Options& options)
+bool applyHardwareLimits(Options& options)
 {
-	auto applyLimit = [](int32_t& value, int32_t maximum)
+	if(!gbgfx::initialize(options.hardware, options.data_type))
 	{
-		value = std::max(0, std::min(value, maximum));
-	};
+		return false;
+	}
 
-	gbgfx::setTargetHardware(options.hardware);
-	gbgfx::Palette::setColorMaxCount(gbgfx::kColorsPerPalette_GB);
-	gbgfx::Palette::setUseTransparentColor(false);
 	switch(options.hardware)
 	{
 		case gbgfx::kHardwareDmg:
 			options.tilemap.use_flips = false;
-
-			applyLimit(options.output.palette_max_count, options.tileset.is_sprite ? 2 : 1);
-			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.skip_export_palette = true;
 			options.output.skip_export_parameters = true;
 			options.output.skip_export_attributes = true;
 			break;
 		case gbgfx::kHardwareCgb:
-			applyLimit(options.output.palette_max_count, 8);
-			applyLimit(options.output.tile_max_count, gbgfx::kTileMaxCount);
 			options.output.skip_export_attributes = true;
 			break;
 		case gbgfx::kHardwareSgb:
 			options.tilemap.use_flips = false;
-
-			applyLimit(options.output.palette_max_count, 4);
-			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.skip_export_parameters = true;
 			break;
 		case gbgfx::kHardwareSfc:
-			gbgfx::Palette::setColorMaxCount(gbgfx::kColorsPerPalette_SFC);
-			gbgfx::Palette::setUseTransparentColor(true);
-			
-			options.tileset.is_sprite = false;
 			options.tileset.skip_single_color_metatiles = false;
-			options.tileset.use_microtile_8x16 = false;
-
 			options.output.palette_offset_index = 4;
-			applyLimit(options.output.palette_max_count, 3);
-			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.use_8800_addressing_mode = false;
-
 			options.output.skip_export_attributes = true;
 			break;
 		default:
 			break;
 	}
 
-	if(options.tileset.is_sprite)
-	{
-		options.output.use_8800_addressing_mode = false;
-	}
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -77,6 +54,13 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		{ "sfc", gbgfx::kHardwareSfc },
 	};
 
+	const Mapping data_type_mapping[] =
+	{
+		{ "bg", gbgfx::kDataTypeBg },
+		{ "obj8", gbgfx::kDataTypeSprite8x8 },
+		{ "obj16", gbgfx::kDataTypeSprite8x16 },
+	};
+
 	const Mapping tile_removal_mapping[] =
 	{
 		{ "none", gbgfx::kTileRemovalNone },
@@ -90,15 +74,16 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionStringToInteger(
 			"hardware", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
+		OptionStringToInteger(
+			"data-type", "Specify the data type", true, 'DATA', reinterpret_cast<int32_t*>(&out_options.data_type),
+			data_type_mapping, sizeof(data_type_mapping) / sizeof(data_type_mapping[0])),
 
 		// tileset
 		OptionInteger("starting-tile-row", "Starting tile row", false, 'STRO', &out_options.tileset.start_tile_row),
 		OptionInteger("tile-row-count", "Tile row count", false, 'ROWC', &out_options.tileset.tile_row_count),
 		OptionInteger("metatile-width", "Metatile pixel width", false, 'METW', &out_options.tileset.metatile_width),
 		OptionInteger("metatile-height", "Metatile pixel height", false, 'METH', &out_options.tileset.metatile_height),
-		OptionFlag("sprite", "Treat as sprite tiles", 'SPRI', &out_options.tileset.is_sprite),
 		OptionFlag("skip-empty-metatile", "Skip single color metatiles", 'SSME', &out_options.tileset.skip_single_color_metatiles),
-		OptionFlag("8x16", "Set sprite size to 8x16", '8x16', &out_options.tileset.use_microtile_8x16),
 		OptionStringToInteger(
 			"tile-removal", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
@@ -108,8 +93,6 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 		// output
 		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_offset_index),
-		OptionInteger("palette-max-count", "Palette max count", false, 'PAMC', &out_options.output.palette_max_count),
-		OptionInteger("tile-max-count", "Tile max count", false, 'TILC', &out_options.output.tile_max_count),
 		OptionFlag("8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
 		OptionFlag("use-headers", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
 		OptionFlag("skip-export-palette", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
@@ -128,7 +111,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	Parser cli_parser(
 		argv, argc,
 		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
-		"-hw <hardware> [options] <tileset_png> [tilemap_png...]");
+		"-hardware <hardware> -data-type <type> [options] <tileset_png> [tilemap_png...]");
 
 	uint32_t code;
 	const char* parameter;

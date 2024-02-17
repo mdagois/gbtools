@@ -38,7 +38,7 @@ enum TileRemoval : uint32_t
 
 ////////////////////////////////////////
 
-void initialize(Hardware hardware, DataType data_type);
+bool initialize(Hardware hardware, DataType data_type);
 
 ////////////////////////////////////////
 
@@ -48,6 +48,7 @@ bool isSprite();
 TileRemoval getTileRemovalMax();
 uint32_t getPaletteMaxCount();
 uint32_t getPaletteColorMaxCount();
+uint32_t getTileMaxCount();
 bool getUseTransparentColor();
 
 ////////////////////////////////////////////////////////////////////////////////

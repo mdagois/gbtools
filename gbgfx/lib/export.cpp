@@ -2,6 +2,7 @@
 
 #include "api.h"
 #include "export.h"
+#include "log.h"
 
 namespace gbgfx {
 
@@ -128,6 +129,13 @@ bool TilemapData::initialize(
 	const Tilemap& tilemap,
 	uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
+	if(palette_index_offset >= getPaletteMaxCount())
+	{
+		GBGFX_LOG_ERROR(
+			"The palette offset [" << palette_index_offset
+			<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
+		return false;
+	}
 	const Hardware hardware = getTargetHardware();
 	const bool extract_attributes = hardware == kHardwareSgb;
 
@@ -136,6 +144,15 @@ bool TilemapData::initialize(
 	for(uint32_t i = 0; i < tilemap.size(); ++i)
 	{
 		const TilemapEntry& entry = tilemap[i];
+
+		if(entry.palette_index + palette_index_offset >= static_cast<uint8_t>(getPaletteMaxCount()))
+		{
+			GBGFX_LOG_ERROR(
+				"The palette index with offset [" << entry.palette_index + palette_index_offset
+				<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
+			return false;
+		}
+
 		m_indices.push_back(entry.tile_index + tile_index_offset);
 		m_parameters.push_back(
 			((entry.palette_index + palette_index_offset) & 0x07) |
@@ -148,7 +165,7 @@ bool TilemapData::initialize(
 		{
 			m_border_parameters.push_back(
 				((entry.tile_index + tile_index_offset) & 0xFF) |
-				(((entry.palette_index + palette_index_offset) & 0x07) << 10) |
+				(((entry.palette_index + palette_index_offset) & 0x03) << 10) |
 				(entry.flip_horizontal ? 0x4000 : 0x0000) |
 				(entry.flip_vertical ? 0x8000 : 0x0000));
 		}

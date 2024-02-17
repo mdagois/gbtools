@@ -21,7 +21,6 @@ static bool loadDataFromImages(
 		options.tileset.start_tile_row, options.tileset.tile_row_count,
 		options.tileset.metatile_width, options.tileset.metatile_height,
 		options.tileset.skip_single_color_metatiles,
-		options.tileset.use_microtile_8x16,
 		options.tileset.tile_removal,
 		options.tileset.png_filename))
 	{
@@ -60,21 +59,6 @@ static bool exportData(const Options& options)
 	std::vector<gbgfx::Tilemap> tilemaps;
 	if(!loadDataFromImages(tileset, palette_set, tilemaps, options))
 	{
-		return false;
-	}
-
-	if(palette_set.size() > static_cast<uint32_t>(options.output.palette_max_count))
-	{
-		GBGFX_LOG_ERROR(
-			"Too many palettes (" << palette_set.size() << " > "
-			<< options.output.palette_max_count << ")");
-		return false;
-	}
-	if(!options.tileset.is_sprite && tileset.size() > static_cast<uint32_t>(options.output.tile_max_count))
-	{
-		GBGFX_LOG_ERROR(
-			"Too many tiles (" << tileset.size() << " > "
-			<< options.output.tile_max_count << ")");
 		return false;
 	}
 
@@ -172,14 +156,15 @@ int main(int argc, const char** argv)
 		return is_help ? 0 : 1;
 	}
 
-	applyHardwareLimits(options);
 	gbgfx::setLogLevel(options.verbose ? gbgfx::kLogLevel_Info : gbgfx::kLogLevel_Error);
-
+	if(!applyHardwareLimits(options))
+	{
+		return 1;
+	}
 	if(!exportData(options))
 	{
 		return 1;
 	}
-
 	return 0;
 }
 

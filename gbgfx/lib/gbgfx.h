@@ -12,7 +12,8 @@
 #include "utils.h"
 
 //TODO Move parameters to their own file (and remove #include "api.h")
-//TODO Support short name for options
 //TODO Allow to set an output directory
+//TODO Support short name for options
+//TODO Add tile offset for tilemaps
 //TODO Support forcing the palette set instead of extracting it
 

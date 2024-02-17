@@ -11,7 +11,8 @@
 
 struct Options
 {
-	gbgfx::Hardware hardware = gbgfx::kHardwareDmg;
+	gbgfx::Hardware hardware = gbgfx::kHardwareCount;
+	gbgfx::DataType data_type = gbgfx::kDataTypeCount;
 
 	struct
 	{
@@ -20,9 +21,7 @@ struct Options
 		int32_t tile_row_count = gbgfx::kIterateAllRows;
 		int32_t metatile_width = gbgfx::kTileSize;
 		int32_t metatile_height = gbgfx::kTileSize;
-		bool is_sprite = false;
 		bool skip_single_color_metatiles = false;
-		bool use_microtile_8x16 = false;
 		gbgfx::TileRemoval tile_removal = gbgfx::kTileRemovalNone;
 	}
 	tileset;
@@ -37,8 +36,6 @@ struct Options
 	struct
 	{
 		int32_t palette_offset_index = 0;
-		int32_t palette_max_count = gbgfx::kPaletteMaxCount;
-		int32_t tile_max_count = gbgfx::kTileMaxCount;
 		bool use_8800_addressing_mode = false;
 		bool add_binary_headers = false;
 
@@ -63,6 +60,6 @@ struct Options
 
 ////////////////////////////////////////////////////////////////////////////////
 
-void applyHardwareLimits(Options& options);
+bool applyHardwareLimits(Options& options);
 bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv);
 
