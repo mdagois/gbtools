@@ -13,7 +13,7 @@ namespace gbgfx {
 
 struct TilemapEntry
 {
-	uint8_t tile_index;
+	uint32_t tile_index;
 	uint8_t palette_index;
 	uint8_t bank;
 	bool flip_horizontal;
@@ -29,7 +29,7 @@ public:
 
 	bool initialize(uint8_t tile_row_count, uint8_t tile_column_count);
 	void push(
-		uint8_t tile_index,
+		uint32_t tile_index,
 		uint8_t palette, uint8_t bank,
 		bool flip_horizontal, bool flip_vertical,
 		bool priority);

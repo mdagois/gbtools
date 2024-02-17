@@ -145,11 +145,19 @@ bool TilemapData::initialize(
 	{
 		const TilemapEntry& entry = tilemap[i];
 
-		if(entry.palette_index + palette_index_offset >= static_cast<uint8_t>(getPaletteMaxCount()))
+		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= getPaletteMaxCount())
 		{
 			GBGFX_LOG_ERROR(
 				"The palette index with offset [" << entry.palette_index + palette_index_offset
 				<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
+			return false;
+		}
+
+		if(static_cast<uint32_t>(entry.tile_index) + tile_index_offset >= getTileMaxCount())
+		{
+			GBGFX_LOG_ERROR(
+				"The tile index with offset [" << entry.tile_index + tile_index_offset
+				<< "] is over the tile max count [" << getTileMaxCount() << "]");
 			return false;
 		}
 
