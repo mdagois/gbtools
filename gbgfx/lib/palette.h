@@ -14,6 +14,10 @@ namespace gbgfx {
 class Palette
 {
 public:
+	static uint32_t getColorMaxCount();
+	static void setColorMaxCount(uint32_t count);
+
+public:
 	Palette();
 	virtual ~Palette();
 
@@ -26,7 +30,10 @@ public:
 	void makeFirstColor(ColorRGBA color);
 
 private:
-	ColorRGBA m_colors[kColorsPerPalette];
+	static uint32_t s_color_max_count;
+
+private:
+	ColorRGBA m_colors[kColorsPerPalette_Max];
 	uint32_t m_color_count;
 };
 

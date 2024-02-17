@@ -24,13 +24,7 @@ public:
 	uint32_t getDataSize() const;
 
 private:
-	struct PaletteData
-	{
-		ColorBGR555 colors[kColorsPerPalette];
-	};
-
-private:
-	std::vector<PaletteData> m_data;
+	std::vector<ColorBGR555> m_data;
 	uint32_t m_palette_count;
 };
 

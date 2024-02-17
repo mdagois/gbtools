@@ -20,17 +20,15 @@ bool PaletteSetData::initialize(const PaletteSet& palette_set)
 	for(uint32_t p = 0; p < palette_set.size(); ++p)
 	{
 		const Palette& palette = palette_set[p];
-		PaletteData data;
 		uint32_t c = 0;
 		for(; c < palette.size(); ++c)
 		{
-			data.colors[c] = convertColor(palette[c]);
+			m_data.push_back(convertColor(palette[c]));
 		}
-		for(; c < kColorsPerPalette; ++c)
+		for(; c < Palette::getColorMaxCount(); ++c)
 		{
-			data.colors[c] = kBGR555_Invalid;
+			m_data.push_back(kBGR555_Invalid);
 		}
-		m_data.push_back(data);
 	}
 	m_palette_count = palette_set.size();
 	return true;
@@ -48,7 +46,7 @@ const uint8_t* PaletteSetData::getData() const
 
 uint32_t PaletteSetData::getDataSize() const
 {
-	return static_cast<uint32_t>(m_data.size() * sizeof(PaletteData));
+	return static_cast<uint32_t>(m_data.size() * sizeof(ColorBGR555));
 }
 
 ////////////////////////////////////////////////////////////////////////////////

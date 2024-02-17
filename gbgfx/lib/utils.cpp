@@ -15,7 +15,7 @@ bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 	{
 		colors.insert(tile[i]);
 	}
-	if(colors.size() > kColorsPerPalette)
+	if(colors.size() > Palette::getColorMaxCount())
 	{
 		GBGFX_LOG_ERROR("Too many colors in palette");
 		return false;

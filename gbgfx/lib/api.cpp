@@ -305,7 +305,7 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	{
 		for(uint32_t i = 0; i < kTileSize; ++i)
 		{
-			assert(indices[i] < kColorsPerPalette);
+			assert(indices[i] < Palette::getColorMaxCount());
 			out_pixels[i] = palette[indices[i]];
 		}
 
@@ -404,7 +404,8 @@ bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
 		return true;
 	}
 
-	const uint32_t total_color_count = kColorsPerPalette * palette_count;
+	const uint32_t color_max_count = Palette::getColorMaxCount();
+	const uint32_t total_color_count = color_max_count * palette_count;
 	ColorRGBA* pixels = new ColorRGBA[total_color_count];
 	for(uint32_t p = 0; p < palette_count; ++p)
 	{
@@ -412,18 +413,18 @@ bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
 		uint32_t c = 0;
 		for(; c < palette.size(); ++c)
 		{
-			pixels[p * kColorsPerPalette + c] = palette[c];
+			pixels[p * color_max_count + c] = palette[c];
 		}
-		for(; c < kColorsPerPalette; ++c)
+		for(; c < color_max_count; ++c)
 		{
-			pixels[p * kColorsPerPalette + c] = kRGBA_Magenta;
+			pixels[p * color_max_count + c] = kRGBA_Magenta;
 		}
 	}
 
 	constexpr int32_t kChannelCount = 4;
 	const int result = stbi_write_png(
 		filename,
-		kColorsPerPalette, palette_count, kChannelCount,
+		color_max_count, palette_count, kChannelCount,
 		pixels, sizeof(ColorRGBA) * total_color_count);
 
 	delete [] pixels;

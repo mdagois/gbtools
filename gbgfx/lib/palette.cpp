@@ -51,7 +51,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 		colors.insert(rhs[i]);
 	}
 
-	if(colors.size() > kColorsPerPalette)
+	if(colors.size() > Palette::getColorMaxCount())
 	{
 		return false;
 	}
@@ -68,10 +68,23 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 // Palette
 ////////////////////////////////////////////////////////////////////////////////
 
+uint32_t Palette::s_color_max_count = kColorsPerPalette_GB;
+
+uint32_t Palette::getColorMaxCount()
+{
+	return s_color_max_count;
+}
+
+void Palette::setColorMaxCount(uint32_t count)
+{
+	assert(count > 0 && count < kColorsPerPalette_Max);
+	s_color_max_count = count;
+}
+
 Palette::Palette()
 : m_color_count(0)
 {
-	for(int32_t i = 0; i < kColorsPerPalette; ++i)
+	for(int32_t i = 0; i < kColorsPerPalette_Max; ++i)
 	{
 		m_colors[i] = kRGBA_Invalid;
 	}
@@ -83,7 +96,7 @@ Palette::~Palette()
 
 void Palette::push(ColorRGBA color)
 {
-	assert(m_color_count < kColorsPerPalette);
+	assert(m_color_count < kColorsPerPalette_Max);
 	m_colors[m_color_count] = color;
 	++m_color_count;
 	sortColorsRGBA(m_colors, m_color_count);
@@ -190,7 +203,7 @@ bool PaletteSet::optimize(bool share_first_color)
 		std::vector<const Palette*> four_color_palettes;
 		for(const Palette& palette : m_palettes)
 		{
-			if(palette.size() == kColorsPerPalette)
+			if(palette.size() == Palette::getColorMaxCount())
 			{
 				four_color_palettes.push_back(&palette);
 			}
@@ -243,7 +256,7 @@ bool PaletteSet::optimize(bool share_first_color)
 
 			for(Palette& palette : m_palettes)
 			{
-				if(palette.size() == kColorsPerPalette)
+				if(palette.size() == Palette::getColorMaxCount())
 				{
 					palette.makeFirstColor(candidate_color);
 				}
