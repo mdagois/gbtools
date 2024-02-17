@@ -11,7 +11,6 @@
 #include "tileset.h"
 #include "utils.h"
 
+//TODO Move the hardware mode (dmg, cgb, sgb, sfc) inside the library
 //TODO Support forcing the palette set instead of extracting it
-//TODO Support SGB screen tiles (maybe already done)
-//TODO Support palette with 16 colors for SGB border
 

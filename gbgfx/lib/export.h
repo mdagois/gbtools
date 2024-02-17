@@ -55,7 +55,7 @@ private:
 	};
 
 private:
-	std::vector<TileData> m_data;
+	std::vector<uint8_t> m_data;
 	uint32_t m_tile_count;
 };
 
