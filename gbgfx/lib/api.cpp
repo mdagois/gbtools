@@ -12,6 +12,27 @@
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
+// Hardware
+////////////////////////////////////////////////////////////////////////////////
+
+struct Option
+{
+	Hardware hardware = kHardwareDmg;
+};
+static Option s_option;
+
+void setTargetHardware(Hardware hardware)
+{
+	assert(hardware < kHardwareCount);
+	s_option.hardware = hardware;
+}
+
+Hardware getTargetHardware()
+{
+	return s_option.hardware;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Input
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -39,7 +60,6 @@ bool extractTileset(
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
-	bool palettes_share_first_color,
 	const char* image_filename)
 {
 	Image image;
@@ -53,7 +73,6 @@ bool extractTileset(
 		metatile_width, metatile_height,
 		skip_single_color_metatiles, use_microtile_8x16,
 		remove_doubles, remove_flips,
-		palettes_share_first_color,
 		image);
 }
 
@@ -63,7 +82,6 @@ bool extractTileset(
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
-	bool palettes_share_first_color,
 	const Image& image)
 {
 	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
@@ -103,7 +121,7 @@ bool extractTileset(
 		return false;
 	}
 
-	if(!out_palette_set.optimize(palettes_share_first_color))
+	if(!out_palette_set.optimize())
 	{
 		return false;
 	}
@@ -292,32 +310,44 @@ bool exportTilemap(
 		static_cast<uint8_t>(tilemap.getColumnCount()),
 		static_cast<uint8_t>(tilemap.getRowCount())
 	};
-	return
-		data.initialize(tilemap, palette_index_offset, tile_index_offset)
-		&&
-		(
-			indices_filename == nullptr ||
-			writeToFile(
-				data.getIndexData(), data.getIndexDataSize(),
-				use_header ? &header : nullptr, sizeof(header),
-				indices_filename)
-		)
-		&&
-		(
-			parameters_filename == nullptr ||
-			writeToFile(
-				data.getParameterData(), data.getParameterDataSize(),
-				use_header ? &header : nullptr, sizeof(header),
-				parameters_filename)
-		)
-		&&
-		(
-			attributes_filename == nullptr ||
-			writeToFile(
-				data.getAttributeData(), data.getAttributeDataSize(),
-				use_header ? &header : nullptr, sizeof(header),
-				attributes_filename)
-		);
+
+	if(!data.initialize(tilemap, palette_index_offset, tile_index_offset))
+	{
+		return false;
+	}
+
+	const Hardware hardware = getTargetHardware();
+
+	if( indices_filename != nullptr &&
+		!writeToFile(
+			data.getIndexData(), data.getIndexDataSize(),
+			use_header ? &header : nullptr, sizeof(header),
+			indices_filename))
+	{
+		return false;
+	}
+
+	if( parameters_filename != nullptr &&
+		(hardware == kHardwareCgb || hardware == kHardwareSfc) &&
+		!writeToFile(
+			data.getParameterData(), data.getParameterDataSize(),
+			use_header ? &header : nullptr, sizeof(header),
+			parameters_filename))
+	{
+		return false;
+	}
+
+	if( attributes_filename != nullptr &&
+		hardware == kHardwareSgb &&
+		!writeToFile(
+			data.getAttributeData(), data.getAttributeDataSize(),
+			use_header ? &header : nullptr, sizeof(header),
+			attributes_filename))
+	{
+		return false;
+	}
+
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

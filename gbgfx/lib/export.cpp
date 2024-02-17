@@ -1,5 +1,6 @@
 #include <cassert>
 
+#include "api.h"
 #include "export.h"
 
 namespace gbgfx {
@@ -62,7 +63,7 @@ TilesetData::~TilesetData()
 
 bool TilesetData::initialize(const Tileset& tileset)
 {
-	const bool is_sfc = false;
+	const bool is_sfc = getTargetHardware() == kHardwareSfc;
 	for(uint32_t t = 0; t < tileset.size(); ++t)
 	{
 		const Tile& tile = tileset[t];
@@ -127,6 +128,9 @@ bool TilemapData::initialize(
 	const Tilemap& tilemap,
 	uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
+	const Hardware hardware = getTargetHardware();
+	const bool extract_attributes = hardware == kHardwareSgb;
+
 	uint8_t attribute = 0;
 	uint32_t attribute_shift = 6;
 	for(uint32_t i = 0; i < tilemap.size(); ++i)
@@ -140,27 +144,36 @@ bool TilemapData::initialize(
 			(entry.flip_vertical ? 0x40 : 0x00) |
 			(entry.priority ? 0x80 : 0x00));
 
-		m_border_parameters.push_back(
-			((entry.tile_index + tile_index_offset) & 0xFF) |
-			(((entry.palette_index + palette_index_offset) & 0x07) << 10) |
-			(entry.flip_horizontal ? 0x4000 : 0x0000) |
-			(entry.flip_vertical ? 0x8000 : 0x0000));
-
-		attribute |= ((entry.palette_index & 0x3) << attribute_shift);
-		if(attribute_shift == 0)
+		if(hardware == kHardwareSfc)
 		{
-			m_attributes.push_back(attribute);
-			attribute = 0;
-			attribute_shift = 6;
+			m_border_parameters.push_back(
+				((entry.tile_index + tile_index_offset) & 0xFF) |
+				(((entry.palette_index + palette_index_offset) & 0x07) << 10) |
+				(entry.flip_horizontal ? 0x4000 : 0x0000) |
+				(entry.flip_vertical ? 0x8000 : 0x0000));
 		}
-		else
+
+		if(extract_attributes)
 		{
-			attribute_shift -= 2;
+			attribute |= ((entry.palette_index & 0x3) << attribute_shift);
+			if(attribute_shift == 0)
+			{
+				m_attributes.push_back(attribute);
+				attribute = 0;
+				attribute_shift = 6;
+			}
+			else
+			{
+				attribute_shift -= 2;
+			}
 		}
 	}
-	if(attribute_shift != 0)
+	if(extract_attributes)
 	{
-		m_attributes.push_back(attribute);
+		if(attribute_shift != 0)
+		{
+			m_attributes.push_back(attribute);
+		}
 	}
 
 	m_row_count = tilemap.getRowCount();
@@ -185,12 +198,15 @@ const uint8_t* TilemapData::getIndexData() const
 
 const uint8_t* TilemapData::getParameterData() const
 {
-	return reinterpret_cast<const uint8_t*>(m_parameters.data());
-}
-
-const uint8_t* TilemapData::getBorderParameterData() const
-{
-	return reinterpret_cast<const uint8_t*>(m_border_parameters.data());
+	if(getTargetHardware() == kHardwareCgb)
+	{
+		return reinterpret_cast<const uint8_t*>(m_parameters.data());
+	}
+	if(getTargetHardware() == kHardwareSfc)
+	{
+		return reinterpret_cast<const uint8_t*>(m_border_parameters.data());
+	}
+	return nullptr;
 }
 
 const uint8_t* TilemapData::getAttributeData() const
@@ -205,12 +221,15 @@ uint32_t TilemapData::getIndexDataSize() const
 
 uint32_t TilemapData::getParameterDataSize() const
 {
-	return static_cast<uint32_t>(m_parameters.size() * sizeof(uint8_t));
-}
-
-uint32_t TilemapData::getBorderParameterDataSize() const
-{
-	return static_cast<uint32_t>(m_border_parameters.size() * sizeof(uint16_t));
+	if(getTargetHardware() == kHardwareCgb)
+	{
+		return static_cast<uint32_t>(m_parameters.size() * sizeof(uint8_t));
+	}
+	if(getTargetHardware() == kHardwareSfc)
+	{
+		return static_cast<uint32_t>(m_border_parameters.size() * sizeof(uint16_t));
+	}
+	return 0;
 }
 
 uint32_t TilemapData::getAttributeDataSize() const

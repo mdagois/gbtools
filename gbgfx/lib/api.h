@@ -8,6 +8,22 @@
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
+// Hardware
+////////////////////////////////////////////////////////////////////////////////
+
+enum Hardware : uint32_t
+{
+	kHardwareDmg,
+	kHardwareCgb,
+	kHardwareSgb,
+	kHardwareSfc,
+	kHardwareCount,
+};
+
+void setTargetHardware(Hardware hardware);
+Hardware getTargetHardware();
+
+////////////////////////////////////////////////////////////////////////////////
 // Input
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -17,7 +33,6 @@ bool extractTileset(
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
-	bool palettes_share_first_color,
 	const char* image_filename);
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
@@ -25,7 +40,6 @@ bool extractTileset(
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
 	bool remove_doubles, bool remove_flips,
-	bool palettes_share_first_color,
 	const Image& image);
 
 bool extractTilemap(

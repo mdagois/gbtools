@@ -73,11 +73,9 @@ public:
 	uint32_t getColumnCount() const;
 	const uint8_t* getIndexData() const;
 	const uint8_t* getParameterData() const;
-	const uint8_t* getBorderParameterData() const;
 	const uint8_t* getAttributeData() const;
 	uint32_t getIndexDataSize() const;
 	uint32_t getParameterDataSize() const;
-	uint32_t getBorderParameterDataSize() const;
 	uint32_t getAttributeDataSize() const;
 
 private:

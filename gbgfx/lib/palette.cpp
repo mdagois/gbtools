@@ -2,6 +2,7 @@
 #include <cassert>
 #include <set>
 
+#include "api.h"
 #include "log.h"
 #include "palette.h"
 
@@ -209,11 +210,11 @@ uint32_t PaletteSet::size() const
 	return static_cast<uint32_t>(m_palettes.size());
 }
 
-bool PaletteSet::optimize(bool share_first_color)
+bool PaletteSet::optimize()
 {
 	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
 
-	if(share_first_color)
+	if(getTargetHardware() == kHardwareSgb)
 	{
 		std::vector<const Palette*> four_color_palettes;
 		for(const Palette& palette : m_palettes)

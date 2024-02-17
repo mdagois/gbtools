@@ -53,7 +53,7 @@ public:
 	void push(const Palette& palette);
 	const Palette& operator[](int32_t index) const;
 	uint32_t size() const;
-	bool optimize(bool share_first_color);
+	bool optimize();
 	uint32_t findCompatiblePaletteIndex(const Palette& palette) const;
 
 private:

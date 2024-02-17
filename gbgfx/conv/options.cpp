@@ -10,11 +10,12 @@ void applyHardwareLimits(Options& options)
 		value = std::max(0, std::min(value, maximum));
 	};
 
+	gbgfx::setTargetHardware(options.hardware);
 	gbgfx::Palette::setColorMaxCount(gbgfx::kColorsPerPalette_GB);
 	gbgfx::Palette::setUseTransparentColor(false);
 	switch(options.hardware)
 	{
-		case kHardwareDmg:
+		case gbgfx::kHardwareDmg:
 			if(options.tileset.tile_removal == kTileRemoval_Flips)
 			{
 				options.tileset.tile_removal = kTileRemoval_Doubles;
@@ -28,12 +29,12 @@ void applyHardwareLimits(Options& options)
 			options.output.skip_export_parameters = true;
 			options.output.skip_export_attributes = true;
 			break;
-		case kHardwareCgb:
+		case gbgfx::kHardwareCgb:
 			applyLimit(options.output.palette_max_count, 8);
 			applyLimit(options.output.tile_max_count, gbgfx::kTileMaxCount);
 			options.output.skip_export_attributes = true;
 			break;
-		case kHardwareSgb:
+		case gbgfx::kHardwareSgb:
 			if(options.tileset.tile_removal == kTileRemoval_Flips)
 			{
 				options.tileset.tile_removal = kTileRemoval_Doubles;
@@ -45,7 +46,7 @@ void applyHardwareLimits(Options& options)
 			applyLimit(options.output.tile_max_count, gbgfx::kTilesPerBank);
 			options.output.skip_export_parameters = true;
 			break;
-		case kHardwareSfc:
+		case gbgfx::kHardwareSfc:
 			gbgfx::Palette::setColorMaxCount(gbgfx::kColorsPerPalette_SFC);
 			gbgfx::Palette::setUseTransparentColor(true);
 			
@@ -80,9 +81,10 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	const Mapping hardware_mapping[] =
 	{
-		{ "dmg", kHardwareDmg },
-		{ "cgb", kHardwareCgb },
-		{ "sgb", kHardwareSgb },
+		{ "dmg", gbgfx::kHardwareDmg },
+		{ "cgb", gbgfx::kHardwareCgb },
+		{ "sgb", gbgfx::kHardwareSgb },
+		{ "sfc", gbgfx::kHardwareSfc },
 	};
 
 	const Mapping tile_removal_mapping[] =

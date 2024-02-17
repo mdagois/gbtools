@@ -9,14 +9,6 @@
 // Options
 ////////////////////////////////////////////////////////////////////////////////
 
-enum Hardware : int32_t
-{
-	kHardwareDmg,
-	kHardwareCgb,
-	kHardwareSgb,
-	kHardwareSfc,
-};
-
 enum TileRemoval : int32_t
 {
 	kTileRemoval_None,
@@ -28,7 +20,7 @@ enum TileRemoval : int32_t
 
 struct Options
 {
-	Hardware hardware = kHardwareDmg;
+	gbgfx::Hardware hardware = gbgfx::kHardwareDmg;
 
 	struct
 	{
