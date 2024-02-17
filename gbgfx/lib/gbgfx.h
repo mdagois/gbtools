@@ -11,8 +11,8 @@
 #include "tileset.h"
 #include "utils.h"
 
+//TODO Move parameters to their own file (and remove #include "api.h")
 //TODO Support short name for options
 //TODO Allow to set an output directory
-//TODO Move the hardware mode (dmg, cgb, sgb, sfc) inside the library
 //TODO Support forcing the palette set instead of extracting it
 

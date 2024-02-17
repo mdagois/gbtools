@@ -1,5 +1,6 @@
 #include <set>
 
+#include "api.h"
 #include "constants.h"
 #include "log.h"
 #include "utils.h"
@@ -15,7 +16,7 @@ bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
 	{
 		colors.insert(tile[i]);
 	}
-	if(colors.size() > Palette::getColorMaxCount())
+	if(colors.size() > getPaletteColorMaxCount())
 	{
 		GBGFX_LOG_ERROR("Too many colors in palette");
 		return false;

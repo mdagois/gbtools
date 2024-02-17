@@ -17,28 +17,50 @@ namespace gbgfx {
 
 struct Parameter
 {
-	Hardware hardware = kHardwareDmg;
-	TileRemoval tile_removal_max = kTileRemovalNone;
+	Hardware hardware = kHardwareCount;
+	DataType data_type = kDataTypeCount;
+	TileRemoval tile_removal_max = kTileRemovalCount;
+	uint32_t palette_max_count = 0;
+	uint32_t palette_color_max_count = 0;
+	bool use_transparent_color = false;
 };
 static Parameter s_parameters;
 
-void setTargetHardware(Hardware hardware)
+////////////////////////////////////////
+
+void initialize(Hardware hardware, DataType data_type)
 {
 	assert(hardware < kHardwareCount);
+	assert(data_type < kDataTypeCount);
+
 	s_parameters.hardware = hardware;
+	s_parameters.data_type = data_type;
+
 	switch(hardware)
 	{
 		case kHardwareDmg:
 			s_parameters.tile_removal_max = kTileRemovalDoubles;
+			s_parameters.palette_max_count = s_parameters.data_type == kDataTypeBg ? 1 : 2;
+			s_parameters.palette_color_max_count = kColorsPerPalette_GB;
+			s_parameters.use_transparent_color = false;
 			break;
 		case kHardwareCgb:
 			s_parameters.tile_removal_max = kTileRemovalFlips;
+			s_parameters.palette_max_count = 8;
+			s_parameters.palette_color_max_count = kColorsPerPalette_GB;
+			s_parameters.use_transparent_color = false;
 			break;
 		case kHardwareSgb:
 			s_parameters.tile_removal_max = kTileRemovalDoubles;
+			s_parameters.palette_max_count = 4;
+			s_parameters.palette_color_max_count = kColorsPerPalette_GB;
+			s_parameters.use_transparent_color = false;
 			break;
 		case kHardwareSfc:
 			s_parameters.tile_removal_max = kTileRemovalFlips;
+			s_parameters.palette_max_count = 3;
+			s_parameters.palette_color_max_count = kColorsPerPalette_SFC;
+			s_parameters.use_transparent_color = true;
 			break;
 		default:
 			assert(false);
@@ -46,14 +68,46 @@ void setTargetHardware(Hardware hardware)
 	}
 }
 
+static bool isParameterValid()
+{
+	return s_parameters.hardware != kHardwareCount;
+}
+
+////////////////////////////////////////
+
 Hardware getTargetHardware()
 {
 	return s_parameters.hardware;
 }
 
+DataType getDataType()
+{
+	return s_parameters.data_type;
+}
+
+bool isSprite()
+{
+	return getDataType() != kDataTypeBg;
+}
+
 TileRemoval getTileRemovalMax()
 {
 	return s_parameters.tile_removal_max;
+}
+
+uint32_t getPaletteMaxCount()
+{
+	return s_parameters.palette_max_count;
+}
+
+uint32_t getPaletteColorMaxCount()
+{
+	return s_parameters.palette_color_max_count;
+}
+
+bool getUseTransparentColor()
+{
+	return s_parameters.use_transparent_color;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -82,8 +136,7 @@ bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	TileRemoval tile_removal,
+	bool skip_single_color_metatiles, TileRemoval tile_removal,
 	const char* image_filename)
 {
 	Image image;
@@ -95,8 +148,7 @@ bool extractTileset(
 		out_tileset, out_palette_set,
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
-		skip_single_color_metatiles, use_microtile_8x16,
-		tile_removal,
+		skip_single_color_metatiles, tile_removal,
 		image);
 }
 
@@ -104,17 +156,16 @@ bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	TileRemoval tile_removal,
+	bool skip_single_color_metatiles, TileRemoval tile_removal,
 	const Image& image)
 {
+	assert(isParameterValid());
 	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
 	std::vector<ImageTile> metatile_tiles;
 	std::vector<ImageTile> image_tiles;
 	if(!image.iterateTiles(
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
-		use_microtile_8x16,
 		[&metatile_tiles, &image_tiles, &out_palette_set,
 		 &image, tiles_per_metatile, skip_single_color_metatiles](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
@@ -203,6 +254,7 @@ bool extractTilemap(
 	bool use_flips,
 	const Image& image)
 {
+	assert(isParameterValid());
 	if(!out_tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
 	{
 		GBGFX_LOG_ERROR("Could not initialize tilemap from [" << image.getFilename() << "]");
@@ -391,7 +443,7 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	{
 		for(uint32_t i = 0; i < kTileSize; ++i)
 		{
-			assert(indices[i] < Palette::getColorMaxCount());
+			assert(indices[i] < getPaletteColorMaxCount());
 			out_pixels[i] = palette[indices[i]];
 		}
 
@@ -490,7 +542,7 @@ bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
 		return true;
 	}
 
-	const uint32_t color_max_count = Palette::getColorMaxCount();
+	const uint32_t color_max_count = getPaletteColorMaxCount();
 	const uint32_t total_color_count = color_max_count * palette_count;
 	ColorRGBA* pixels = new ColorRGBA[total_color_count];
 	for(uint32_t p = 0; p < palette_count; ++p)

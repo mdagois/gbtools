@@ -20,6 +20,14 @@ enum Hardware : uint32_t
 	kHardwareCount,
 };
 
+enum DataType : uint32_t
+{
+	kDataTypeBg,
+	kDataTypeSprite8x8,
+	kDataTypeSprite8x16,
+	kDataTypeCount,
+};
+
 enum TileRemoval : uint32_t
 {
 	kTileRemovalNone,
@@ -28,9 +36,19 @@ enum TileRemoval : uint32_t
 	kTileRemovalCount,
 };
 
-void setTargetHardware(Hardware hardware);
+////////////////////////////////////////
+
+void initialize(Hardware hardware, DataType data_type);
+
+////////////////////////////////////////
+
 Hardware getTargetHardware();
+DataType getDataType();
+bool isSprite();
 TileRemoval getTileRemovalMax();
+uint32_t getPaletteMaxCount();
+uint32_t getPaletteColorMaxCount();
+bool getUseTransparentColor();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Input
@@ -40,15 +58,13 @@ bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	TileRemoval tile_removal,
+	bool skip_single_color_metatiles, TileRemoval tile_removal,
 	const char* image_filename);
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	TileRemoval tile_removal,
+	bool skip_single_color_metatiles, TileRemoval tile_removal,
 	const Image& image);
 
 bool extractTilemap(

@@ -3,6 +3,7 @@
 #define STB_IMAGE_IMPLEMENTATION
 #include "third_party/stb_image.h"
 
+#include "api.h"
 #include "image.h"
 #include "log.h"
 
@@ -249,13 +250,12 @@ const ColorRGBA* Image::getPixels() const
 bool Image::iterateTiles(
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
-	return iterateTiles(0, kIterateAllRows, kTileSize, kTileSize, false, tile_callback);
+	return iterateTiles(0, kIterateAllRows, kTileSize, kTileSize, tile_callback);
 }
 
 bool Image::iterateTiles(
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
-	bool use_microtile_8x16,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
 	if(metatile_width == 0 && metatile_height == 0)
@@ -263,7 +263,7 @@ bool Image::iterateTiles(
 		GBGFX_LOG_ERROR("Metatile dimensions must not be zero [" << m_filename << "]");
 		return false;
 	}
-	if(use_microtile_8x16 && ((metatile_height % (kTileSize * 2)) != 0))
+	if(getDataType() == kDataTypeSprite8x16 && ((metatile_height % (kTileSize * 2)) != 0))
 	{
 		GBGFX_LOG_ERROR("Metatiles' height must be a multiple of 16 when using 8x16 microtiles [" << m_filename << "]");
 		return false;
@@ -291,10 +291,10 @@ bool Image::iterateTiles(
 	full_image.iterateArea(
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
-		[&tile_callback, use_microtile_8x16](const ImageArea& metatile_area)
+		[&tile_callback](const ImageArea& metatile_area)
 		{
 			return metatile_area.iterateArea(
-				0, kIterateAllRows, kTileSize, kTileSize * (use_microtile_8x16 ? 2 : 1),
+				0, kIterateAllRows, kTileSize, kTileSize * (isSprite() ? 2 : 1),
 				[&tile_callback](const ImageArea& microtile_area)
 				{
 					return microtile_area.iterateTiles(tile_callback);
