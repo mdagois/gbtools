@@ -45,13 +45,11 @@ public:
 private:
 	enum : uint32_t
 	{
-		kBytesPerTileDataRow = 2,
-		kBytesPerTileData = kTileSize * kBytesPerTileDataRow,
-	};
+		kBytesPerTileDataRow_GB = 2,
+		kBytesPerTileData_GB = kTileSize * kBytesPerTileDataRow_GB,
 
-	struct TileData
-	{
-		uint8_t byte[kBytesPerTileData];
+		kBytesPerTileDataRow_SFC = 4,
+		kBytesPerTileData_SFC = kTileSize * kBytesPerTileDataRow_SFC,
 	};
 
 private:
@@ -75,14 +73,17 @@ public:
 	uint32_t getColumnCount() const;
 	const uint8_t* getIndexData() const;
 	const uint8_t* getParameterData() const;
+	const uint8_t* getBorderParameterData() const;
 	const uint8_t* getAttributeData() const;
 	uint32_t getIndexDataSize() const;
 	uint32_t getParameterDataSize() const;
+	uint32_t getBorderParameterDataSize() const;
 	uint32_t getAttributeDataSize() const;
 
 private:
 	std::vector<uint8_t> m_indices;
 	std::vector<uint8_t> m_parameters;
+	std::vector<uint16_t> m_border_parameters;
 	std::vector<uint8_t> m_attributes;
 	uint32_t m_row_count;
 	uint32_t m_column_count;

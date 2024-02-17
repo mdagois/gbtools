@@ -47,7 +47,25 @@ bool extractTileset(
 	{
 		return false;
 	}
+	return extractTileset(
+		out_tileset, out_palette_set,
+		start_tile_row, tile_row_count,
+		metatile_width, metatile_height,
+		skip_single_color_metatiles, use_microtile_8x16,
+		remove_doubles, remove_flips,
+		palettes_share_first_color,
+		image);
+}
 
+bool extractTileset(
+	Tileset& out_tileset, PaletteSet& out_palette_set,
+	uint32_t start_tile_row, uint32_t tile_row_count,
+	uint32_t metatile_width, uint32_t metatile_height,
+	bool skip_single_color_metatiles, bool use_microtile_8x16,
+	bool remove_doubles, bool remove_flips,
+	bool palettes_share_first_color,
+	const Image& image)
+{
 	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
 	std::vector<ImageTile> metatile_tiles;
 	std::vector<ImageTile> image_tiles;
@@ -56,14 +74,14 @@ bool extractTileset(
 		metatile_width, metatile_height,
 		use_microtile_8x16,
 		[&metatile_tiles, &image_tiles, &out_palette_set,
-		 image_filename, tiles_per_metatile, skip_single_color_metatiles](const ImageTile& tile, uint32_t x, uint32_t y)
+		 &image, tiles_per_metatile, skip_single_color_metatiles](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			Palette palette;
 			if(!extractTilePalette(palette, tile))
 			{
 				GBGFX_LOG_ERROR(
 					"Could not extract palette from metatile ("
-					<< x << "," << y << ") in [" << image_filename << "]");
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
 				return false;
 			}
 			out_palette_set.push(palette);
@@ -97,7 +115,7 @@ bool extractTileset(
 		{
 			GBGFX_LOG_ERROR(
 				"Could not generate tile ("
-				<< i << ") in [" << image_filename << "]");
+				<< i << ") in [" << image.getFilename() << "]");
 			return false;
 		}
 		out_tileset.push(tile);
@@ -111,7 +129,7 @@ bool extractTileset(
 	GBGFX_LOG_INFO(
 		"Tile count is " << out_tileset.size()
 		<< " and palette count is " << out_palette_set.size()
-		<< " in [" << image_filename << "]"); 
+		<< " in [" << image.getFilename() << "]"); 
 	return true;
 }
 
@@ -128,14 +146,22 @@ bool extractTilemap(
 	{
 		return false;
 	}
+	return extractTilemap(out_tilemap, tileset, palette_set, use_flips, image);
+}
 
+bool extractTilemap(
+	Tilemap& out_tilemap,
+	const Tileset& tileset, const PaletteSet& palette_set,
+	bool use_flips,
+	const Image& image)
+{
 	if(!out_tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
 	{
-		GBGFX_LOG_ERROR("Could not initialize tilemap from [" << image_filename << "]");
+		GBGFX_LOG_ERROR("Could not initialize tilemap from [" << image.getFilename() << "]");
 		return false;
 	}
 	if(!image.iterateTiles(
-		[&out_tilemap, &tileset, &palette_set, use_flips, image_filename](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		[&out_tilemap, &tileset, &palette_set, &image, use_flips](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
 			if(!generateTile(tile, image_tile, palette_set))
@@ -143,7 +169,7 @@ bool extractTilemap(
 				GBGFX_LOG_ERROR(
 					"Could not generate tile ("
 					<< x << "," << y << ") in ["
-					<< image_filename << "]");
+					<< image.getFilename() << "]");
 				return false;
 			}
 
@@ -155,7 +181,7 @@ bool extractTilemap(
 				GBGFX_LOG_ERROR(
 					"Could not find tile ("
 					<< x << "," << y << ") in tileset in ["
-					<< image_filename << "]");
+					<< image.getFilename() << "]");
 				return false;
 			}
 
@@ -175,7 +201,7 @@ bool extractTilemap(
 
 	GBGFX_LOG_INFO(
 		"Tilemap size is " << out_tilemap.getColumnCount() << "x" << out_tilemap.getRowCount()
-		<< " in [" << image_filename << "]"); 
+		<< " in [" << image.getFilename() << "]"); 
 	return true;
 }
 

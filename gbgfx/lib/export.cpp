@@ -62,6 +62,7 @@ TilesetData::~TilesetData()
 
 bool TilesetData::initialize(const Tileset& tileset)
 {
+	const bool is_sfc = false;
 	for(uint32_t t = 0; t < tileset.size(); ++t)
 	{
 		const Tile& tile = tileset[t];
@@ -76,9 +77,22 @@ bool TilesetData::initialize(const Tileset& tileset)
 				((indices[0] << 6) & 0x80) | ((indices[1] << 5) & 0x40) | ((indices[2] << 4) & 0x20) | ((indices[3] << 3) & 0x10) |
 				((indices[4] << 2) & 0x08) | ((indices[5] << 1) & 0x04) | ((indices[6] << 0) & 0x02) | ((indices[7] >> 1) & 0x01));
 		}
+		if(is_sfc)
+		{
+			for(uint32_t d = 0; d < kTileSize; ++d)
+			{
+				const uint8_t* indices = flip.color_indices + d * kTileSize;
+				m_data.push_back(
+					((indices[0] << 5) & 0x80) | ((indices[1] << 4) & 0x40) | ((indices[2] << 3) & 0x20) | ((indices[3] << 2) & 0x10) |
+					((indices[4] << 1) & 0x08) | ((indices[5] << 0) & 0x04) | ((indices[6] >> 1) & 0x02) | ((indices[7] >> 2) & 0x01));
+				m_data.push_back(
+					((indices[0] << 4) & 0x80) | ((indices[1] << 3) & 0x40) | ((indices[2] << 2) & 0x20) | ((indices[3] << 0) & 0x10) |
+					((indices[4] << 0) & 0x08) | ((indices[5] >> 1) & 0x04) | ((indices[6] >> 2) & 0x02) | ((indices[7] >> 3) & 0x01));
+			}
+		}
 	}
+	assert(getDataSize() % (is_sfc ? kBytesPerTileData_SFC : kBytesPerTileData_GB) == 0);
 	m_tile_count = tileset.size();
-	assert(getDataSize() % kBytesPerTileData == 0);
 	return true;
 }
 
@@ -126,6 +140,12 @@ bool TilemapData::initialize(
 			(entry.flip_vertical ? 0x40 : 0x00) |
 			(entry.priority ? 0x80 : 0x00));
 
+		m_border_parameters.push_back(
+			((entry.tile_index + tile_index_offset) & 0xFF) |
+			(((entry.palette_index + palette_index_offset) & 0x07) << 10) |
+			(entry.flip_horizontal ? 0x4000 : 0x0000) |
+			(entry.flip_vertical ? 0x8000 : 0x0000));
+
 		attribute |= ((entry.palette_index & 0x3) << attribute_shift);
 		if(attribute_shift == 0)
 		{
@@ -168,6 +188,11 @@ const uint8_t* TilemapData::getParameterData() const
 	return reinterpret_cast<const uint8_t*>(m_parameters.data());
 }
 
+const uint8_t* TilemapData::getBorderParameterData() const
+{
+	return reinterpret_cast<const uint8_t*>(m_border_parameters.data());
+}
+
 const uint8_t* TilemapData::getAttributeData() const
 {
 	return reinterpret_cast<const uint8_t*>(m_attributes.data());
@@ -181,6 +206,11 @@ uint32_t TilemapData::getIndexDataSize() const
 uint32_t TilemapData::getParameterDataSize() const
 {
 	return static_cast<uint32_t>(m_parameters.size() * sizeof(uint8_t));
+}
+
+uint32_t TilemapData::getBorderParameterDataSize() const
+{
+	return static_cast<uint32_t>(m_border_parameters.size() * sizeof(uint16_t));
 }
 
 uint32_t TilemapData::getAttributeDataSize() const
