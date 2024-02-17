@@ -9,15 +9,6 @@
 // Options
 ////////////////////////////////////////////////////////////////////////////////
 
-enum TileRemoval : int32_t
-{
-	kTileRemoval_None,
-	kTileRemoval_Doubles,
-	kTileRemoval_Flips,
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
 struct Options
 {
 	gbgfx::Hardware hardware = gbgfx::kHardwareDmg;
@@ -32,7 +23,7 @@ struct Options
 		bool is_sprite = false;
 		bool skip_single_color_metatiles = false;
 		bool use_microtile_8x16 = false;
-		TileRemoval tile_removal = kTileRemoval_None;
+		gbgfx::TileRemoval tile_removal = gbgfx::kTileRemovalNone;
 	}
 	tileset;
 

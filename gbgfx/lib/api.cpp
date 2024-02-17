@@ -15,21 +15,45 @@ namespace gbgfx {
 // Hardware
 ////////////////////////////////////////////////////////////////////////////////
 
-struct Option
+struct Parameter
 {
 	Hardware hardware = kHardwareDmg;
+	TileRemoval tile_removal_max = kTileRemovalNone;
 };
-static Option s_option;
+static Parameter s_parameters;
 
 void setTargetHardware(Hardware hardware)
 {
 	assert(hardware < kHardwareCount);
-	s_option.hardware = hardware;
+	s_parameters.hardware = hardware;
+	switch(hardware)
+	{
+		case kHardwareDmg:
+			s_parameters.tile_removal_max = kTileRemovalDoubles;
+			break;
+		case kHardwareCgb:
+			s_parameters.tile_removal_max = kTileRemovalFlips;
+			break;
+		case kHardwareSgb:
+			s_parameters.tile_removal_max = kTileRemovalDoubles;
+			break;
+		case kHardwareSfc:
+			s_parameters.tile_removal_max = kTileRemovalFlips;
+			break;
+		default:
+			assert(false);
+			break;
+	}
 }
 
 Hardware getTargetHardware()
 {
-	return s_option.hardware;
+	return s_parameters.hardware;
+}
+
+TileRemoval getTileRemovalMax()
+{
+	return s_parameters.tile_removal_max;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -59,7 +83,7 @@ bool extractTileset(
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	bool remove_doubles, bool remove_flips,
+	TileRemoval tile_removal,
 	const char* image_filename)
 {
 	Image image;
@@ -72,7 +96,7 @@ bool extractTileset(
 		start_tile_row, tile_row_count,
 		metatile_width, metatile_height,
 		skip_single_color_metatiles, use_microtile_8x16,
-		remove_doubles, remove_flips,
+		tile_removal,
 		image);
 }
 
@@ -81,7 +105,7 @@ bool extractTileset(
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	bool remove_doubles, bool remove_flips,
+	TileRemoval tile_removal,
 	const Image& image)
 {
 	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
@@ -139,9 +163,15 @@ bool extractTileset(
 		out_tileset.push(tile);
 	}
 
-	if(remove_doubles)
+	if(tile_removal != kTileRemovalNone)
 	{
-		out_tileset.removeDoubles(remove_flips);
+		if(tile_removal > getTileRemovalMax())
+		{
+			GBGFX_LOG_WARN(
+				"Downgraded tile removal from " << tile_removal << " to " << getTileRemovalMax());
+			tile_removal = getTileRemovalMax();
+		}
+		out_tileset.removeDoubles(tile_removal == kTileRemovalFlips);
 	}
 
 	GBGFX_LOG_INFO(

@@ -20,8 +20,17 @@ enum Hardware : uint32_t
 	kHardwareCount,
 };
 
+enum TileRemoval : uint32_t
+{
+	kTileRemovalNone,
+	kTileRemovalDoubles,
+	kTileRemovalFlips,
+	kTileRemovalCount,
+};
+
 void setTargetHardware(Hardware hardware);
 Hardware getTargetHardware();
+TileRemoval getTileRemovalMax();
 
 ////////////////////////////////////////////////////////////////////////////////
 // Input
@@ -32,14 +41,14 @@ bool extractTileset(
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	bool remove_doubles, bool remove_flips,
+	TileRemoval tile_removal,
 	const char* image_filename);
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
 	uint32_t start_tile_row, uint32_t tile_row_count,
 	uint32_t metatile_width, uint32_t metatile_height,
 	bool skip_single_color_metatiles, bool use_microtile_8x16,
-	bool remove_doubles, bool remove_flips,
+	TileRemoval tile_removal,
 	const Image& image);
 
 bool extractTilemap(

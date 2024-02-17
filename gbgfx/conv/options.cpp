@@ -16,11 +16,6 @@ void applyHardwareLimits(Options& options)
 	switch(options.hardware)
 	{
 		case gbgfx::kHardwareDmg:
-			if(options.tileset.tile_removal == kTileRemoval_Flips)
-			{
-				options.tileset.tile_removal = kTileRemoval_Doubles;
-			}
-
 			options.tilemap.use_flips = false;
 
 			applyLimit(options.output.palette_max_count, options.tileset.is_sprite ? 2 : 1);
@@ -35,11 +30,6 @@ void applyHardwareLimits(Options& options)
 			options.output.skip_export_attributes = true;
 			break;
 		case gbgfx::kHardwareSgb:
-			if(options.tileset.tile_removal == kTileRemoval_Flips)
-			{
-				options.tileset.tile_removal = kTileRemoval_Doubles;
-			}
-
 			options.tilemap.use_flips = false;
 
 			applyLimit(options.output.palette_max_count, 4);
@@ -89,9 +79,9 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	const Mapping tile_removal_mapping[] =
 	{
-		{ "none", kTileRemoval_None },
-		{ "doubles", kTileRemoval_Doubles },
-		{ "flips", kTileRemoval_Flips },
+		{ "none", gbgfx::kTileRemovalNone },
+		{ "doubles", gbgfx::kTileRemovalDoubles },
+		{ "flips", gbgfx::kTileRemovalFlips },
 	};
 
 	Option cli_options[] =

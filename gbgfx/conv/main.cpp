@@ -22,8 +22,7 @@ static bool loadDataFromImages(
 		options.tileset.metatile_width, options.tileset.metatile_height,
 		options.tileset.skip_single_color_metatiles,
 		options.tileset.use_microtile_8x16,
-		options.tileset.tile_removal != kTileRemoval_None,
-		options.tileset.tile_removal == kTileRemoval_Flips,
+		options.tileset.tile_removal,
 		options.tileset.png_filename))
 	{
 		GBGFX_LOG_ERROR("Could not extract tileset from [" << options.tileset.png_filename << "]");
