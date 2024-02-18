@@ -9,9 +9,9 @@ enum
 	kTileSize = 8,
 	kPixelsPerTile = kTileSize * kTileSize,
 
-	kColorsPerPalette_GB = 4,
-	kColorsPerPalette_SFC = 16,
-	kColorsPerPalette_Max = kColorsPerPalette_SFC,
+	//kColorsPerPalette_GB = 4,
+	//kColorsPerPalette_SFC = 16,
+	kColorsPerPalette_Max = 16,
 
 	kInvalidColorIndex = 0xFFU,
 	kInvalidPaletteIndex = 0xFFFFFFFFU,

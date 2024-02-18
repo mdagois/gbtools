@@ -2,9 +2,9 @@
 #include <cassert>
 #include <set>
 
-#include "api.h"
 #include "log.h"
 #include "palette.h"
+#include "profile.h"
 
 namespace gbgfx {
 

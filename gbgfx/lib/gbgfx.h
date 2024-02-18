@@ -7,11 +7,11 @@
 #include "image.h"
 #include "log.h"
 #include "palette.h"
+#include "profile.h"
 #include "tilemap.h"
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Move parameters to their own file (profile.h/cpp) (and remove #include "api.h")
 //TODO Transform all hardware checks into parameters
 //TODO Support forcing the palette set instead of extracting it
 

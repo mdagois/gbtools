@@ -1,8 +1,8 @@
 #include <cassert>
 
-#include "api.h"
 #include "export.h"
 #include "log.h"
+#include "profile.h"
 
 namespace gbgfx {
 

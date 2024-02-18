@@ -1,8 +1,8 @@
 #include <set>
 
-#include "api.h"
 #include "constants.h"
 #include "log.h"
+#include "profile.h"
 #include "utils.h"
 
 namespace gbgfx {
