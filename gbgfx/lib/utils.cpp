@@ -43,8 +43,8 @@ static bool generateTileFlip(
 			return false;
 		}
 
-		const uint32_t palette_index = palette_set.findCompatiblePaletteIndex(tile_palette);
-		if(palette_index == kInvalidPaletteIndex)
+		uint32_t palette_index = 0;
+		if(!palette_set.findCompatiblePaletteIndex(palette_index, tile_palette))
 		{
 			GBGFX_LOG_ERROR("Could not find a compatible palette");
 			return false;
@@ -55,8 +55,8 @@ static bool generateTileFlip(
 	const Palette& palette = palette_set[out_palette_index];
 	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
 	{
-		const uint8_t color_index = palette.findColorIndex(image_tile[i]);
-		if(color_index == kInvalidColorIndex)
+		uint8_t color_index = 0;
+		if(!palette.findColorIndex(color_index, image_tile[i]))
 		{
 			GBGFX_LOG_ERROR("Could not find color in palette");
 			return false;

@@ -122,16 +122,17 @@ const ColorRGBA Palette::operator[](int32_t index) const
 	return m_colors[index];
 }
 
-uint8_t Palette::findColorIndex(ColorRGBA color) const
+bool Palette::findColorIndex(uint8_t& out_color_index, ColorRGBA color) const
 {
 	for(uint32_t i = 0; i < m_color_count; ++i)
 	{
 		if(color == m_colors[i])
 		{
-			return static_cast<uint8_t>(i);
+			out_color_index = static_cast<uint8_t>(i);
+			return true;
 		}
 	}
-	return kInvalidColorIndex;
+	return false;
 }
 
 void Palette::makeFirstColor(ColorRGBA color)
@@ -298,16 +299,17 @@ bool PaletteSet::optimize()
 	return true;
 }
 
-uint32_t PaletteSet::findCompatiblePaletteIndex(const Palette& palette) const
+bool PaletteSet::findCompatiblePaletteIndex(uint32_t& out_palette_index, const Palette& palette) const
 {
 	for(uint32_t i = 0; i < m_palettes.size(); ++i)
 	{
 		if(m_palettes[i].contains(palette))
 		{
-			return i;
+			out_palette_index = i;
+			return true;
 		}
 	}
-	return kInvalidPaletteIndex;
+	return false;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

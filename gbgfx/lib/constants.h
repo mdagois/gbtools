@@ -9,9 +9,6 @@ enum
 	kTileSize = 8,
 	kPixelsPerTile = kTileSize * kTileSize,
 
-	kInvalidColorIndex = 0xFFU,
-	kInvalidPaletteIndex = 0xFFFFFFFFU,
-
 	kTilesPerBank = 256,
 
 	kTilemapRowMaxCount = 32,

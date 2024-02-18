@@ -12,6 +12,8 @@
 #include "tileset.h"
 #include "utils.h"
 
+//TODO Bring more constants into the profile
+//TODO Express tilemap format as Vulkan format
 //TODO Split into profile/logical/binary layers
 //TODO Support forcing the palette set instead of extracting it
 
