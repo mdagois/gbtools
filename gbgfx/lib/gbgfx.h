@@ -11,9 +11,10 @@
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Move parameters to their own file (and remove #include "api.h")
+//TODO Move parameters to their own file (profile.h/cpp) (and remove #include "api.h")
+//TODO Transform all hardware checks into parameters
+//TODO Support forcing the palette set instead of extracting it
+
 //TODO Allow to set an output directory
 //TODO Support short name for options
-//TODO Add tile offset for tilemaps
-//TODO Support forcing the palette set instead of extracting it
 

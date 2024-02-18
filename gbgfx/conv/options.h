@@ -35,7 +35,8 @@ struct Options
 
 	struct
 	{
-		int32_t palette_offset_index = 0;
+		int32_t palette_index_offset = 0;
+		int32_t tile_index_offset = 0;
 		bool use_8800_addressing_mode = false;
 		bool add_binary_headers = false;
 

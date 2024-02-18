@@ -18,8 +18,6 @@ enum
 	kPaletteMaxCount = 8,
 
 	kTilesPerBank = 256,
-	kTileBankMaxCount = 2,
-	kTileMaxCount = kTilesPerBank * kTileBankMaxCount,
 
 	kTilemapRowMaxCount = 32,
 	kTilemapColumnMaxCount = 32,

@@ -31,7 +31,7 @@ bool Tilemap::initialize(uint8_t tile_row_count, uint8_t tile_column_count)
 }
 
 void Tilemap::push(
-	uint32_t tile_index,
+	uint8_t tile_index,
 	uint8_t palette, uint8_t bank,
 	bool flip_horizontal, bool flip_vertical,
 	bool priority)

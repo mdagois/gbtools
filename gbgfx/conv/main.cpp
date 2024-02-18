@@ -103,8 +103,9 @@ static bool exportData(const Options& options)
 				options.output.skip_export_parameters ? nullptr : prm_filename.c_str(),
 				options.output.skip_export_attributes ? nullptr : atr_filename.c_str(),
 				options.output.add_binary_headers,
-				options.output.palette_offset_index,
-				options.output.use_8800_addressing_mode ? 128 : 0))
+				options.output.use_8800_addressing_mode,
+				options.output.palette_index_offset,
+				options.output.tile_index_offset))
 		{
 			GBGFX_LOG_ERROR("Could not export tilemap");
 			return false;

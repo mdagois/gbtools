@@ -127,7 +127,8 @@ TilemapData::~TilemapData()
 
 bool TilemapData::initialize(
 	const Tilemap& tilemap,
-	uint8_t palette_index_offset, uint8_t tile_index_offset)
+	uint8_t palette_index_offset, uint8_t tile_index_offset,
+	bool use_8800_addressing_mode)
 {
 	if(palette_index_offset >= getPaletteMaxCount())
 	{
@@ -136,6 +137,14 @@ bool TilemapData::initialize(
 			<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
 		return false;
 	}
+	if(tile_index_offset >= getTileMaxCount())
+	{
+		GBGFX_LOG_ERROR(
+			"The tile offset [" << tile_index_offset
+			<< "] is over the tile max count [" << getTileMaxCount() << "]");
+		return false;
+	}
+
 	const Hardware hardware = getTargetHardware();
 	const bool extract_attributes = hardware == kHardwareSgb;
 
@@ -143,7 +152,7 @@ bool TilemapData::initialize(
 	uint32_t attribute_shift = 6;
 	for(uint32_t i = 0; i < tilemap.size(); ++i)
 	{
-		const TilemapEntry& entry = tilemap[i];
+		TilemapEntry entry = tilemap[i];
 
 		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= getPaletteMaxCount())
 		{
@@ -153,17 +162,38 @@ bool TilemapData::initialize(
 			return false;
 		}
 
-		if(static_cast<uint32_t>(entry.tile_index) + tile_index_offset >= getTileMaxCount())
+		if(tile_index_offset > 0)
 		{
-			GBGFX_LOG_ERROR(
-				"The tile index with offset [" << entry.tile_index + tile_index_offset
-				<< "] is over the tile max count [" << getTileMaxCount() << "]");
-			return false;
+			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * kTilesPerBank);
+			global_tile_index += tile_index_offset;
+			if(global_tile_index >= getTileMaxCount())
+			{
+				GBGFX_LOG_ERROR(
+					"The tile index with offset [" << entry.tile_index + tile_index_offset
+					<< "] is over the tile max count [" << getTileMaxCount() << "]");
+				return false;
+			}
+			entry.tile_index = global_tile_index % kTilesPerBank;
+			entry.bank = global_tile_index / kTilesPerBank;
+			if(entry.bank >= getBankMaxCount())
+			{
+				GBGFX_LOG_ERROR(
+					"The bank (after applying the tile offset) [" << entry.bank
+					<< "] is over the bank max count [" << getBankMaxCount() << "]");
+				return false;
+			}
 		}
+
+		if(use_8800_addressing_mode)
+		{
+			entry.tile_index += 128;
+		}
+
+		const uint8_t palette_index = entry.palette_index + palette_index_offset + getPaletteBaseIndex();
 
 		m_indices.push_back(entry.tile_index + tile_index_offset);
 		m_parameters.push_back(
-			((entry.palette_index + palette_index_offset) & 0x07) |
+			(palette_index & 0x07) |
 			((entry.bank & 0x01) << 3) |
 			(entry.flip_horizontal ? 0x20 : 0x00) |
 			(entry.flip_vertical ? 0x40 : 0x00) |
@@ -173,14 +203,14 @@ bool TilemapData::initialize(
 		{
 			m_border_parameters.push_back(
 				((entry.tile_index + tile_index_offset) & 0xFF) |
-				(((entry.palette_index + palette_index_offset) & 0x03) << 10) |
+				((palette_index & 0x03) << 10) |
 				(entry.flip_horizontal ? 0x4000 : 0x0000) |
 				(entry.flip_vertical ? 0x8000 : 0x0000));
 		}
 
 		if(extract_attributes)
 		{
-			attribute |= ((entry.palette_index & 0x3) << attribute_shift);
+			attribute |= ((palette_index & 0x3) << attribute_shift);
 			if(attribute_shift == 0)
 			{
 				m_attributes.push_back(attribute);

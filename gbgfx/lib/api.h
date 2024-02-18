@@ -46,9 +46,11 @@ Hardware getTargetHardware();
 DataType getDataType();
 bool isSprite();
 TileRemoval getTileRemovalMax();
+uint32_t getPaletteBaseIndex();
 uint32_t getPaletteMaxCount();
 uint32_t getPaletteColorMaxCount();
 uint32_t getTileMaxCount();
+uint32_t getBankMaxCount();
 bool getUseTransparentColor();
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -94,7 +96,8 @@ bool exportTilemap(
 	const char* indices_filename,
 	const char* parameter_filename,
 	const char* attributes_filename,
-	bool use_header, uint8_t palette_index_offset, uint8_t tile_index_offset);
+	bool use_header, bool use_8800_addressing_mode,
+	uint8_t palette_index_offset, uint8_t tile_index_offset);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug

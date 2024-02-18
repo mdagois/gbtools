@@ -67,7 +67,8 @@ public:
 
 	bool initialize(
 		const Tilemap& tilemap,
-		uint8_t palette_index_offset, uint8_t tile_index_offset);
+		uint8_t palette_index_offset, uint8_t tile_index_offset,
+		bool use_8800_addressing_mode);
 
 	uint32_t getRowCount() const;
 	uint32_t getColumnCount() const;

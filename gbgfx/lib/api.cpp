@@ -20,9 +20,11 @@ struct Parameter
 	Hardware hardware = kHardwareCount;
 	DataType data_type = kDataTypeCount;
 	TileRemoval tile_removal_max = kTileRemovalCount;
+	uint32_t palette_base_index = 0;
 	uint32_t palette_max_count = 0;
 	uint32_t palette_color_max_count = 0;
 	uint32_t tile_max_count = 0;
+	uint32_t bank_max_count = 0;
 	bool use_transparent_color = false;
 };
 static Parameter s_parameters;
@@ -48,30 +50,38 @@ bool initialize(Hardware hardware, DataType data_type)
 	{
 		case kHardwareDmg:
 			s_parameters.tile_removal_max = kTileRemovalDoubles;
+			s_parameters.palette_base_index = 0;
 			s_parameters.palette_max_count = s_parameters.data_type == kDataTypeBg ? 1 : 2;
 			s_parameters.palette_color_max_count = kColorsPerPalette_GB;
 			s_parameters.tile_max_count = 256;
+			s_parameters.bank_max_count = 1;
 			s_parameters.use_transparent_color = false;
 			break;
 		case kHardwareCgb:
 			s_parameters.tile_removal_max = kTileRemovalFlips;
+			s_parameters.palette_base_index = 0;
 			s_parameters.palette_max_count = 8;
 			s_parameters.palette_color_max_count = kColorsPerPalette_GB;
 			s_parameters.tile_max_count = 512;
+			s_parameters.bank_max_count = 2;
 			s_parameters.use_transparent_color = false;
 			break;
 		case kHardwareSgb:
 			s_parameters.tile_removal_max = kTileRemovalDoubles;
+			s_parameters.palette_base_index = 0;
 			s_parameters.palette_max_count = 4;
 			s_parameters.palette_color_max_count = kColorsPerPalette_GB;
 			s_parameters.tile_max_count = 256;
+			s_parameters.bank_max_count = 1;
 			s_parameters.use_transparent_color = false;
 			break;
 		case kHardwareSfc:
 			s_parameters.tile_removal_max = kTileRemovalFlips;
+			s_parameters.palette_base_index = 4;
 			s_parameters.palette_max_count = 3;
 			s_parameters.palette_color_max_count = kColorsPerPalette_SFC;
 			s_parameters.tile_max_count = 256;
+			s_parameters.bank_max_count = 1;
 			s_parameters.use_transparent_color = true;
 			break;
 		default:
@@ -109,6 +119,11 @@ TileRemoval getTileRemovalMax()
 	return s_parameters.tile_removal_max;
 }
 
+uint32_t getPaletteBaseIndex()
+{
+	return s_parameters.palette_base_index;
+}
+
 uint32_t getPaletteMaxCount()
 {
 	return s_parameters.palette_max_count;
@@ -122,6 +137,11 @@ uint32_t getPaletteColorMaxCount()
 uint32_t getTileMaxCount()
 {
 	return s_parameters.tile_max_count;
+}
+
+uint32_t getBankMaxCount()
+{
+	return s_parameters.bank_max_count;
 }
 
 bool getUseTransparentColor()
@@ -323,6 +343,27 @@ bool extractTilemap(
 			assert(tile_index <= getTileMaxCount());
 			constexpr uint32_t priority = 0;
 			const uint32_t bank = tile_index / kTilesPerBank;
+			if(tile_index >= getTileMaxCount())
+			{
+				GBGFX_LOG_ERROR(
+					"The tile index [" << tile_index
+					<< "] is over the tile max count [" << getTileMaxCount() << "]");
+				return false;
+			}
+			if(palette_index >= getPaletteMaxCount())
+			{
+				GBGFX_LOG_ERROR(
+					"The palette index [" << palette_index
+					<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
+				return false;
+			}
+			if(bank >= getBankMaxCount())
+			{
+				GBGFX_LOG_ERROR(
+					"The bank index [" << bank
+					<< "] is over the bank max count [" << getBankMaxCount() << "]");
+				return false;
+			}
 			out_tilemap.push(
 				tile_index % kTilesPerBank, palette_index, bank,
 				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
@@ -417,7 +458,8 @@ bool exportTilemap(
 	const char* indices_filename,
 	const char* parameters_filename,
 	const char* attributes_filename,
-	bool use_header, uint8_t palette_index_offset, uint8_t tile_index_offset)
+	bool use_header, bool use_8800_addressing_mode,
+	uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
 	if(getDataType() != kDataTypeBg)
 	{
@@ -434,7 +476,8 @@ bool exportTilemap(
 		static_cast<uint8_t>(tilemap.getRowCount())
 	};
 
-	if(!data.initialize(tilemap, palette_index_offset, tile_index_offset))
+	if(!data.initialize(
+		tilemap, palette_index_offset, tile_index_offset, use_8800_addressing_mode))
 	{
 		return false;
 	}

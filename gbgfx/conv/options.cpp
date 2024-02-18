@@ -27,7 +27,6 @@ bool applyHardwareLimits(Options& options)
 			break;
 		case gbgfx::kHardwareSfc:
 			options.tileset.skip_single_color_metatiles = false;
-			options.output.palette_offset_index = 4;
 			options.output.use_8800_addressing_mode = false;
 			options.output.skip_export_attributes = true;
 			break;
@@ -92,7 +91,8 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("use-flips", "Use flips when exporting tilemaps", 'FLIP', &out_options.tilemap.use_flips),
 
 		// output
-		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_offset_index),
+		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
+		OptionInteger("tile-index-offset", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
 		OptionFlag("8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
 		OptionFlag("use-headers", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
 		OptionFlag("skip-export-palette", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
