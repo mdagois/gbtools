@@ -273,12 +273,12 @@ bool Image::iterateTiles(
 			<< ") in [" << m_filename << "]");
 		return false;
 	}
-	if((getWidth() % profile::microtile_width != 0) || (getHeight() % profile::microtile_height != 0))
+	if((getWidth() % PROFILE.tileset.microtile_width != 0) || (getHeight() % PROFILE.tileset.microtile_height != 0))
 	{
 		GBGFX_LOG_ERROR(
 			"Image dimension (" << getWidth() << "x" << getHeight()
 			<< ") must be a multiple of the microtile dimension ("
-			<< profile::microtile_width << "x" << profile::microtile_height
+			<< PROFILE.tileset.microtile_width << "x" << PROFILE.tileset.microtile_height
 			<< ") in [" << m_filename << "]");
 		return false;
 	}
@@ -300,7 +300,7 @@ bool Image::iterateTiles(
 		[&tile_callback](const ImageArea& metatile_area)
 		{
 			return metatile_area.iterateArea(
-				0, kIterateAllRows, profile::microtile_width, profile::microtile_height,
+				0, kIterateAllRows, PROFILE.tileset.microtile_width, PROFILE.tileset.microtile_height,
 				[&tile_callback](const ImageArea& microtile_area)
 				{
 					return microtile_area.iterateTiles(tile_callback);

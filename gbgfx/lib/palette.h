@@ -26,6 +26,12 @@ public:
 	void makeFirstColor(ColorRGBA color);
 
 private:
+	enum : uint32_t
+	{
+		kColorsPerPalette_Max = 16,
+	};
+
+private:
 	ColorRGBA m_colors[kColorsPerPalette_Max];
 	uint32_t m_color_count;
 };

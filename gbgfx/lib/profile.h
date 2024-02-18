@@ -35,38 +35,45 @@ enum TileRemoval : uint32_t
 // Profile
 ////////////////////////////////////////////////////////////////////////////////
 
-namespace profile
+struct Profile
 {
-	// hardware
-	extern bool supports_flips;
+	struct
+	{
+		uint32_t base_index;
+		uint32_t max_count;
+		uint32_t color_max_count;
+		bool insert_transparent_color;
+		bool share_first_color;
+	} palette;
 
-	// palette
-	extern uint32_t palette_base_index;
-	extern uint32_t palette_max_count;
-	extern uint32_t palette_color_max_count;
-	extern bool insert_transparent_color;
-	extern bool palette_share_first_color;
+	struct
+	{
+		uint32_t microtile_width;
+		uint32_t microtile_height;
+		TileRemoval tile_removal_max;
+		uint32_t tile_max_count;
+		uint32_t bank_max_count;
+	} tileset;
 
-	// tileset
-	extern TileRemoval tile_removal_max;
-	extern uint32_t tile_max_count;
-	extern uint32_t bank_max_count;
+	struct
+	{
+		uint32_t parameter_bit_depth;
+		bool has_parameters;
+		bool has_attributes;
+	} tilemap;
 
-	// tilemap
-	extern uint32_t tilemap_parameter_bit_depth;
-	extern bool tilemap_has_parameters;
-	extern bool tilemap_has_attributes;
+	struct
+	{
+		bool is_bg;
+		bool is_sprite;
+	} data;
+};
 
-	// misc
-	extern bool is_bg;
-	extern bool is_sprite;
-	extern uint32_t microtile_width;
-	extern uint32_t microtile_height;
+extern Profile PROFILE;
 
-	// function
-	bool initialize(Hardware hardware, DataType data_type);
-	bool isValid();
-}
+bool initializeProfile(Hardware hardware, DataType data_type);
+bool isProfileValid();
+
 
 ////////////////////////////////////////////////////////////////////////////////
 

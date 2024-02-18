@@ -61,7 +61,7 @@ bool extractTileset(
 	bool skip_single_color_metatiles, TileRemoval tile_removal,
 	const Image& image)
 {
-	assert(profile::isValid());
+	assert(isProfileValid());
 
 	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
 	std::vector<ImageTile> metatile_tiles;
@@ -119,11 +119,11 @@ bool extractTileset(
 
 	if(tile_removal != kTileRemovalNone)
 	{
-		if(tile_removal > profile::tile_removal_max)
+		if(tile_removal > PROFILE.tileset.tile_removal_max)
 		{
 			GBGFX_LOG_WARN(
-				"Downgraded tile removal from " << tile_removal << " to " << profile::tile_removal_max);
-			tile_removal = profile::tile_removal_max;
+				"Downgraded tile removal from " << tile_removal << " to " << PROFILE.tileset.tile_removal_max);
+			tile_removal = PROFILE.tileset.tile_removal_max;
 		}
 		out_tileset.removeDoubles(tile_removal == kTileRemovalFlips);
 	}
@@ -132,9 +132,9 @@ bool extractTileset(
 		"Tile count is " << out_tileset.size()
 		<< " and palette count is " << out_palette_set.size()
 		<< " in [" << image.getFilename() << "]"); 
-	if(!profile::is_sprite && out_tileset.size() > profile::tile_max_count)
+	if(!PROFILE.data.is_sprite && out_tileset.size() > PROFILE.tileset.tile_max_count)
 	{
-		GBGFX_LOG_INFO("The tile count [" << out_tileset.size() << " is over the maximum [" << profile::tile_max_count);
+		GBGFX_LOG_INFO("The tile count [" << out_tileset.size() << " is over the maximum [" << PROFILE.tileset.tile_max_count);
 		return false;
 	}
 	return true;
@@ -162,9 +162,9 @@ bool extractTilemap(
 	bool use_flips,
 	const Image& image)
 {
-	assert(profile::isValid());
+	assert(isProfileValid());
 
-	if(use_flips && !profile::supports_flips)
+	if(use_flips && PROFILE.tileset.tile_removal_max < kTileRemovalFlips)
 	{
 		GBGFX_LOG_WARN("Flips are disabled as the hardware cannot use flips");
 		use_flips = false;
@@ -200,28 +200,28 @@ bool extractTilemap(
 				return false;
 			}
 
-			assert(tile_index <= profile::tile_max_count);
+			assert(tile_index <= PROFILE.tileset.tile_max_count);
 			constexpr uint32_t priority = 0;
 			const uint32_t bank = tile_index / kTilesPerBank;
-			if(tile_index >= profile::tile_max_count)
+			if(tile_index >= PROFILE.tileset.tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index [" << tile_index
-					<< "] is over the tile max count [" << profile::tile_max_count << "]");
+					<< "] is over the tile max count [" << PROFILE.tileset.tile_max_count << "]");
 				return false;
 			}
-			if(palette_index >= profile::palette_max_count)
+			if(palette_index >= PROFILE.palette.max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The palette index [" << palette_index
-					<< "] is over the palette max count [" << profile::palette_max_count << "]");
+					<< "] is over the palette max count [" << PROFILE.palette.max_count << "]");
 				return false;
 			}
-			if(bank >= profile::bank_max_count)
+			if(bank >= PROFILE.tileset.bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank index [" << bank
-					<< "] is over the bank max count [" << profile::bank_max_count << "]");
+					<< "] is over the bank max count [" << PROFILE.tileset.bank_max_count << "]");
 				return false;
 			}
 			out_tilemap.push(
@@ -321,7 +321,7 @@ bool exportTilemap(
 	bool use_header, bool use_8800_addressing_mode,
 	uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
-	if(profile::is_sprite)
+	if(PROFILE.data.is_sprite)
 	{
 		GBGFX_LOG_ERROR("Exporting tilemaps is not supported for sprites");
 		return false;
@@ -352,7 +352,7 @@ bool exportTilemap(
 	}
 
 	if( parameters_filename != nullptr &&
-		profile::tilemap_has_parameters &&
+		PROFILE.tilemap.has_parameters &&
 		!writeToFile(
 			data.getParameterData(), data.getParameterDataSize(),
 			use_header ? &header : nullptr, sizeof(header),
@@ -362,7 +362,7 @@ bool exportTilemap(
 	}
 
 	if( attributes_filename != nullptr &&
-		profile::tilemap_has_attributes &&
+		PROFILE.tilemap.has_attributes &&
 		!writeToFile(
 			data.getAttributeData(), data.getAttributeDataSize(),
 			use_header ? &header : nullptr, sizeof(header),
@@ -385,7 +385,7 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	{
 		for(uint32_t i = 0; i < kTileSize; ++i)
 		{
-			assert(indices[i] < profile::palette_color_max_count);
+			assert(indices[i] < PROFILE.palette.color_max_count);
 			out_pixels[i] = palette[indices[i]];
 		}
 
@@ -484,7 +484,7 @@ bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
 		return true;
 	}
 
-	const uint32_t color_max_count = profile::palette_color_max_count;
+	const uint32_t color_max_count = PROFILE.palette.color_max_count;
 	const uint32_t total_color_count = color_max_count * palette_count;
 	ColorRGBA* pixels = new ColorRGBA[total_color_count];
 	for(uint32_t p = 0; p < palette_count; ++p)

@@ -27,7 +27,7 @@ bool PaletteSetData::initialize(const PaletteSet& palette_set)
 		{
 			m_data.push_back(convertColor(palette[c]));
 		}
-		for(; c < profile::palette_color_max_count; ++c)
+		for(; c < PROFILE.palette.color_max_count; ++c)
 		{
 			m_data.push_back(kBGR555_Invalid);
 		}
@@ -64,7 +64,7 @@ TilesetData::~TilesetData()
 
 bool TilesetData::initialize(const Tileset& tileset)
 {
-	assert(profile::palette_color_max_count == 4 || profile::palette_color_max_count == 16);
+	assert(PROFILE.palette.color_max_count == 4 || PROFILE.palette.color_max_count == 16);
 	for(uint32_t t = 0; t < tileset.size(); ++t)
 	{
 		const Tile& tile = tileset[t];
@@ -79,7 +79,7 @@ bool TilesetData::initialize(const Tileset& tileset)
 				((indices[0] << 6) & 0x80) | ((indices[1] << 5) & 0x40) | ((indices[2] << 4) & 0x20) | ((indices[3] << 3) & 0x10) |
 				((indices[4] << 2) & 0x08) | ((indices[5] << 1) & 0x04) | ((indices[6] << 0) & 0x02) | ((indices[7] >> 1) & 0x01));
 		}
-		if(profile::palette_color_max_count == 16)
+		if(PROFILE.palette.color_max_count == 16)
 		{
 			for(uint32_t d = 0; d < kTileSize; ++d)
 			{
@@ -129,18 +129,18 @@ bool TilemapData::initialize(
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	bool use_8800_addressing_mode)
 {
-	if(palette_index_offset >= profile::palette_max_count)
+	if(palette_index_offset >= PROFILE.palette.max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The palette offset [" << palette_index_offset
-			<< "] is over the palette max count [" << profile::palette_max_count << "]");
+			<< "] is over the palette max count [" << PROFILE.palette.max_count << "]");
 		return false;
 	}
-	if(tile_index_offset >= profile::tile_max_count)
+	if(tile_index_offset >= PROFILE.tileset.tile_max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The tile offset [" << tile_index_offset
-			<< "] is over the tile max count [" << profile::tile_max_count << "]");
+			<< "] is over the tile max count [" << PROFILE.tileset.tile_max_count << "]");
 		return false;
 	}
 
@@ -150,11 +150,11 @@ bool TilemapData::initialize(
 	{
 		TilemapEntry entry = tilemap[i];
 
-		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= profile::palette_max_count)
+		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= PROFILE.palette.max_count)
 		{
 			GBGFX_LOG_ERROR(
 				"The palette index with offset [" << entry.palette_index + palette_index_offset
-				<< "] is over the palette max count [" << profile::palette_max_count << "]");
+				<< "] is over the palette max count [" << PROFILE.palette.max_count << "]");
 			return false;
 		}
 
@@ -162,20 +162,20 @@ bool TilemapData::initialize(
 		{
 			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * kTilesPerBank);
 			global_tile_index += tile_index_offset;
-			if(global_tile_index >= profile::tile_max_count)
+			if(global_tile_index >= PROFILE.tileset.tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index with offset [" << entry.tile_index + tile_index_offset
-					<< "] is over the tile max count [" << profile::tile_max_count << "]");
+					<< "] is over the tile max count [" << PROFILE.tileset.tile_max_count << "]");
 				return false;
 			}
 			entry.tile_index = global_tile_index % kTilesPerBank;
 			entry.bank = global_tile_index / kTilesPerBank;
-			if(entry.bank >= profile::bank_max_count)
+			if(entry.bank >= PROFILE.tileset.bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank (after applying the tile offset) [" << entry.bank
-					<< "] is over the bank max count [" << profile::bank_max_count << "]");
+					<< "] is over the bank max count [" << PROFILE.tileset.bank_max_count << "]");
 				return false;
 			}
 		}
@@ -185,15 +185,15 @@ bool TilemapData::initialize(
 			entry.tile_index += 128;
 		}
 
-		const uint8_t palette_index = entry.palette_index + palette_index_offset + profile::palette_base_index;
+		const uint8_t palette_index = entry.palette_index + palette_index_offset + PROFILE.palette.base_index;
 
 		m_indices.push_back(entry.tile_index + tile_index_offset);
 
 		assert(
-			profile::tilemap_parameter_bit_depth == 0 ||
-			profile::tilemap_parameter_bit_depth == 8 ||
-			profile::tilemap_parameter_bit_depth == 16);
-		if(profile::tilemap_parameter_bit_depth == 8)
+			PROFILE.tilemap.parameter_bit_depth == 0 ||
+			PROFILE.tilemap.parameter_bit_depth == 8 ||
+			PROFILE.tilemap.parameter_bit_depth == 16);
+		if(PROFILE.tilemap.parameter_bit_depth == 8)
 		{
 			m_parameters_8.push_back(
 				(palette_index & 0x07) |
@@ -202,7 +202,7 @@ bool TilemapData::initialize(
 				(entry.flip_vertical ? 0x40 : 0x00) |
 				(entry.priority ? 0x80 : 0x00));
 		}
-		else if(profile::tilemap_parameter_bit_depth == 16)
+		else if(PROFILE.tilemap.parameter_bit_depth == 16)
 		{
 			m_parameters_16.push_back(
 				((entry.tile_index + tile_index_offset) & 0xFF) |
@@ -211,7 +211,7 @@ bool TilemapData::initialize(
 				(entry.flip_vertical ? 0x8000 : 0x0000));
 		}
 
-		if(profile::tilemap_has_attributes)
+		if(PROFILE.tilemap.has_attributes)
 		{
 			attribute |= ((palette_index & 0x3) << attribute_shift);
 			if(attribute_shift == 0)
@@ -226,7 +226,7 @@ bool TilemapData::initialize(
 			}
 		}
 	}
-	if(profile::tilemap_has_attributes)
+	if(PROFILE.tilemap.has_attributes)
 	{
 		if(attribute_shift != 0)
 		{
@@ -256,12 +256,12 @@ const uint8_t* TilemapData::getIndexData() const
 
 const uint8_t* TilemapData::getParameterData() const
 {
-	assert(profile::tilemap_parameter_bit_depth == 8 || profile::tilemap_parameter_bit_depth == 16);
-	if(profile::tilemap_parameter_bit_depth == 8)
+	assert(PROFILE.tilemap.parameter_bit_depth == 8 || PROFILE.tilemap.parameter_bit_depth == 16);
+	if(PROFILE.tilemap.parameter_bit_depth == 8)
 	{
 		return reinterpret_cast<const uint8_t*>(m_parameters_8.data());
 	}
-	if(profile::tilemap_parameter_bit_depth == 16)
+	if(PROFILE.tilemap.parameter_bit_depth == 16)
 	{
 		return reinterpret_cast<const uint8_t*>(m_parameters_16.data());
 	}
@@ -280,12 +280,12 @@ uint32_t TilemapData::getIndexDataSize() const
 
 uint32_t TilemapData::getParameterDataSize() const
 {
-	assert(profile::tilemap_parameter_bit_depth == 8 || profile::tilemap_parameter_bit_depth == 16);
-	if(profile::tilemap_parameter_bit_depth == 8)
+	assert(PROFILE.tilemap.parameter_bit_depth == 8 || PROFILE.tilemap.parameter_bit_depth == 16);
+	if(PROFILE.tilemap.parameter_bit_depth == 8)
 	{
 		return static_cast<uint32_t>(m_parameters_8.size() * sizeof(uint8_t));
 	}
-	if(profile::tilemap_parameter_bit_depth == 16)
+	if(PROFILE.tilemap.parameter_bit_depth == 16)
 	{
 		return static_cast<uint32_t>(m_parameters_16.size() * sizeof(uint16_t));
 	}
