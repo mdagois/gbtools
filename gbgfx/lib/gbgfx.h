@@ -12,7 +12,7 @@
 #include "tileset.h"
 #include "utils.h"
 
-//TODO Transform all hardware checks into parameters
+//TODO Split into profile/logical/binary layers
 //TODO Support forcing the palette set instead of extracting it
 
 //TODO Allow to set an output directory

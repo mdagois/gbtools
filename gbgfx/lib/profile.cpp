@@ -1,28 +1,41 @@
 #include <cassert>
 
-#include "constants.h"
 #include "profile.h"
 #include "log.h"
 
-namespace gbgfx {
+namespace gbgfx { namespace profile {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Profile
 ////////////////////////////////////////////////////////////////////////////////
 
-struct Parameter
-{
-	Hardware hardware = kHardwareCount;
-	DataType data_type = kDataTypeCount;
-	TileRemoval tile_removal_max = kTileRemovalCount;
-	uint32_t palette_base_index = 0;
-	uint32_t palette_max_count = 0;
-	uint32_t palette_color_max_count = 0;
-	uint32_t tile_max_count = 0;
-	uint32_t bank_max_count = 0;
-	bool use_transparent_color = false;
-};
-static Parameter s_parameters;
+////////////////////////////////////////
+
+Hardware hardware = kHardwareCount;
+DataType data_type = kDataTypeCount;
+
+////////////////////////////////////////
+
+extern bool supports_flips = false;
+
+uint32_t palette_base_index = 0;
+uint32_t palette_max_count = 0;
+uint32_t palette_color_max_count = 0;
+bool insert_transparent_color = false;
+bool palette_share_first_color = false;
+
+TileRemoval tile_removal_max = kTileRemovalCount;
+uint32_t tile_max_count = 0;
+uint32_t bank_max_count = 0;
+
+uint32_t tilemap_parameter_bit_depth = 0;
+bool tilemap_has_parameters = false;
+bool tilemap_has_attributes = false;
+
+bool is_bg = false;
+bool is_sprite = false;
+uint32_t microtile_width = 0;
+uint32_t microtile_height = 0;
 
 ////////////////////////////////////////
 
@@ -31,8 +44,8 @@ bool initialize(Hardware hardware, DataType data_type)
 	assert(hardware < kHardwareCount);
 	assert(data_type < kDataTypeCount);
 
-	s_parameters.hardware = hardware;
-	s_parameters.data_type = data_type;
+	profile::hardware = hardware;
+	profile::data_type = data_type;
 
 	if( (hardware == kHardwareSfc || hardware == kHardwareSgb) &&
 		data_type != kDataTypeBg)
@@ -44,107 +57,107 @@ bool initialize(Hardware hardware, DataType data_type)
 	switch(hardware)
 	{
 		case kHardwareDmg:
-			s_parameters.tile_removal_max = kTileRemovalDoubles;
-			s_parameters.palette_base_index = 0;
-			s_parameters.palette_max_count = s_parameters.data_type == kDataTypeBg ? 1 : 2;
-			s_parameters.palette_color_max_count = 4;
-			s_parameters.tile_max_count = 256;
-			s_parameters.bank_max_count = 1;
-			s_parameters.use_transparent_color = false;
+			profile::supports_flips = false;
+
+			profile::palette_base_index = 0;
+			profile::palette_max_count = profile::data_type == kDataTypeBg ? 1 : 2;
+			profile::palette_color_max_count = 4;
+			profile::insert_transparent_color = false;
+			profile::palette_share_first_color = false;
+
+			profile::tile_removal_max = kTileRemovalDoubles;
+			profile::tile_max_count = 256;
+			profile::bank_max_count = 1;
+
+			profile::tilemap_parameter_bit_depth = 0;
+			profile::tilemap_has_parameters = false;
+			profile::tilemap_has_attributes = false;
 			break;
 		case kHardwareCgb:
-			s_parameters.tile_removal_max = kTileRemovalFlips;
-			s_parameters.palette_base_index = 0;
-			s_parameters.palette_max_count = 8;
-			s_parameters.palette_color_max_count = 4;
-			s_parameters.tile_max_count = 512;
-			s_parameters.bank_max_count = 2;
-			s_parameters.use_transparent_color = false;
+			profile::supports_flips = true;
+
+			profile::palette_base_index = 0;
+			profile::palette_max_count = 8;
+			profile::palette_color_max_count = 4;
+			profile::insert_transparent_color = false;
+			profile::palette_share_first_color = false;
+
+			profile::tile_removal_max = kTileRemovalFlips;
+			profile::tile_max_count = 512;
+			profile::bank_max_count = 2;
+
+			profile::tilemap_parameter_bit_depth = 8;
+			profile::tilemap_has_parameters = true;
+			profile::tilemap_has_attributes = false;
 			break;
 		case kHardwareSgb:
-			s_parameters.tile_removal_max = kTileRemovalDoubles;
-			s_parameters.palette_base_index = 0;
-			s_parameters.palette_max_count = 4;
-			s_parameters.palette_color_max_count = 4;
-			s_parameters.tile_max_count = 256;
-			s_parameters.bank_max_count = 1;
-			s_parameters.use_transparent_color = false;
+			profile::supports_flips = false;
+
+			profile::palette_base_index = 0;
+			profile::palette_max_count = 4;
+			profile::palette_color_max_count = 4;
+			profile::insert_transparent_color = false;
+			profile::palette_share_first_color = true;
+
+			profile::tile_removal_max = kTileRemovalDoubles;
+			profile::tile_max_count = 256;
+			profile::bank_max_count = 1;
+
+			profile::tilemap_parameter_bit_depth = 0;
+			profile::tilemap_has_parameters = false;
+			profile::tilemap_has_attributes = true;
 			break;
 		case kHardwareSfc:
-			s_parameters.tile_removal_max = kTileRemovalFlips;
-			s_parameters.palette_base_index = 4;
-			s_parameters.palette_max_count = 3;
-			s_parameters.palette_color_max_count = 16;
-			s_parameters.tile_max_count = 256;
-			s_parameters.bank_max_count = 1;
-			s_parameters.use_transparent_color = true;
+			profile::supports_flips = true;
+
+			profile::palette_base_index = 4;
+			profile::palette_max_count = 3;
+			profile::palette_color_max_count = 16;
+			profile::insert_transparent_color = true;
+			profile::palette_share_first_color = false;
+
+			profile::tile_removal_max = kTileRemovalFlips;
+			profile::tile_max_count = 256;
+			profile::bank_max_count = 1;
+
+			profile::tilemap_parameter_bit_depth = 16;
+			profile::tilemap_has_parameters = true;
+			profile::tilemap_has_attributes = false;
 			break;
 		default:
 			assert(false);
 			break;
 	}
 
+	is_bg = data_type == kDataTypeBg;
+	is_sprite = !is_bg;
+	if(is_sprite)
+	{
+		switch(data_type)
+		{
+			case kDataTypeBg:
+			case kDataTypeSprite8x8:
+				microtile_width = 8;
+				microtile_height = 8;
+				break;
+			case kDataTypeSprite8x16:
+				microtile_width = 8;
+				microtile_height = 16;
+				break;
+			default:
+				assert(false);
+				break;
+		}
+	}
 	return true;
 }
 
-bool isParameterValid()
+bool isValid()
 {
-	return s_parameters.hardware != kHardwareCount;
-}
-
-////////////////////////////////////////
-
-Hardware getTargetHardware()
-{
-	return s_parameters.hardware;
-}
-
-DataType getDataType()
-{
-	return s_parameters.data_type;
-}
-
-bool isSprite()
-{
-	return getDataType() != kDataTypeBg;
-}
-
-TileRemoval getTileRemovalMax()
-{
-	return s_parameters.tile_removal_max;
-}
-
-uint32_t getPaletteBaseIndex()
-{
-	return s_parameters.palette_base_index;
-}
-
-uint32_t getPaletteMaxCount()
-{
-	return s_parameters.palette_max_count;
-}
-
-uint32_t getPaletteColorMaxCount()
-{
-	return s_parameters.palette_color_max_count;
-}
-
-uint32_t getTileMaxCount()
-{
-	return s_parameters.tile_max_count;
-}
-
-uint32_t getBankMaxCount()
-{
-	return s_parameters.bank_max_count;
-}
-
-bool getUseTransparentColor()
-{
-	return s_parameters.use_transparent_color;
+	return hardware < kHardwareCount;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-}
+} }
 

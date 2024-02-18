@@ -52,7 +52,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 		colors.insert(rhs[i]);
 	}
 
-	if(colors.size() > getPaletteColorMaxCount())
+	if(colors.size() > profile::palette_color_max_count)
 	{
 		return false;
 	}
@@ -76,7 +76,7 @@ Palette::Palette()
 	{
 		m_colors[i] = kRGBA_Invalid;
 	}
-	if(getUseTransparentColor())
+	if(profile::insert_transparent_color)
 	{
 		push(kRGBA_Magenta);
 	}
@@ -190,12 +190,12 @@ bool PaletteSet::optimize()
 {
 	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
 
-	if(getTargetHardware() == kHardwareSgb)
+	if(profile::palette_share_first_color)
 	{
 		std::vector<const Palette*> four_color_palettes;
 		for(const Palette& palette : m_palettes)
 		{
-			if(palette.size() == getPaletteColorMaxCount())
+			if(palette.size() == profile::palette_color_max_count)
 			{
 				four_color_palettes.push_back(&palette);
 			}
@@ -248,7 +248,7 @@ bool PaletteSet::optimize()
 
 			for(Palette& palette : m_palettes)
 			{
-				if(palette.size() == getPaletteColorMaxCount())
+				if(palette.size() == profile::palette_color_max_count)
 				{
 					palette.makeFirstColor(candidate_color);
 				}

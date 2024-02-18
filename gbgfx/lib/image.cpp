@@ -260,27 +260,33 @@ bool Image::iterateTiles(
 {
 	if(metatile_width == 0 && metatile_height == 0)
 	{
-		GBGFX_LOG_ERROR("Metatile dimensions must not be zero [" << m_filename << "]");
-		return false;
-	}
-	if(getDataType() == kDataTypeSprite8x16 && ((metatile_height % (kTileSize * 2)) != 0))
-	{
-		GBGFX_LOG_ERROR("Metatiles' height must be a multiple of 16 when using 8x16 microtiles [" << m_filename << "]");
+		GBGFX_LOG_ERROR(
+			"Metatile dimensions must not be zero [" << m_filename << "]");
 		return false;
 	}
 	if((getWidth() % metatile_width != 0) || (getHeight() % metatile_height != 0))
 	{
-		GBGFX_LOG_ERROR("Image dimension must be a multiple of the metatile dimension [" << m_filename << "]");
+		GBGFX_LOG_ERROR(
+			"Image dimension (" << getWidth() << "x" << getHeight()
+			<< ") must be a multiple of the microtile dimension ("
+			<< metatile_width << "x" << metatile_height
+			<< ") in [" << m_filename << "]");
 		return false;
 	}
-	if((metatile_height % kTileSize) != 0 || (metatile_height % kTileSize) != 0)
+	if((getWidth() % profile::microtile_width != 0) || (getHeight() % profile::microtile_height != 0))
 	{
-		GBGFX_LOG_ERROR("Metatile dimension must be a multiple of the microtile dimension [" << m_filename << "]");
+		GBGFX_LOG_ERROR(
+			"Image dimension (" << getWidth() << "x" << getHeight()
+			<< ") must be a multiple of the microtile dimension ("
+			<< profile::microtile_width << "x" << profile::microtile_height
+			<< ") in [" << m_filename << "]");
 		return false;
 	}
 	if(start_tile_row >= getHeight() / kTileSize)
 	{
-		GBGFX_LOG_ERROR("The start tile row must be between 0 and " << getHeight() / kTileSize - 1 << " [" << m_filename << "]");
+		GBGFX_LOG_ERROR(
+			"The start tile row must be between 0 and "
+			<< getHeight() / kTileSize - 1 << " in [" << m_filename << "]");
 		return false;
 	}
 	
@@ -294,7 +300,7 @@ bool Image::iterateTiles(
 		[&tile_callback](const ImageArea& metatile_area)
 		{
 			return metatile_area.iterateArea(
-				0, kIterateAllRows, kTileSize, kTileSize * (isSprite() ? 2 : 1),
+				0, kIterateAllRows, profile::microtile_width, profile::microtile_height,
 				[&tile_callback](const ImageArea& microtile_area)
 				{
 					return microtile_area.iterateTiles(tile_callback);

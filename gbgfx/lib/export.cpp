@@ -27,7 +27,7 @@ bool PaletteSetData::initialize(const PaletteSet& palette_set)
 		{
 			m_data.push_back(convertColor(palette[c]));
 		}
-		for(; c < getPaletteColorMaxCount(); ++c)
+		for(; c < profile::palette_color_max_count; ++c)
 		{
 			m_data.push_back(kBGR555_Invalid);
 		}
@@ -64,7 +64,7 @@ TilesetData::~TilesetData()
 
 bool TilesetData::initialize(const Tileset& tileset)
 {
-	const bool is_sfc = getTargetHardware() == kHardwareSfc;
+	assert(profile::palette_color_max_count == 4 || profile::palette_color_max_count == 16);
 	for(uint32_t t = 0; t < tileset.size(); ++t)
 	{
 		const Tile& tile = tileset[t];
@@ -79,7 +79,7 @@ bool TilesetData::initialize(const Tileset& tileset)
 				((indices[0] << 6) & 0x80) | ((indices[1] << 5) & 0x40) | ((indices[2] << 4) & 0x20) | ((indices[3] << 3) & 0x10) |
 				((indices[4] << 2) & 0x08) | ((indices[5] << 1) & 0x04) | ((indices[6] << 0) & 0x02) | ((indices[7] >> 1) & 0x01));
 		}
-		if(is_sfc)
+		if(profile::palette_color_max_count == 16)
 		{
 			for(uint32_t d = 0; d < kTileSize; ++d)
 			{
@@ -93,7 +93,6 @@ bool TilesetData::initialize(const Tileset& tileset)
 			}
 		}
 	}
-	assert(getDataSize() % (is_sfc ? kBytesPerTileData_SFC : kBytesPerTileData_GB) == 0);
 	m_tile_count = tileset.size();
 	return true;
 }
@@ -130,23 +129,20 @@ bool TilemapData::initialize(
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	bool use_8800_addressing_mode)
 {
-	if(palette_index_offset >= getPaletteMaxCount())
+	if(palette_index_offset >= profile::palette_max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The palette offset [" << palette_index_offset
-			<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
+			<< "] is over the palette max count [" << profile::palette_max_count << "]");
 		return false;
 	}
-	if(tile_index_offset >= getTileMaxCount())
+	if(tile_index_offset >= profile::tile_max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The tile offset [" << tile_index_offset
-			<< "] is over the tile max count [" << getTileMaxCount() << "]");
+			<< "] is over the tile max count [" << profile::tile_max_count << "]");
 		return false;
 	}
-
-	const Hardware hardware = getTargetHardware();
-	const bool extract_attributes = hardware == kHardwareSgb;
 
 	uint8_t attribute = 0;
 	uint32_t attribute_shift = 6;
@@ -154,11 +150,11 @@ bool TilemapData::initialize(
 	{
 		TilemapEntry entry = tilemap[i];
 
-		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= getPaletteMaxCount())
+		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= profile::palette_max_count)
 		{
 			GBGFX_LOG_ERROR(
 				"The palette index with offset [" << entry.palette_index + palette_index_offset
-				<< "] is over the palette max count [" << getPaletteMaxCount() << "]");
+				<< "] is over the palette max count [" << profile::palette_max_count << "]");
 			return false;
 		}
 
@@ -166,20 +162,20 @@ bool TilemapData::initialize(
 		{
 			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * kTilesPerBank);
 			global_tile_index += tile_index_offset;
-			if(global_tile_index >= getTileMaxCount())
+			if(global_tile_index >= profile::tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index with offset [" << entry.tile_index + tile_index_offset
-					<< "] is over the tile max count [" << getTileMaxCount() << "]");
+					<< "] is over the tile max count [" << profile::tile_max_count << "]");
 				return false;
 			}
 			entry.tile_index = global_tile_index % kTilesPerBank;
 			entry.bank = global_tile_index / kTilesPerBank;
-			if(entry.bank >= getBankMaxCount())
+			if(entry.bank >= profile::bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank (after applying the tile offset) [" << entry.bank
-					<< "] is over the bank max count [" << getBankMaxCount() << "]");
+					<< "] is over the bank max count [" << profile::bank_max_count << "]");
 				return false;
 			}
 		}
@@ -189,26 +185,33 @@ bool TilemapData::initialize(
 			entry.tile_index += 128;
 		}
 
-		const uint8_t palette_index = entry.palette_index + palette_index_offset + getPaletteBaseIndex();
+		const uint8_t palette_index = entry.palette_index + palette_index_offset + profile::palette_base_index;
 
 		m_indices.push_back(entry.tile_index + tile_index_offset);
-		m_parameters.push_back(
-			(palette_index & 0x07) |
-			((entry.bank & 0x01) << 3) |
-			(entry.flip_horizontal ? 0x20 : 0x00) |
-			(entry.flip_vertical ? 0x40 : 0x00) |
-			(entry.priority ? 0x80 : 0x00));
 
-		if(hardware == kHardwareSfc)
+		assert(
+			profile::tilemap_parameter_bit_depth == 0 ||
+			profile::tilemap_parameter_bit_depth == 8 ||
+			profile::tilemap_parameter_bit_depth == 16);
+		if(profile::tilemap_parameter_bit_depth == 8)
 		{
-			m_border_parameters.push_back(
+			m_parameters_8.push_back(
+				(palette_index & 0x07) |
+				((entry.bank & 0x01) << 3) |
+				(entry.flip_horizontal ? 0x20 : 0x00) |
+				(entry.flip_vertical ? 0x40 : 0x00) |
+				(entry.priority ? 0x80 : 0x00));
+		}
+		else if(profile::tilemap_parameter_bit_depth == 16)
+		{
+			m_parameters_16.push_back(
 				((entry.tile_index + tile_index_offset) & 0xFF) |
 				((palette_index & 0x03) << 10) |
 				(entry.flip_horizontal ? 0x4000 : 0x0000) |
 				(entry.flip_vertical ? 0x8000 : 0x0000));
 		}
 
-		if(extract_attributes)
+		if(profile::tilemap_has_attributes)
 		{
 			attribute |= ((palette_index & 0x3) << attribute_shift);
 			if(attribute_shift == 0)
@@ -223,7 +226,7 @@ bool TilemapData::initialize(
 			}
 		}
 	}
-	if(extract_attributes)
+	if(profile::tilemap_has_attributes)
 	{
 		if(attribute_shift != 0)
 		{
@@ -253,13 +256,14 @@ const uint8_t* TilemapData::getIndexData() const
 
 const uint8_t* TilemapData::getParameterData() const
 {
-	if(getTargetHardware() == kHardwareCgb)
+	assert(profile::tilemap_parameter_bit_depth == 8 || profile::tilemap_parameter_bit_depth == 16);
+	if(profile::tilemap_parameter_bit_depth == 8)
 	{
-		return reinterpret_cast<const uint8_t*>(m_parameters.data());
+		return reinterpret_cast<const uint8_t*>(m_parameters_8.data());
 	}
-	if(getTargetHardware() == kHardwareSfc)
+	if(profile::tilemap_parameter_bit_depth == 16)
 	{
-		return reinterpret_cast<const uint8_t*>(m_border_parameters.data());
+		return reinterpret_cast<const uint8_t*>(m_parameters_16.data());
 	}
 	return nullptr;
 }
@@ -276,13 +280,14 @@ uint32_t TilemapData::getIndexDataSize() const
 
 uint32_t TilemapData::getParameterDataSize() const
 {
-	if(getTargetHardware() == kHardwareCgb)
+	assert(profile::tilemap_parameter_bit_depth == 8 || profile::tilemap_parameter_bit_depth == 16);
+	if(profile::tilemap_parameter_bit_depth == 8)
 	{
-		return static_cast<uint32_t>(m_parameters.size() * sizeof(uint8_t));
+		return static_cast<uint32_t>(m_parameters_8.size() * sizeof(uint8_t));
 	}
-	if(getTargetHardware() == kHardwareSfc)
+	if(profile::tilemap_parameter_bit_depth == 16)
 	{
-		return static_cast<uint32_t>(m_border_parameters.size() * sizeof(uint16_t));
+		return static_cast<uint32_t>(m_parameters_16.size() * sizeof(uint16_t));
 	}
 	return 0;
 }

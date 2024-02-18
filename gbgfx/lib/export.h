@@ -43,16 +43,6 @@ public:
 	uint32_t getDataSize() const;
 
 private:
-	enum : uint32_t
-	{
-		kBytesPerTileDataRow_GB = 2,
-		kBytesPerTileData_GB = kTileSize * kBytesPerTileDataRow_GB,
-
-		kBytesPerTileDataRow_SFC = 4,
-		kBytesPerTileData_SFC = kTileSize * kBytesPerTileDataRow_SFC,
-	};
-
-private:
 	std::vector<uint8_t> m_data;
 	uint32_t m_tile_count;
 };
@@ -81,8 +71,8 @@ public:
 
 private:
 	std::vector<uint8_t> m_indices;
-	std::vector<uint8_t> m_parameters;
-	std::vector<uint16_t> m_border_parameters;
+	std::vector<uint8_t> m_parameters_8;
+	std::vector<uint16_t> m_parameters_16;
 	std::vector<uint8_t> m_attributes;
 	uint32_t m_row_count;
 	uint32_t m_column_count;

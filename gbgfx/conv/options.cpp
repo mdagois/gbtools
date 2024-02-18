@@ -5,7 +5,7 @@
 
 bool applyHardwareLimits(Options& options)
 {
-	if(!gbgfx::initialize(options.hardware, options.data_type))
+	if(!gbgfx::profile::initialize(options.hardware, options.data_type))
 	{
 		return false;
 	}
