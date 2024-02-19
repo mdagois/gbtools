@@ -13,7 +13,6 @@ bool applyHardwareLimits(Options& options)
 	switch(options.hardware)
 	{
 		case gbgfx::kHardwareDmg:
-			options.tilemap.use_flips = false;
 			options.output.skip_export_palette = true;
 			options.output.skip_export_parameters = true;
 			options.output.skip_export_attributes = true;
@@ -22,7 +21,6 @@ bool applyHardwareLimits(Options& options)
 			options.output.skip_export_attributes = true;
 			break;
 		case gbgfx::kHardwareSgb:
-			options.tilemap.use_flips = false;
 			options.output.skip_export_parameters = true;
 			break;
 		case gbgfx::kHardwareSfc:
@@ -86,9 +84,6 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionStringToInteger(
 			"tile-removal", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
-
-		// tilemap
-		OptionFlag("use-flips", "Use flips when exporting tilemaps", 'FLIP', &out_options.tilemap.use_flips),
 
 		// output
 		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),

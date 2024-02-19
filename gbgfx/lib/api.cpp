@@ -145,7 +145,6 @@ bool extractTileset(
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	bool use_flips,
 	const char* image_filename)
 {
 	Image image;
@@ -153,22 +152,15 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, tileset, palette_set, use_flips, image);
+	return extractTilemap(out_tilemap, tileset, palette_set, image);
 }
 
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	bool use_flips,
 	const Image& image)
 {
 	assert(isProfileValid());
-
-	if(use_flips && PROFILE.tileset.tile_removal_max < kTileRemovalFlips)
-	{
-		GBGFX_LOG_WARN("Flips are disabled as the hardware cannot use flips");
-		use_flips = false;
-	}
 
 	if(!out_tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
 	{
@@ -176,7 +168,7 @@ bool extractTilemap(
 		return false;
 	}
 	if(!image.iterateTiles(
-		[&out_tilemap, &tileset, &palette_set, &image, use_flips](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
 			if(!generateTile(tile, image_tile, palette_set))
@@ -191,7 +183,9 @@ bool extractTilemap(
 			uint32_t tile_index;
 			uint32_t palette_index;
 			TileFlipType flip_type;
-			if(!tileset.findTileIndex(tile_index, palette_index, flip_type, tile, use_flips))
+			if(!tileset.findTileIndex(
+				tile_index, palette_index, flip_type, tile,
+				PROFILE.tileset.tile_removal_max >= kTileRemovalFlips))
 			{
 				GBGFX_LOG_ERROR(
 					"Could not find tile ("

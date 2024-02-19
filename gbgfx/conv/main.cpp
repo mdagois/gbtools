@@ -36,7 +36,7 @@ static bool loadDataFromImages(
 		out_tilemaps.resize(size + 1);
 		if(!gbgfx::extractTilemap(
 			out_tilemaps[size], out_tileset, out_palette_set,
-			options.tilemap.use_flips, png_filename))
+			png_filename))
 		{
 			GBGFX_LOG_ERROR("Could not extract tilemap from [" << png_filename << "]");
 			return false;

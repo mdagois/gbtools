@@ -29,7 +29,6 @@ struct Options
 	struct
 	{
 		std::vector<const char*> png_filenames;
-		bool use_flips = false;
 	}
 	tilemap;
 

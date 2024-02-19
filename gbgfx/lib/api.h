@@ -28,12 +28,10 @@ bool extractTileset(
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	bool use_flips,
 	const char* image_filename);
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	bool use_flips,
 	const Image& image);
 
 ////////////////////////////////////////////////////////////////////////////////
