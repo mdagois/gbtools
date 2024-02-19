@@ -11,8 +11,7 @@ add_library(
 	palette.h palette.cpp
 	profile.h profile.cpp
 	tilemap.h tilemap.cpp
-	tileset.h tileset.cpp
-	utils.h utils.cpp)
+	tileset.h tileset.cpp)
 target_compile_definitions(gbgfx PUBLIC _CRT_SECURE_NO_WARNINGS)
 target_compile_features(gbgfx PRIVATE cxx_std_17)
 

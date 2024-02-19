@@ -10,7 +10,6 @@
 #include "profile.h"
 #include "tilemap.h"
 #include "tileset.h"
-#include "utils.h"
 
 //TODO Support metatiles in tilemap extraction
 //TODO Bring more constants into the profile

@@ -78,12 +78,16 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		// tileset
 		OptionInteger("starting-tile-row", "Starting tile row", false, 'STRO', &out_options.tileset.start_tile_row),
 		OptionInteger("tile-row-count", "Tile row count", false, 'ROWC', &out_options.tileset.tile_row_count),
-		OptionInteger("metatile-width", "Metatile pixel width", false, 'METW', &out_options.tileset.metatile_width),
-		OptionInteger("metatile-height", "Metatile pixel height", false, 'METH', &out_options.tileset.metatile_height),
+		OptionInteger("tileset-metatile-width", "Tileset metatile pixel width", false, 'TSMW', &out_options.tileset.metatile_width),
+		OptionInteger("tileset-metatile-height", "Tileset metatile pixel height", false, 'TSMH', &out_options.tileset.metatile_height),
 		OptionFlag("skip-empty-metatile", "Skip single color metatiles", 'SSME', &out_options.tileset.skip_single_color_metatiles),
 		OptionStringToInteger(
 			"tile-removal", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
+
+		// tilemap
+		OptionInteger("tilemap-metatile-width", "Tilemap metatile pixel width", false, 'TMMW', &out_options.tilemap.metatile_width),
+		OptionInteger("tilemap-metatile-height", "Tilemap metatile pixel height", false, 'TMMH', &out_options.tilemap.metatile_height),
 
 		// output
 		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),

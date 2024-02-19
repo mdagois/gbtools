@@ -141,7 +141,7 @@ void Palette::makeFirstColor(ColorRGBA color)
 	{
 		if(color == m_colors[i])
 		{
-			m_colors[i].a = kSharedColorAlpha;
+			m_colors[i].a = kHighPriorityColorAlpha;
 			return;
 		}
 	}

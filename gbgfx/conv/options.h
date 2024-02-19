@@ -29,6 +29,8 @@ struct Options
 	struct
 	{
 		std::vector<const char*> png_filenames;
+		int32_t metatile_width = gbgfx::kTileSize;
+		int32_t metatile_height = gbgfx::kTileSize;
 	}
 	tilemap;
 

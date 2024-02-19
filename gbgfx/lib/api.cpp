@@ -1,4 +1,5 @@
 #include <cassert>
+#include <set>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "third_party/stb_image_write.h"
@@ -8,9 +9,82 @@
 #include "image.h"
 #include "log.h"
 #include "profile.h"
-#include "utils.h"
 
 namespace gbgfx {
+
+////////////////////////////////////////////////////////////////////////////////
+// Utils
+////////////////////////////////////////////////////////////////////////////////
+
+static bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
+{
+	std::set<ColorRGBA> colors;
+	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	{
+		colors.insert(tile[i]);
+	}
+	if(colors.size() > PROFILE.palette.color_max_count)
+	{
+		GBGFX_LOG_ERROR("Too many colors in palette");
+		return false;
+	}
+
+	for(ColorRGBA color : colors)
+	{
+		out_tile_palette.push(color);
+	}
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+static bool generateTileFlip(
+	TileFlip& out_tile_flip, uint32_t& out_palette_index,
+	const ImageTile& image_tile, const PaletteSet& palette_set)
+{
+	{
+		Palette tile_palette;
+		if(!extractTilePalette(tile_palette, image_tile))
+		{
+			GBGFX_LOG_ERROR("Could not extract palette");
+			return false;
+		}
+
+		uint32_t palette_index = 0;
+		if(!palette_set.findCompatiblePaletteIndex(palette_index, tile_palette))
+		{
+			GBGFX_LOG_ERROR("Could not find a compatible palette");
+			return false;
+		}
+		out_palette_index = palette_index;
+	}
+
+	const Palette& palette = palette_set[out_palette_index];
+	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	{
+		uint8_t color_index = 0;
+		if(!palette.findColorIndex(color_index, image_tile[i]))
+		{
+			GBGFX_LOG_ERROR("Could not find color in palette");
+			return false;
+		}
+		out_tile_flip.color_indices[i] = color_index;
+	}
+	return true;
+}
+
+static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set)
+{
+	TileFlip tile_flip;
+	uint32_t palette_index;
+	if(!generateTileFlip(tile_flip, palette_index, image_tile, palette_set))
+	{
+		GBGFX_LOG_ERROR("Could not generate tile flip");
+		return false;
+	}
+	out_tile.initialize(tile_flip, palette_index);
+	return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 // Input
@@ -145,6 +219,7 @@ bool extractTileset(
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
+	uint32_t metatile_width, uint32_t metatile_height,
 	const char* image_filename)
 {
 	Image image;
@@ -152,12 +227,13 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, tileset, palette_set, image);
+	return extractTilemap(out_tilemap, tileset, palette_set, metatile_width, metatile_height, image);
 }
 
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
+	uint32_t metatile_width, uint32_t metatile_height,
 	const Image& image)
 {
 	assert(isProfileValid());
@@ -168,6 +244,7 @@ bool extractTilemap(
 		return false;
 	}
 	if(!image.iterateTiles(
+		0, kIterateAllRows, metatile_width, metatile_height,
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;

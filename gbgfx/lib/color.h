@@ -8,6 +8,11 @@ namespace gbgfx {
 // RGBA
 ////////////////////////////////////////////////////////////////////////////////
 
+enum
+{
+	kHighPriorityColorAlpha = 0,
+};
+
 struct ColorRGBA
 {
 	uint8_t r;

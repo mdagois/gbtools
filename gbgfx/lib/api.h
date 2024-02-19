@@ -28,10 +28,12 @@ bool extractTileset(
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
+	uint32_t metatile_width, uint32_t metatile_height,
 	const char* image_filename);
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
+	uint32_t metatile_width, uint32_t metatile_height,
 	const Image& image);
 
 ////////////////////////////////////////////////////////////////////////////////
