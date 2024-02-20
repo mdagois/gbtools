@@ -141,8 +141,7 @@ bool extractTileset(
 	std::vector<ImageTile> metatile_tiles;
 	std::vector<ImageTile> image_tiles;
 	if(!image.iterateTiles(
-		start_tile_row, tile_row_count,
-		metatile_width, metatile_height,
+		start_tile_row, tile_row_count, metatile_width, metatile_height,
 		[&metatile_tiles, &image_tiles, &out_palette_set,
 		 &image, tiles_per_metatile, skip_single_color_metatiles](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
