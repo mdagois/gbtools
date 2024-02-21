@@ -6,7 +6,6 @@
 #include <string>
 
 #include "color.h"
-#include "constants.h"
 
 namespace gbgfx {
 
@@ -14,18 +13,32 @@ namespace gbgfx {
 // Image tile
 ////////////////////////////////////////////////////////////////////////////////
 
+class ImageArea;
+
 class ImageTile
 {
 public:
 	ImageTile();
 	virtual ~ImageTile();
+	void setImageArea(const ImageArea* image_area);
 
-	ColorRGBA& operator[](int32_t index);
 	const ColorRGBA operator[](int32_t index) const;
-	uint32_t size() const;
+	uint32_t getWidth() const;
+	uint32_t getHeight() const;
 
 private:
-	ColorRGBA m_pixels[kPixelsPerTile];
+	const ImageArea* m_image_area;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+// Division
+////////////////////////////////////////////////////////////////////////////////
+
+struct Division
+{
+	uint32_t width;
+	uint32_t height;
+	bool ignore_transparent;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -46,10 +59,7 @@ public:
 	const ColorRGBA* getPixels() const;
 
 	bool iterateTiles(
-		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
-	bool iterateTiles(
-		uint32_t start_tile_row, uint32_t tile_row_count,
-		uint32_t metatile_width, uint32_t metatile_height,
+		const Division* divisions, uint32_t division_count,
 		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:

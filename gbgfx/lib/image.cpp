@@ -5,42 +5,14 @@
 
 #include "image.h"
 #include "log.h"
-#include "profile.h"
 
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Image tile
-////////////////////////////////////////////////////////////////////////////////
-
-ImageTile::ImageTile()
-{
-}
-
-ImageTile::~ImageTile()
-{
-}
-
-ColorRGBA& ImageTile::operator[](int32_t index)
-{
-	assert(index < kPixelsPerTile);
-	return m_pixels[index];
-}
-
-const ColorRGBA ImageTile::operator[](int32_t index) const
-{
-	assert(index < kPixelsPerTile);
-	return m_pixels[index];
-}
-
-uint32_t ImageTile::size() const
-{
-	return kPixelsPerTile;
-}
-
-////////////////////////////////////////////////////////////////////////////////
 // Image area
 ////////////////////////////////////////////////////////////////////////////////
+
+typedef std::function<bool(const ImageArea&, const Division* division, uint32_t level)> AreaCallback;
 
 class ImageArea
 {
@@ -51,18 +23,13 @@ public:
 		uint32_t pitch);
 	~ImageArea();
 
+	bool iterateArea(const Division* division, uint32_t level, AreaCallback area_callback) const;
+
+	const ColorRGBA operator[](int32_t index) const;
 	uint32_t getX() const;
 	uint32_t getY() const;
 	uint32_t getWidth() const;
 	uint32_t getHeight() const;
-	const ColorRGBA* getPixels() const;
-
-	bool iterateArea(
-		uint32_t start_tile_row, uint32_t tile_row_count,
-		uint32_t metatile_width, uint32_t metatile_height,
-		std::function<bool(const ImageArea&)> area_callback) const;
-	bool iterateTiles(
-		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:
 	const ColorRGBA* m_pixels;
@@ -92,6 +59,40 @@ ImageArea::~ImageArea()
 {
 }
 
+bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallback area_callback) const
+{
+	assert(m_width % division->width == 0);
+	assert(m_height % division->height == 0);
+
+	const uint32_t row_count = m_height / division->height;
+	const uint32_t column_count = m_width / division->width;
+	for(uint32_t j = 0; j < row_count; ++j)
+	{
+		for(uint32_t i = 0; i < column_count; ++i)
+		{
+			const ColorRGBA* area_pixels = m_pixels + (j * division->height * m_pitch) + (i * division->width);
+			const ImageArea sub_area(area_pixels, i, j, division->width, division->height, m_pitch);
+			if(!area_callback(sub_area, division, level))
+			{
+				GBGFX_LOG_ERROR(
+					"Error in callback for area (x=" << sub_area.m_x << ", y=" << sub_area.m_y
+					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+const ColorRGBA ImageArea::operator[](int32_t index) const
+{
+	assert(index < static_cast<int32_t>(m_width * m_height));
+	const uint32_t row = index / m_width;
+	const uint32_t column = index % m_width;
+	return m_pixels[row * m_pitch + column];
+}
+
 uint32_t ImageArea::getX() const
 {
 	return m_x;
@@ -112,79 +113,91 @@ uint32_t ImageArea::getHeight() const
 	return m_height;
 }
 
-const ColorRGBA* ImageArea::getPixels() const
+////////////////////////////////////////////////////////////////////////////////
+// Image tile
+////////////////////////////////////////////////////////////////////////////////
+
+ImageTile::ImageTile()
+: m_image_area(nullptr)
 {
-	return m_pixels;
 }
 
-bool ImageArea::iterateArea(
-	uint32_t start_tile_row, uint32_t tile_row_count,
-	uint32_t metatile_width, uint32_t metatile_height,
-	std::function<bool(const ImageArea&)> area_callback) const
+ImageTile::~ImageTile()
 {
-	if(tile_row_count == kIterateAllRows)
-	{
-		tile_row_count = 0xFFFFFFFFU;
-	}
-	assert(tile_row_count > 0);
-
-	const uint32_t total_row_count = getHeight() / metatile_height;
-	const uint32_t iterate_row_count = std::min(total_row_count - start_tile_row, tile_row_count);
-	const uint32_t iterate_column_count = getWidth() / metatile_width;
-	const ColorRGBA* pixels = getPixels() + (start_tile_row * getWidth() * metatile_height);
-	for(uint32_t j = 0; j < iterate_row_count; ++j)
-	{
-		for(uint32_t i = 0; i < iterate_column_count; ++i)
-		{
-			const ColorRGBA* area_pixels = pixels + (j * getWidth() * metatile_height) + (i * metatile_width);
-			const ImageArea tile_area(area_pixels, i, j, metatile_width, metatile_height, m_pitch);
-			if(!area_callback(tile_area))
-			{
-				return false;
-			}
-		}
-	}
-
-	return true;
 }
 
-bool ImageArea::iterateTiles(
-	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
+void ImageTile::setImageArea(const ImageArea* image_area)
 {
-	assert(getWidth() % kTileSize == 0);
-	assert(getHeight() % kTileSize == 0);
+	assert(image_area != nullptr);
+	m_image_area = image_area;
+}
 
-	const uint32_t iterate_row_count = getHeight() / kTileSize;
-	const uint32_t iterate_column_count = getWidth() / kTileSize;
-	const ColorRGBA* const pixels = getPixels();
-	for(uint32_t j = 0; j < iterate_row_count; ++j)
+const ColorRGBA ImageTile::operator[](int32_t index) const
+{
+	assert(m_image_area != nullptr);
+	return (*m_image_area)[index];
+}
+
+uint32_t ImageTile::getWidth() const
+{
+	assert(m_image_area != nullptr);
+	return (*m_image_area).getWidth();
+}
+
+uint32_t ImageTile::getHeight() const
+{
+	assert(m_image_area != nullptr);
+	return (*m_image_area).getHeight();
+}
+
+////////////////////////////////////////////////////////////////////////////////
+// Division
+////////////////////////////////////////////////////////////////////////////////
+
+static bool validateDivisions(
+	uint32_t top_width, uint32_t top_height,
+	const Division* divisions, uint32_t division_count)
+{
+	if(division_count == 0)
 	{
-		for(uint32_t i = 0; i < iterate_column_count; ++i)
-		{
-			const ColorRGBA* tile_pixels = pixels + (j * m_pitch * kTileSize) + (i * kTileSize);
-			ImageTile tile;
-			for(uint32_t p = 0; p < kTileSize; ++p)
-			{
-				const uint32_t base_index = p * kTileSize;
-				tile[base_index + 0] = tile_pixels[0];
-				tile[base_index + 1] = tile_pixels[1];
-				tile[base_index + 2] = tile_pixels[2];
-				tile[base_index + 3] = tile_pixels[3];
-				tile[base_index + 4] = tile_pixels[4];
-				tile[base_index + 5] = tile_pixels[5];
-				tile[base_index + 6] = tile_pixels[6];
-				tile[base_index + 7] = tile_pixels[7];
-				tile_pixels += m_pitch;
-			}
-			const uint32_t tile_x = m_x * iterate_column_count + i;
-			const uint32_t tile_y = m_y * iterate_row_count + j;
-			if(!tile_callback(tile, tile_x, tile_y))
-			{
-				return false;
-			}
-		}
+		GBGFX_LOG_ERROR("The division list cannot be empty");
+		return false;
 	}
-
+	uint32_t previous_width = top_width;
+	uint32_t previous_height = top_height;
+	for(uint32_t i = 0; i < division_count; ++i)
+	{
+		const Division& current = divisions[i];
+		if(current.width == 0 || current.height == 0)
+		{
+			GBGFX_LOG_ERROR(
+				"Division " << i << " (" << current.width << "x" << current.height << ") "
+				<< "must not have any dimension at zero");
+			return false;
+		}
+		if(current.width > previous_width || current.height > previous_height)
+		{
+			GBGFX_LOG_ERROR(
+				"Division " << i << " (" << current.width << "x" << current.height << ") "
+				<< "must not be larger than " << previous_width << "x" << previous_height);
+			return false;
+		}
+		if(current.width == previous_width && current.height == previous_height)
+		{
+			GBGFX_LOG_ERROR(
+				"Division " << i << " (" << current.width << "x" << current.height << ") "
+				<< "must be stricly smaller than " << previous_width << "x" << previous_height);
+			return false;
+		}
+		if((previous_width % current.width != 0) || (previous_height % current.height != 0))
+		{
+			GBGFX_LOG_ERROR(
+				"Division " << i << " (" << current.width << "x" << current.height << ") "
+				<< "dimension must divide exactly " << previous_width << "x" << previous_height);
+		}
+		previous_width = current.width;
+		previous_height = current.height;
+	}
 	return true;
 }
 
@@ -248,65 +261,33 @@ const ColorRGBA* Image::getPixels() const
 }
 
 bool Image::iterateTiles(
+	const Division* divisions, uint32_t division_count,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
-	return iterateTiles(0, kIterateAllRows, kTileSize, kTileSize, tile_callback);
-}
+	if(!validateDivisions(m_width, m_height, divisions, division_count))
+	{
+		return false;
+	}
 
-bool Image::iterateTiles(
-	uint32_t start_tile_row, uint32_t tile_row_count,
-	uint32_t metatile_width, uint32_t metatile_height,
-	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
-{
-	if(metatile_width == 0 && metatile_height == 0)
+	AreaCallback area_callback = [&area_callback, &tile_callback](const ImageArea& area, const Division* division, uint32_t level)
 	{
-		GBGFX_LOG_ERROR(
-			"Metatile dimensions must not be zero [" << m_filename << "]");
-		return false;
-	}
-	if((getWidth() % metatile_width != 0) || (getHeight() % metatile_height != 0))
-	{
-		GBGFX_LOG_ERROR(
-			"Image dimension (" << getWidth() << "x" << getHeight()
-			<< ") must be a multiple of the microtile dimension ("
-			<< metatile_width << "x" << metatile_height
-			<< ") in [" << m_filename << "]");
-		return false;
-	}
-	if((getWidth() % PROFILE.tileset.microtile_width != 0) || (getHeight() % PROFILE.tileset.microtile_height != 0))
-	{
-		GBGFX_LOG_ERROR(
-			"Image dimension (" << getWidth() << "x" << getHeight()
-			<< ") must be a multiple of the microtile dimension ("
-			<< PROFILE.tileset.microtile_width << "x" << PROFILE.tileset.microtile_height
-			<< ") in [" << m_filename << "]");
-		return false;
-	}
-	if(start_tile_row >= getHeight() / kTileSize)
-	{
-		GBGFX_LOG_ERROR(
-			"The start tile row must be between 0 and "
-			<< getHeight() / kTileSize - 1 << " in [" << m_filename << "]");
-		return false;
-	}
-	
+		if(level == 0)
+		{
+			ImageTile image_tile;
+			image_tile.setImageArea(&area);
+			return tile_callback(image_tile, area.getX(), area.getY());
+		}
+		else
+		{
+			return area.iterateArea(division + 1, level - 1, area_callback);
+		}
+	};
+
 	ImageArea full_image(
 		m_pixels,
 		0, 0, m_width, m_height,
 		m_width);
-	full_image.iterateArea(
-		start_tile_row, tile_row_count,
-		metatile_width, metatile_height,
-		[&tile_callback](const ImageArea& metatile_area)
-		{
-			return metatile_area.iterateArea(
-				0, kIterateAllRows, PROFILE.tileset.microtile_width, PROFILE.tileset.microtile_height,
-				[&tile_callback](const ImageArea& microtile_area)
-				{
-					return microtile_area.iterateTiles(tile_callback);
-				});
-		});
-	return true;
+	return full_image.iterateArea(divisions, division_count - 1, area_callback);
 }
 
 void Image::unload()
