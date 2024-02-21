@@ -3,7 +3,6 @@
 #include <vector>
 
 #include "color.h"
-#include "constants.h"
 
 namespace gbgfx {
 
@@ -17,7 +16,7 @@ public:
 	Palette();
 	virtual ~Palette();
 
-	void push(ColorRGBA color);
+	void add(ColorRGBA color);
 	void clear();
 	uint32_t size() const;
 	bool contains(const Palette& sub_palette) const;
@@ -46,7 +45,7 @@ public:
 	PaletteSet();
 	virtual ~PaletteSet();
 
-	void push(const Palette& palette);
+	void add(const Palette& palette);
 	const Palette& operator[](int32_t index) const;
 	uint32_t size() const;
 	bool optimize();

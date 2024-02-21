@@ -2,9 +2,9 @@
 #include <cassert>
 #include <set>
 
+#include "features.h"
 #include "log.h"
 #include "palette.h"
-#include "profile.h"
 
 namespace gbgfx {
 
@@ -52,7 +52,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 		colors.insert(rhs[i]);
 	}
 
-	if(colors.size() > PROFILE.palette.color_max_count)
+	if(colors.size() > FEATURES.palette.color_max_count)
 	{
 		return false;
 	}
@@ -60,7 +60,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 	out_palette.clear();
 	for(ColorRGBA color : colors)
 	{
-		out_palette.push(color);
+		out_palette.add(color);
 	}
 	return true;
 }
@@ -72,13 +72,10 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 Palette::Palette()
 : m_color_count(0)
 {
-	for(int32_t i = 0; i < kColorsPerPalette_Max; ++i)
+	memset(m_colors, 0, sizeof(m_colors) * sizeof(m_colors[0]));
+	if(FEATURES.palette.insert_transparent_color)
 	{
-		m_colors[i] = kRGBA_Invalid;
-	}
-	if(PROFILE.palette.insert_transparent_color)
-	{
-		push(kRGBA_Magenta);
+		add(kRGBA_Magenta);
 	}
 }
 
@@ -86,7 +83,7 @@ Palette::~Palette()
 {
 }
 
-void Palette::push(ColorRGBA color)
+void Palette::add(ColorRGBA color)
 {
 	assert(m_color_count < kColorsPerPalette_Max);
 	m_colors[m_color_count] = color;
@@ -160,7 +157,7 @@ PaletteSet::~PaletteSet()
 {
 }
 
-void PaletteSet::push(const Palette& palette)
+void PaletteSet::add(const Palette& palette)
 {
 	for(uint32_t i = 0; i < m_palettes.size(); ++i)
 	{
@@ -191,12 +188,12 @@ bool PaletteSet::optimize()
 {
 	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
 
-	if(PROFILE.palette.share_first_color)
+	if(FEATURES.palette.share_first_color)
 	{
 		std::vector<const Palette*> four_color_palettes;
 		for(const Palette& palette : m_palettes)
 		{
-			if(palette.size() == PROFILE.palette.color_max_count)
+			if(palette.size() == FEATURES.palette.color_max_count)
 			{
 				four_color_palettes.push_back(&palette);
 			}
@@ -205,7 +202,7 @@ bool PaletteSet::optimize()
 		{
 			for(Palette& palette : m_palettes)
 			{
-				palette.push(kRGBA_Magenta);
+				palette.add(kRGBA_Magenta);
 			}
 		}
 		else
@@ -249,13 +246,13 @@ bool PaletteSet::optimize()
 
 			for(Palette& palette : m_palettes)
 			{
-				if(palette.size() == PROFILE.palette.color_max_count)
+				if(palette.size() == FEATURES.palette.color_max_count)
 				{
 					palette.makeFirstColor(candidate_color);
 				}
 				else
 				{
-					palette.push(candidate_color);
+					palette.add(candidate_color);
 				}
 			}
 		}

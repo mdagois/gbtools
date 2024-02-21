@@ -9,7 +9,7 @@ add_library(
 	features.h features.cpp
 	image.h image.cpp
 	log.h log.cpp
-#	palette.h palette.cpp
+	palette.h palette.cpp
 #	tilemap.h tilemap.cpp
 #	tileset.h tileset.cpp
 	)
