@@ -1,16 +1,17 @@
 #pragma once
 
-#include "api.h"
+//#include "api.h"
 #include "color.h"
-#include "constants.h"
-#include "export.h"
+//#include "constants.h"
+//#include "export.h"
+#include "features.h"
 #include "image.h"
 #include "log.h"
-#include "palette.h"
-#include "profile.h"
-#include "tilemap.h"
-#include "tileset.h"
+//#include "palette.h"
+//#include "tilemap.h"
+//#include "tileset.h"
 
+//TODO Support OAM export
 //TODO Support metatiles in tilemap extraction
 //TODO Bring more constants into the profile
 //TODO Express tilemap format as Vulkan format

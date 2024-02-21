@@ -6,10 +6,10 @@ add_library(
 #	api.h api.cpp
 	color.h color.cpp
 #	export.h export.cpp
+	features.h features.cpp
 	image.h image.cpp
 	log.h log.cpp
 #	palette.h palette.cpp
-#	profile.h profile.cpp
 #	tilemap.h tilemap.cpp
 #	tileset.h tileset.cpp
 	)

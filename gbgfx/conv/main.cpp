@@ -6,6 +6,7 @@
 #include "gbgfx.h"
 #include "options.h"
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Data export
 ////////////////////////////////////////////////////////////////////////////////
@@ -144,6 +145,7 @@ static bool exportData(const Options& options)
 
 	return true;
 }
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // main
@@ -151,6 +153,7 @@ static bool exportData(const Options& options)
 
 int main(int argc, const char** argv)
 {
+#if 0
 	Options options;
 	bool is_help = 0;
 	if(!parseCliOptions(options, is_help, argc, argv))
@@ -167,6 +170,7 @@ int main(int argc, const char** argv)
 	{
 		return 1;
 	}
+#endif
 	return 0;
 }
 

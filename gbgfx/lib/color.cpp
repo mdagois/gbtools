@@ -59,36 +59,6 @@ void sortColorsRGBA(ColorRGBA* colors, uint32_t count)
 // BGR555
 ////////////////////////////////////////////////////////////////////////////////
 
-double getLuminance(const ColorBGR555 color)
-{
-	const double blue = ((color >> 10) & 0x1F) / 32.0;
-	const double green = ((color >> 5) & 0x1F) / 32.0;
-	const double red = (color & 0x1F) / 32.0;
-	return 0.2126 * red + 0.7152 * green + 0.0722 * blue;
-}
-
-void sortColorsBGR555(ColorBGR555* colors, uint32_t count)
-{
-	std::sort(
-		colors, colors + count,
-		[](const ColorBGR555 lhs, const ColorBGR555 rhs)
-		{
-			if(lhs == kBGR555_Magenta)
-			{
-				return true;
-			}
-			if(rhs == kBGR555_Magenta)
-			{
-				return false;
-			}
-			return getLuminance(lhs) < getLuminance(rhs);
-		});
-}
-
-////////////////////////////////////////////////////////////////////////////////
-// Conversion
-////////////////////////////////////////////////////////////////////////////////
-
 ColorBGR555 convertColor(ColorRGBA rgba)
 {
 	const uint8_t red = rgba.r / 8;

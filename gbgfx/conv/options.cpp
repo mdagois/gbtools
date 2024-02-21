@@ -1,6 +1,7 @@
 #include "commandline.h"
 #include "options.h"
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 
 bool applyHardwareLimits(Options& options)
@@ -157,4 +158,5 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	return true;
 }
+#endif
 

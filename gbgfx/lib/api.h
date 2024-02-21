@@ -1,8 +1,8 @@
 #pragma once
 
+#include "features.h"
 #include "image.h"
 #include "palette.h"
-#include "profile.h"
 #include "tilemap.h"
 #include "tileset.h"
 

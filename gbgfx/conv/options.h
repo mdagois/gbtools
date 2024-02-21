@@ -5,6 +5,7 @@
 
 #include "gbgfx.h"
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Options
 ////////////////////////////////////////////////////////////////////////////////
@@ -64,4 +65,5 @@ struct Options
 
 bool applyHardwareLimits(Options& options);
 bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv);
+#endif
 

@@ -17,7 +17,7 @@ enum LogLevel : uint32_t
 	kLogLevel_Error,
 	kLogLevel_Warn,
 	kLogLevel_Info,
-	kLogLevel_All = kLogLevel_Info,
+	kLogLevel_All,
 };
 
 void setLogLevel(LogLevel level);
