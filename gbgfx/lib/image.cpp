@@ -32,6 +32,9 @@ public:
 	uint32_t getHeight() const;
 
 private:
+	bool isTransparent() const;
+
+private:
 	const ColorRGBA* m_pixels;
 	uint32_t m_x;
 	uint32_t m_y;
@@ -72,6 +75,13 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 		{
 			const ColorRGBA* area_pixels = m_pixels + (j * division->height * m_pitch) + (i * division->width);
 			const ImageArea sub_area(area_pixels, i, j, division->width, division->height, m_pitch);
+			if(division->skip_transparent && sub_area.isTransparent())
+			{
+				GBGFX_LOG_INFO(
+					"Skipping transparent area (x=" << sub_area.m_x << ", y=" << sub_area.m_y
+					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
+				return true;
+			}
 			if(!area_callback(sub_area, division, level))
 			{
 				GBGFX_LOG_ERROR(
@@ -111,6 +121,18 @@ uint32_t ImageArea::getWidth() const
 uint32_t ImageArea::getHeight() const
 {
 	return m_height;
+}
+
+bool ImageArea::isTransparent() const
+{
+	for(uint32_t i = 0; i < m_width * m_height; ++i)
+	{
+		if((*this)[i] != kRGBA_Magenta)
+		{
+			return false;
+		}
+	}
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

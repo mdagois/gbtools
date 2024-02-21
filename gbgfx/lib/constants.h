@@ -9,8 +9,6 @@ enum
 	kTileSize = 8,
 	kPixelsPerTile = kTileSize * kTileSize,
 
-	kTilesPerBank = 256,
-
 	kTilemapRowMaxCount = 32,
 	kTilemapColumnMaxCount = 32,
 };

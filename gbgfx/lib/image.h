@@ -38,7 +38,7 @@ struct Division
 {
 	uint32_t width;
 	uint32_t height;
-	bool ignore_transparent;
+	bool skip_transparent;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
