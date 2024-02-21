@@ -17,7 +17,6 @@
 //TODO Express tilemap format as Vulkan format
 //TODO Split into profile/logical/binary layers
 //TODO Support forcing the palette set instead of extracting it
-
 //TODO Allow to set an output directory
 //TODO Support short name for options
 
