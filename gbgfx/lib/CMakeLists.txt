@@ -10,13 +10,13 @@ set(IMPORT_SRC
 )
 list(TRANSFORM IMPORT_SRC PREPEND import/)
 
-set(MODEL_SRC 
+set(DATA_SRC 
 	color.h color.cpp
 	palette.h palette.cpp
 	tilemap.h tilemap.cpp
 	tileset.h tileset.cpp
 )
-list(TRANSFORM MODEL_SRC PREPEND model/)
+list(TRANSFORM DATA_SRC PREPEND data/)
 
 set(UTILS_SRC log.h log.cpp)
 list(TRANSFORM UTILS_SRC PREPEND utils/)
@@ -26,10 +26,10 @@ add_library(
 	STATIC
 #	${EXPORT_SRC}
 	${IMPORT_SRC}
-	${MODEL_SRC}
+	${DATA_SRC}
 	${UTILS_SRC}
-#	api.h api.cpp
 	features.h features.cpp
+#	gbgfx.h gbgfx.cpp
 )
 
 target_compile_definitions(gbgfx PUBLIC _CRT_SECURE_NO_WARNINGS)

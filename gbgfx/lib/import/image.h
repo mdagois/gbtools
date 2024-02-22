@@ -5,7 +5,7 @@
 #include <functional>
 #include <string>
 
-#include "model/color.h"
+#include "data/color.h"
 
 namespace gbgfx {
 
