@@ -23,6 +23,7 @@ enum
 	kHighPriorityColorAlpha = 0,
 };
 
+static ColorRGBA kRGBA_White = {0xFFU, 0xFFU, 0xFFU, 0xFFU};
 static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -25,6 +25,10 @@ public:
 	bool contains(const Palette& sub_palette) const;
 	bool findColorIndex(uint8_t& out_color_index, ColorRGBA color) const;
 	void makeFirstColor(ColorRGBA color);
+	bool getAverageLuminance() const;
+
+private:
+	void sort();
 
 private:
 	std::vector<ColorRGBA> m_colors;
@@ -43,7 +47,7 @@ public:
 	void add(const Palette& palette);
 	const Palette& operator[](int32_t index) const;
 	uint32_t size() const;
-	bool optimize(uint32_t palette_color_max_count, bool share_first_color);
+	bool optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_palettes);
 	bool findCompatiblePaletteIndex(uint32_t& out_palette_index, const Palette& palette) const;
 
 private:

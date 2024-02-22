@@ -2,8 +2,8 @@
 #include <cassert>
 #include <set>
 
-#include "log.h"
 #include "palette.h"
+#include "utils/log.h"
 
 namespace gbgfx {
 
@@ -83,7 +83,7 @@ Palette::~Palette()
 void Palette::add(ColorRGBA color)
 {
 	m_colors.push_back(color);
-	sortColorsRGBA(m_colors.data(), static_cast<uint32_t>(m_colors.size()));
+	sort();
 }
 
 void Palette::clear()
@@ -134,11 +134,26 @@ void Palette::makeFirstColor(ColorRGBA color)
 		if(color == m_colors[i])
 		{
 			m_colors[i].a = kHighPriorityColorAlpha;
-			sortColorsRGBA(m_colors.data(), static_cast<uint32_t>(m_colors.size()));
+			sort();
 			return;
 		}
 	}
 	assert(false);
+}
+
+bool Palette::getAverageLuminance() const
+{
+	double luminance = 0.0;
+	for(const ColorRGBA& color : m_colors)
+	{
+		luminance += getLuminance(color);
+	}
+	return luminance / m_colors.size();
+}
+
+void Palette::sort()
+{
+	sortColorsRGBA(m_colors.data(), static_cast<uint32_t>(m_colors.size()));
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -180,21 +195,28 @@ uint32_t PaletteSet::size() const
 	return static_cast<uint32_t>(m_palettes.size());
 }
 
-bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_color)
+bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_palettes)
 {
-	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
+	const uint32_t original_palette_count = static_cast<uint32_t>(m_palettes.size());
 
 	if(share_first_color)
 	{
-		std::vector<const Palette*> four_color_palettes;
+		std::vector<const Palette*> max_color_palettes;
 		for(const Palette& palette : m_palettes)
 		{
+			if(palette.size() > palette_color_max_count)
+			{
+				GBGFX_LOG_ERROR(
+					"A palette has more than " << palette_color_max_count
+					<< " colors (count=" << palette.size() << ")");
+				return false;
+			}
 			if(palette.size() == palette_color_max_count)
 			{
-				four_color_palettes.push_back(&palette);
+				max_color_palettes.push_back(&palette);
 			}
 		}
-		if(four_color_palettes.empty())
+		if(max_color_palettes.empty())
 		{
 			for(Palette& palette : m_palettes)
 			{
@@ -204,7 +226,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 		else
 		{
 			std::vector<ColorRGBA> first_color_candidates;
-			for(const Palette* palette : four_color_palettes)
+			for(const Palette* palette : max_color_palettes)
 			{
 				for(uint32_t c = 0; c < palette->size(); ++c)
 				{
@@ -227,7 +249,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 				{
 					++count;
 				}
-				if(count == static_cast<uint32_t>(four_color_palettes.size()))
+				if(count == static_cast<uint32_t>(max_color_palettes.size()))
 				{
 					first_color_found = true;
 					break;
@@ -254,7 +276,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 		}
 	}
 
-	if(palette_count >= 2)
+	if(m_palettes.size() > 1)
 	{
 		std::vector<Palette> palettes = m_palettes;
 		std::sort(
@@ -288,7 +310,41 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 		}
 	}
 
-	GBGFX_LOG_INFO("Palette optimization from " << palette_count << " to " << m_palettes.size());
+	if(fill_palettes)
+	{
+		for(Palette& palette : m_palettes)
+		{
+			assert(palette.size() <= palette_color_max_count);
+			if(palette.size() >= palette_color_max_count)
+			{
+				continue;
+			}
+			while(palette.size() < palette_color_max_count)
+			{
+				palette.add(kRGBA_White);
+			}
+		}
+	}
+
+	if(m_palettes.size() > 1)
+	{
+		std::sort(
+			m_palettes.begin(), m_palettes.end(),
+			[](const Palette& lhs, const Palette& rhs)
+			{
+				if(lhs.size() > rhs.size())
+				{
+					return true;
+				}
+				if(lhs.size() < rhs.size())
+				{
+					return false;
+				}
+				return lhs.getAverageLuminance() < rhs.getAverageLuminance();
+			});
+	}
+
+	GBGFX_LOG_INFO("Palette optimization from " << original_palette_count << " to " << m_palettes.size());
 	return true;
 }
 
