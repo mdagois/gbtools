@@ -14,7 +14,7 @@ static Features s_features = {};
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool initialize(Hardware hardware, Mode mode)
+bool initializeFeatures(Hardware hardware, Mode mode)
 {
 	assert(hardware < kHardwareCount);
 	assert(mode < kModeCount);
@@ -121,7 +121,7 @@ bool initialize(Hardware hardware, Mode mode)
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool isInitialized()
+bool areFeaturesInitialized()
 {
 	return s_hardware < kHardwareCount;
 }

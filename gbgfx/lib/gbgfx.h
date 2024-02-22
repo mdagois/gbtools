@@ -2,53 +2,53 @@
 
 //TODO Support OAM export
 //TODO Support metatiles in tilemap extraction
-//TODO Bring more constants into the features
-//TODO Split into features/model/binary layers
 //TODO Support forcing the palette set instead of extracting it
 //TODO Allow to set an output directory
 //TODO Support short name for options
 
-#if 0
-#include "features.h"
-#include "image.h"
-#include "palette.h"
-#include "tilemap.h"
-#include "tileset.h"
+#include "data/palette.h"
+#include "data/tilemap.h"
+#include "data/tileset.h"
+#include "enums.h"
+#include "import/image.h"
 
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Input
+// Initialization
+////////////////////////////////////////////////////////////////////////////////
+
+bool initialize(Hardware hardware, Mode mode);
+
+////////////////////////////////////////////////////////////////////////////////
+// Import
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	uint32_t start_tile_row, uint32_t tile_row_count,
-	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, TileRemoval tile_removal,
-	const char* image_filename);
+	const Division* divisions, uint32_t division_count,
+	TileRemoval tile_removal, const char* image_filename);
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	uint32_t start_tile_row, uint32_t tile_row_count,
-	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, TileRemoval tile_removal,
-	const Image& image);
+	const Division* divisions, uint32_t division_count,
+	TileRemoval tile_removal, const Image& image);
 
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	uint32_t metatile_width, uint32_t metatile_height,
+	const Division* divisions, uint32_t division_count,
 	const char* image_filename);
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	uint32_t metatile_width, uint32_t metatile_height,
+	const Division* divisions, uint32_t division_count,
 	const Image& image);
 
 ////////////////////////////////////////////////////////////////////////////////
-// Output
+// Export
 ////////////////////////////////////////////////////////////////////////////////
 
+#if 0
 bool exportPaletteSet(
 	const PaletteSet& palette_set,
 	const char* output_filename, bool use_header);
@@ -62,19 +62,21 @@ bool exportTilemap(
 	const char* attributes_filename,
 	bool use_header, bool use_8800_addressing_mode,
 	uint8_t palette_index_offset, uint8_t tile_index_offset);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug
 ////////////////////////////////////////////////////////////////////////////////
 
+#if 0
 bool writeTilesetToPNG(
 	const char* filename, uint32_t tile_column_count,
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
 	bool clear_doubles);
 bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set);
+#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 
 }
-#endif
 

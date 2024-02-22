@@ -2,31 +2,12 @@
 
 #include <cstdint>
 
+#include "enums.h"
+
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Features
-////////////////////////////////////////////////////////////////////////////////
-
-enum Hardware : uint32_t
-{
-	kHardwareDmg,
-	kHardwareCgb,
-	kHardwareSgb,
-	kHardwareSfc,
-	kHardwareCount,
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-enum Mode : uint32_t
-{
-	kModeBg,
-	kModeSprite8x8,
-	kModeSprite8x16,
-	kModeCount,
-};
-
 ////////////////////////////////////////////////////////////////////////////////
 
 enum Format : uint32_t
@@ -96,8 +77,8 @@ struct Features
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool initialize(Hardware hardware, Mode mode);
-bool isInitialized();
+bool initializeFeatures(Hardware hardware, Mode mode);
+bool areFeaturesInitialized();
 const Features& getFeatures();
 
 #define FEATURES gbgfx::getFeatures()

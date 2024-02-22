@@ -29,7 +29,8 @@ add_library(
 	${DATA_SRC}
 	${UTILS_SRC}
 	features.h features.cpp
-#	gbgfx.h gbgfx.cpp
+	gbgfx.h gbgfx.cpp
+	enums.h
 )
 
 target_compile_definitions(gbgfx PUBLIC _CRT_SECURE_NO_WARNINGS)
