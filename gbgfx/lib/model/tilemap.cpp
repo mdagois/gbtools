@@ -1,13 +1,11 @@
-#include "log.h"
 #include "tilemap.h"
+#include "utils/log.h"
 
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
 Tilemap::Tilemap()
-: m_row_count(0)
-, m_column_count(0)
 {
 }
 
@@ -15,22 +13,7 @@ Tilemap::~Tilemap()
 {
 }
 
-bool Tilemap::initialize(uint8_t tile_row_count, uint8_t tile_column_count)
-{
-	if(tile_row_count > kTilemapRowMaxCount || tile_column_count > kTilemapColumnMaxCount)
-	{
-		GBGFX_LOG_ERROR(
-			"Tilemap is (" << tile_column_count << "x" << tile_row_count
-			<< "), which is beyond the maximum of ("
-			<< kTilemapColumnMaxCount << "x" << kTilemapRowMaxCount << ")");
-		return false;
-	}
-	m_row_count = tile_row_count;
-	m_column_count = tile_column_count;
-	return true;
-}
-
-void Tilemap::push(
+void Tilemap::add(
 	uint8_t tile_index,
 	uint8_t palette, uint8_t bank,
 	bool flip_horizontal, bool flip_vertical,
@@ -54,16 +37,6 @@ const TilemapEntry& Tilemap::operator[](int32_t index) const
 uint32_t Tilemap::size() const
 {
 	return static_cast<uint32_t>(m_entries.size());
-}
-
-uint32_t Tilemap::getRowCount() const
-{
-	return m_row_count;
-}
-
-uint32_t Tilemap::getColumnCount() const
-{
-	return m_column_count;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

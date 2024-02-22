@@ -1,15 +1,19 @@
 cmake_minimum_required(VERSION 3.10.0)
 
-set(EXPORT_SRC export.h export.cpp)
+set(EXPORT_SRC
+	export.h export.cpp
+)
 list(TRANSFORM EXPORT_SRC PREPEND export/)
 
-set(IMPORT_SRC image.h image.cpp)
+set(IMPORT_SRC
+	image.h image.cpp
+)
 list(TRANSFORM IMPORT_SRC PREPEND import/)
 
 set(MODEL_SRC 
 	color.h color.cpp
 	palette.h palette.cpp
-#	tilemap.h tilemap.cpp
+	tilemap.h tilemap.cpp
 	tileset.h tileset.cpp
 )
 list(TRANSFORM MODEL_SRC PREPEND model/)
