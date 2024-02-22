@@ -1,91 +1,124 @@
 #include <cassert>
 #include <set>
 
-#include "log.h"
 #include "tileset.h"
+#include "utils/log.h"
 
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Tile
+// Tile flip
 ////////////////////////////////////////////////////////////////////////////////
+
+TileFlip::TileFlip()
+: side_length(0)
+{
+}
+
+void initializeTileFlip(TileFlip& out_tile_flip, uint32_t side_length)
+{
+	out_tile_flip.side_length = side_length;
+	out_tile_flip.color_indices.resize(side_length * side_length);
+}
 
 bool operator==(const TileFlip& lhs, const TileFlip& rhs)
 {
-	return memcmp(&lhs, &rhs, sizeof(TileFlip)) == 0;
+	return
+		lhs.color_indices.size() == rhs.color_indices.size() &&
+		memcmp(
+			lhs.color_indices.data(), rhs.color_indices.data(),
+			lhs.color_indices.size() * sizeof(lhs.color_indices[0])) == 0;
 }
 
 bool operator<(const TileFlip& lhs, const TileFlip& rhs)
 {
-	return memcmp(&lhs, &rhs, sizeof(TileFlip)) < 0;
+	return
+		lhs.color_indices.size() == rhs.color_indices.size() &&
+		memcmp(
+			lhs.color_indices.data(), rhs.color_indices.data(),
+			lhs.color_indices.size() * sizeof(lhs.color_indices[0])) < 0;
 }
 
-static void flipRow(uint8_t* out, const uint8_t* in)
+static void flipRow(uint8_t* out, const uint8_t* in, uint32_t row_length)
 {
-	out[0] = in[7];
-	out[1] = in[6];
-	out[2] = in[5];
-	out[3] = in[4];
-	out[4] = in[3];
-	out[5] = in[2];
-	out[6] = in[1];
-	out[7] = in[0];
+	assert(out != in);
+	for(uint32_t i = 0; i < row_length; ++i)
+	{
+		out[i] = in[row_length - (i + 1)];
+	}
 }
 
-static void copyRow(uint8_t* out, const uint8_t* in)
+static void copyRow(uint8_t* out, const uint8_t* in, uint32_t row_length)
 {
-	out[0] = in[0];
-	out[1] = in[1];
-	out[2] = in[2];
-	out[3] = in[3];
-	out[4] = in[4];
-	out[5] = in[5];
-	out[6] = in[6];
-	out[7] = in[7];
+	assert(out != in);
+	for(uint32_t i = 0; i < row_length; ++i)
+	{
+		out[i] = in[i];
+	}
+}
+
+static bool isTileFlipValid(const TileFlip& tile_flip)
+{
+	return
+		tile_flip.side_length > 0 &&
+		tile_flip.color_indices.size() == tile_flip.side_length * tile_flip.side_length;
 }
 
 static void generateFlips(TileFlip* inout_tile_flips)
 {
 	const TileFlip& none = inout_tile_flips[kTileFlipType_None];
+	const uint32_t side_length = none.side_length;
+	assert(isTileFlipValid(none));
 
 	{
 		TileFlip& horizontal = inout_tile_flips[kTileFlipType_Horizontal];
-		for(uint32_t i = 0; i < kTileSize; ++i)
+		initializeTileFlip(horizontal, side_length);
+		for(uint32_t i = 0; i < side_length; ++i)
 		{
-			const uint32_t base_index = i * kTileSize;
+			const uint32_t base_index = i * side_length;
 			flipRow(
-				horizontal.color_indices + base_index,
-				none.color_indices + base_index);
+				horizontal.color_indices.data() + base_index,
+				none.color_indices.data() + base_index,
+				side_length);
 		}
 	}
 
 	{
 		TileFlip& vertical = inout_tile_flips[kTileFlipType_Vertical];
-		for(uint32_t i = 0; i < kTileSize; ++i)
+		initializeTileFlip(vertical, side_length);
+		for(uint32_t i = 0; i < side_length; ++i)
 		{
-			const uint32_t in_index = i * kTileSize;
-			const uint32_t out_index = ((kTileSize - 1) - i) * kTileSize;
+			const uint32_t in_index = i * side_length;
+			const uint32_t out_index = ((side_length - 1) - i) * side_length;
 			copyRow(
-				vertical.color_indices + out_index,
-				none.color_indices + in_index);
+				vertical.color_indices.data() + out_index,
+				none.color_indices.data() + in_index,
+				side_length);
 		}
 	}
 
 	{
 		TileFlip& both = inout_tile_flips[kTileFlipType_Both];
+		initializeTileFlip(both, side_length);
 		const TileFlip& horizontal = inout_tile_flips[kTileFlipType_Horizontal];
-		for(uint32_t i = 0; i < kTileSize; ++i)
+		for(uint32_t i = 0; i < side_length; ++i)
 		{
-			const uint32_t in_index = i * kTileSize;
-			const uint32_t out_index = ((kTileSize - 1) - i) * kTileSize;
+			const uint32_t in_index = i * side_length;
+			const uint32_t out_index = ((side_length - 1) - i) * side_length;
 			copyRow(
-				both.color_indices + out_index,
-				horizontal.color_indices + in_index);
+				both.color_indices.data() + out_index,
+				horizontal.color_indices.data() + in_index,
+				side_length);
 		}
 	}
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Tile
+////////////////////////////////////////////////////////////////////////////////
+
 Tile::Tile()
+: m_palette_index(0)
 {
 }
 
@@ -95,6 +128,7 @@ Tile::~Tile()
 
 void Tile::initialize(const TileFlip& tile_flip, uint32_t palette_index)
 {
+	assert(isTileFlipValid(tile_flip));
 	m_flips[kTileFlipType_None] = tile_flip;
 	generateFlips(m_flips);
 	m_palette_index = palette_index;
@@ -123,7 +157,7 @@ Tileset::~Tileset()
 {
 }
 
-void Tileset::push(const Tile& tile)
+void Tileset::add(const Tile& tile)
 {
 	m_tiles.push_back(tile);
 }
@@ -140,7 +174,7 @@ uint32_t Tileset::size() const
 
 void Tileset::removeDoubles(bool compare_flips)
 {
-	const size_t tile_count = m_tiles.size();
+	const size_t original_tile_count = m_tiles.size();
 
 	struct CheckEntry
 	{
@@ -182,7 +216,9 @@ void Tileset::removeDoubles(bool compare_flips)
 		++tileIt;
 	}
 
-	GBGFX_LOG_INFO("Tileset shrinked from " << tile_count << " tiles to " << m_tiles.size() << " tiles");
+	GBGFX_LOG_INFO(
+		"Tileset shrinked from " << original_tile_count
+		<< " tiles to " << m_tiles.size() << " tiles");
 }
 
 bool Tileset::findTileIndex(

@@ -1,15 +1,12 @@
 #pragma once
 
 #include <cstdint>
-#include <map>
 #include <vector>
-
-#include "constants.h"
 
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Tile
+// Tile flip
 ////////////////////////////////////////////////////////////////////////////////
 
 enum TileFlipType : uint32_t
@@ -23,11 +20,19 @@ enum TileFlipType : uint32_t
 
 struct TileFlip
 {
-	uint8_t color_indices[kPixelsPerTile];
+	TileFlip();
+
+	std::vector<uint8_t> color_indices;
+	uint32_t side_length;
 };
 
+void initializeTileFlip(TileFlip& out_tile_flip, uint32_t tile_side_length);
 bool operator==(const TileFlip& lhs, const TileFlip& rhs);
 bool operator<(const TileFlip& lhs, const TileFlip& rhs);
+
+////////////////////////////////////////////////////////////////////////////////
+// Tile
+////////////////////////////////////////////////////////////////////////////////
 
 class Tile
 {
@@ -36,6 +41,7 @@ public:
 	virtual ~Tile();
 
 	void initialize(const TileFlip& tile_flip, uint32_t palette_index);
+
 	const TileFlip& getTileFlip(TileFlipType type) const;
 	uint32_t getPaletteIndex() const;
 
@@ -54,9 +60,11 @@ public:
 	Tileset();
 	virtual ~Tileset();
 
-	void push(const Tile& tile);
+	void add(const Tile& tile);
+
 	const Tile& operator[](int32_t index) const;
 	uint32_t size() const;
+
 	void removeDoubles(bool compare_flips);
 	bool findTileIndex(
 		uint32_t& out_tile_index, uint32_t& out_palette_index, TileFlipType& out_flip_type,

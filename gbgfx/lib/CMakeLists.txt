@@ -10,7 +10,7 @@ set(MODEL_SRC
 	color.h color.cpp
 	palette.h palette.cpp
 #	tilemap.h tilemap.cpp
-#	tileset.h tileset.cpp
+	tileset.h tileset.cpp
 )
 list(TRANSFORM MODEL_SRC PREPEND model/)
 
