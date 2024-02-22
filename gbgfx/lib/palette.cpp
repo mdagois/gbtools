@@ -2,7 +2,6 @@
 #include <cassert>
 #include <set>
 
-#include "features.h"
 #include "log.h"
 #include "palette.h"
 
@@ -40,7 +39,7 @@ static bool operator==(const Palette& lhs, const Palette& rhs)
 	return true;
 }
 
-static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs)
+static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette rhs, uint32_t color_max_count)
 {
 	std::set<ColorRGBA> colors;
 	for(uint32_t i = 0; i < lhs.size(); ++i)
@@ -52,7 +51,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 		colors.insert(rhs[i]);
 	}
 
-	if(colors.size() > FEATURES.palette.color_max_count)
+	if(colors.size() > color_max_count)
 	{
 		return false;
 	}
@@ -69,11 +68,9 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 // Palette
 ////////////////////////////////////////////////////////////////////////////////
 
-Palette::Palette()
-: m_color_count(0)
+Palette::Palette(bool insert_transparent_color)
 {
-	memset(m_colors, 0, sizeof(m_colors) * sizeof(m_colors[0]));
-	if(FEATURES.palette.insert_transparent_color)
+	if(insert_transparent_color)
 	{
 		add(kRGBA_Magenta);
 	}
@@ -85,15 +82,24 @@ Palette::~Palette()
 
 void Palette::add(ColorRGBA color)
 {
-	assert(m_color_count < kColorsPerPalette_Max);
-	m_colors[m_color_count] = color;
-	++m_color_count;
-	sortColorsRGBA(m_colors, m_color_count);
+	m_colors.push_back(color);
+	sortColorsRGBA(m_colors.data(), static_cast<uint32_t>(m_colors.size()));
 }
 
 void Palette::clear()
 {
-	m_color_count = 0;
+	m_colors.clear();
+}
+
+uint32_t Palette::size() const
+{
+	return static_cast<uint32_t>(m_colors.size());
+}
+
+const ColorRGBA Palette::operator[](int32_t index) const
+{
+	assert(index >= 0 && index < static_cast<int32_t>(m_colors.size()));
+	return m_colors[index];
 }
 
 bool Palette::contains(const Palette& sub_palette) const
@@ -108,20 +114,9 @@ bool Palette::contains(const Palette& sub_palette) const
 	return true;
 }
 
-uint32_t Palette::size() const
-{
-	return m_color_count;
-}
-
-const ColorRGBA Palette::operator[](int32_t index) const
-{
-	assert(index >= 0 && index < static_cast<int32_t>(m_color_count));
-	return m_colors[index];
-}
-
 bool Palette::findColorIndex(uint8_t& out_color_index, ColorRGBA color) const
 {
-	for(uint32_t i = 0; i < m_color_count; ++i)
+	for(uint32_t i = 0; i < m_colors.size(); ++i)
 	{
 		if(color == m_colors[i])
 		{
@@ -134,11 +129,12 @@ bool Palette::findColorIndex(uint8_t& out_color_index, ColorRGBA color) const
 
 void Palette::makeFirstColor(ColorRGBA color)
 {
-	for(uint32_t i = 0; i < m_color_count; ++i)
+	for(uint32_t i = 0; i < m_colors.size(); ++i)
 	{
 		if(color == m_colors[i])
 		{
 			m_colors[i].a = kHighPriorityColorAlpha;
+			sortColorsRGBA(m_colors.data(), static_cast<uint32_t>(m_colors.size()));
 			return;
 		}
 	}
@@ -184,16 +180,16 @@ uint32_t PaletteSet::size() const
 	return static_cast<uint32_t>(m_palettes.size());
 }
 
-bool PaletteSet::optimize()
+bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_color)
 {
 	const uint32_t palette_count = static_cast<uint32_t>(m_palettes.size());
 
-	if(FEATURES.palette.share_first_color)
+	if(share_first_color)
 	{
 		std::vector<const Palette*> four_color_palettes;
 		for(const Palette& palette : m_palettes)
 		{
-			if(palette.size() == FEATURES.palette.color_max_count)
+			if(palette.size() == palette_color_max_count)
 			{
 				four_color_palettes.push_back(&palette);
 			}
@@ -246,7 +242,7 @@ bool PaletteSet::optimize()
 
 			for(Palette& palette : m_palettes)
 			{
-				if(palette.size() == FEATURES.palette.color_max_count)
+				if(palette.size() == palette_color_max_count)
 				{
 					palette.makeFirstColor(candidate_color);
 				}
@@ -278,7 +274,7 @@ bool PaletteSet::optimize()
 			bool merged = false;
 			for(uint32_t i = 0; i < m_palettes.size(); ++i)
 			{
-				if(mergePalettes(m_palettes[i], m_palettes[i], palette))
+				if(mergePalettes(m_palettes[i], m_palettes[i], palette, palette_color_max_count))
 				{
 					merged = true;
 					break;
