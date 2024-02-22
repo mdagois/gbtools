@@ -1,12 +1,12 @@
 #pragma once
 
 //#include "api.h"
-#include "color.h"
+#include "model/color.h"
 //#include "constants.h"
 //#include "export.h"
 #include "features.h"
-#include "image.h"
-#include "log.h"
+#include "import/image.h"
+#include "utils/log.h"
 //#include "palette.h"
 //#include "tilemap.h"
 //#include "tileset.h"

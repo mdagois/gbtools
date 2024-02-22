@@ -4,7 +4,7 @@
 #include "third_party/stb_image.h"
 
 #include "image.h"
-#include "log.h"
+#include "utils/log.h"
 
 namespace gbgfx {
 

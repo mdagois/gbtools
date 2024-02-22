@@ -1,7 +1,7 @@
 #include <cassert>
 
 #include "features.h"
-#include "log.h"
+#include "utils/log.h"
 
 namespace gbgfx {
 
