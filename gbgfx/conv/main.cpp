@@ -15,8 +15,8 @@ static bool importData(
 	////////////////////////////////////////
 	const gbgfx::Division tileset_divisions[] =
 	{
-		{ 32, 32, true },
-		{ 8, 16, true },
+		//{ 32, 32, true },
+		//{ 8, 16, true },
 		{ 8, 8, false },
 	};
 	const uint32_t tileset_division_count = sizeof(tileset_divisions) / sizeof(tileset_divisions[0]);
@@ -68,8 +68,8 @@ static std::string getOutputFilename(const char* input_filename, const char* out
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool exportData(
-	gbgfx::Tileset& tileset, gbgfx::PaletteSet& palette_set,
-	std::vector<gbgfx::Tilemap>& tilemaps, const Options& options)
+	const gbgfx::Tileset& tileset, const gbgfx::PaletteSet& palette_set,
+	const std::vector<gbgfx::Tilemap>& tilemaps, const Options& options)
 {
 	if(!options.output.skip_export_palette)
 	{
@@ -122,14 +122,14 @@ static bool exportData(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#if 0
-	////////////////////////////////////////
-
+static bool outputDebugData(
+	const gbgfx::Tileset& tileset, const gbgfx::PaletteSet& palette_set, const Options& options)
+{
 	if(options.debug.generate_palette_png)
 	{
 		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal.png");
 		GBGFX_LOG_INFO("Generating palette set PNG to [" << filename << "]");
-		if(!gbgfx::writePaletteSetToPNG(filename.c_str(), palette_set))
+		if(!gbgfx::writePaletteSetToPNG(palette_set, filename.c_str()))
 		{
 			GBGFX_LOG_ERROR("Could not write palette set PNG [" << filename << "]");
 			return false;
@@ -143,9 +143,8 @@ static bool exportData(
 		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr.png");
 		GBGFX_LOG_INFO("Generating tileset PNG to [" << filename << "]");
 		if(!gbgfx::writeTilesetToPNG(
-			filename.c_str(), kTileColumnCount,
-			tileset, gbgfx::kTileFlipType_None,
-			palette_set, kClearDoubles))
+			tileset, gbgfx::kTileFlipType_None, palette_set,
+			kTileColumnCount, kClearDoubles, filename.c_str()))
 		{
 			GBGFX_LOG_ERROR("Could not write tileset PNG [" << filename << "]");
 			return false;
@@ -154,10 +153,7 @@ static bool exportData(
 
 	return true;
 }
-#endif
 
-////////////////////////////////////////////////////////////////////////////////
-// main
 ////////////////////////////////////////////////////////////////////////////////
 
 int main(int argc, const char** argv)
@@ -185,6 +181,11 @@ int main(int argc, const char** argv)
 	}
 
 	if(!exportData(tileset, palette_set, tilemaps, options))
+	{
+		return 1;
+	}
+
+	if(!outputDebugData(tileset, palette_set, options))
 	{
 		return 1;
 	}
