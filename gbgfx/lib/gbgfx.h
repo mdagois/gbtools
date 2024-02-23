@@ -64,13 +64,10 @@ bool exportTilemap(
 // Debug
 ////////////////////////////////////////////////////////////////////////////////
 
-#if 0
 bool writeTilesetToPNG(
-	const char* filename, uint32_t tile_column_count,
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
-	bool clear_doubles);
-bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set);
-#endif
+	uint32_t tile_column_count, bool clear_doubles, const char* filename);
+bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename);
 
 ////////////////////////////////////////////////////////////////////////////////
 

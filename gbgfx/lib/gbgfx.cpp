@@ -414,23 +414,22 @@ bool exportTilemap(
 	return true;
 }
 
-#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Debug
 ////////////////////////////////////////////////////////////////////////////////
 
 static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip, const Palette& palette)
 {
-	const uint8_t* indices = flip.color_indices;
-	for(uint32_t j = 0; j < kTileSize; ++j)
+	const uint8_t* indices = flip.color_indices.data();
+	for(uint32_t j = 0; j < flip.height; ++j)
 	{
-		for(uint32_t i = 0; i < kTileSize; ++i)
+		for(uint32_t i = 0; i < flip.width; ++i)
 		{
-			assert(indices[i] < PROFILE.palette.color_max_count);
+			assert(indices[i] < FEATURES.palette.color_max_count);
 			out_pixels[i] = palette[indices[i]];
 		}
 
-		indices += kTileSize;
+		indices += flip.width;
 		out_pixels += pitch;
 	}
 }
@@ -453,23 +452,29 @@ static bool findTileFlipInTileset(
 }
 
 bool writeTilesetToPNG(
-	const char* filename, uint32_t tile_column_count,
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
-	bool clear_doubles)
+	uint32_t tile_column_count, bool clear_doubles, const char* filename)
 {
 	assert(flip_type < kTileFlipType_Count);
 
+	if(tileset.size() == 0)
+	{
+		GBGFX_LOG_WARN("Skipping output of [" << filename << "] because the tileset is empty");
+		return true;
+	}
+
+	const TileFlip& base_tile_flip = tileset[0].getTileFlip(flip_type);
 	const uint32_t tile_row_count = tileset.size() / tile_column_count + (tileset.size() % tile_column_count == 0 ? 0 : 1);
-	const int32_t image_width = static_cast<int32_t>(tile_column_count * kTileSize);
-	const int32_t image_height = static_cast<int32_t>(tile_row_count * kTileSize);
+	const int32_t image_width = static_cast<int32_t>(tile_column_count * base_tile_flip.width);
+	const int32_t image_height = static_cast<int32_t>(tile_row_count * base_tile_flip.height);
 
 	TileFlip empty_flip;
-	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	initializeTileFlip(empty_flip, base_tile_flip.width, base_tile_flip.height);
+	for(uint32_t i = 0; i < empty_flip.width * empty_flip.height; ++i)
 	{
 		empty_flip.color_indices[i] = 0;
 	}
-	Palette empty_palette;
-	empty_palette.push(kRGBA_Magenta);
+	Palette empty_palette(true);
 
 	ColorRGBA* pixels = new ColorRGBA[image_width * image_height];
 
@@ -498,7 +503,7 @@ bool writeTilesetToPNG(
 		const uint32_t tile_row = i / tile_column_count;
 		const uint32_t tile_column = i % tile_column_count;
 		blitTile(
-			pixels + (tile_row * kTileSize * image_width) + (tile_column * kTileSize),
+			pixels + (tile_row * base_tile_flip.height * image_width) + (tile_column * base_tile_flip.width),
 			image_width, *blit_flip, *blit_palette);
 	}
 
@@ -517,7 +522,7 @@ bool writeTilesetToPNG(
 	return true;
 }
 
-bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
+bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 {
 	const uint32_t palette_count = palette_set.size();
 	if(palette_count == 0)
@@ -525,12 +530,19 @@ bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
 		return true;
 	}
 
-	const uint32_t color_max_count = PROFILE.palette.color_max_count;
+	const uint32_t color_max_count = FEATURES.palette.color_max_count;
 	const uint32_t total_color_count = color_max_count * palette_count;
 	ColorRGBA* pixels = new ColorRGBA[total_color_count];
 	for(uint32_t p = 0; p < palette_count; ++p)
 	{
 		const Palette& palette = palette_set[p];
+		if(palette.size() > color_max_count)
+		{
+			GBGFX_LOG_ERROR(
+				"Palette " << p << " has " << palette.size()
+				<< " colors, but the limit for the hardware is "
+				<< color_max_count << " colors per palette");
+		}
 		uint32_t c = 0;
 		for(; c < palette.size(); ++c)
 		{
@@ -558,6 +570,6 @@ bool writePaletteSetToPNG(const char* filename, const PaletteSet& palette_set)
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-#endif
+
 }
 
