@@ -1,5 +1,6 @@
 #pragma once
 
+//TODO Add divisions to CLI
 //TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
 //TODO Allow to set an output directory
@@ -10,6 +11,7 @@
 #include "data/tileset.h"
 #include "enums.h"
 #include "import/image.h"
+#include "utils/log.h"
 
 namespace gbgfx {
 
@@ -48,17 +50,16 @@ bool extractTilemap(
 ////////////////////////////////////////////////////////////////////////////////
 
 bool exportPaletteSet(
-	const PaletteSet& palette_set,
-	const char* output_filename, bool use_header);
+	const PaletteSet& palette_set, bool use_header,
+	const char* output_filename);
 bool exportTileset(
-	const Tileset& tileset,
-	const char* output_filename, bool use_header);
+	const Tileset& tileset, bool use_header,
+	const char* output_filename);
 bool exportTilemap(
 	const Tilemap& tilemap,
-	const char* indices_filename,
-	const char* parameter_filename,
 	bool use_header, bool use_8800_addressing_mode,
-	uint8_t palette_index_offset, uint8_t tile_index_offset);
+	uint8_t palette_index_offset, uint8_t tile_index_offset,
+	const char* indices_filename, const char* parameter_filename);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug

@@ -1,41 +1,6 @@
 #include "commandline.h"
 #include "options.h"
 
-#if 0
-////////////////////////////////////////////////////////////////////////////////
-
-bool applyHardwareLimits(Options& options)
-{
-	if(!gbgfx::initializeProfile(options.hardware, options.data_type))
-	{
-		return false;
-	}
-
-	switch(options.hardware)
-	{
-		case gbgfx::kHardwareDmg:
-			options.output.skip_export_palette = true;
-			options.output.skip_export_parameters = true;
-			options.output.skip_export_attributes = true;
-			break;
-		case gbgfx::kHardwareCgb:
-			options.output.skip_export_attributes = true;
-			break;
-		case gbgfx::kHardwareSgb:
-			options.output.skip_export_parameters = true;
-			break;
-		case gbgfx::kHardwareSfc:
-			options.tileset.skip_single_color_metatiles = false;
-			options.output.use_8800_addressing_mode = false;
-			options.output.skip_export_attributes = true;
-			break;
-		default:
-			break;
-	}
-
-	return true;
-}
-
 ////////////////////////////////////////////////////////////////////////////////
 
 bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv)
@@ -52,11 +17,11 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		{ "sfc", gbgfx::kHardwareSfc },
 	};
 
-	const Mapping data_type_mapping[] =
+	const Mapping mode_mapping[] =
 	{
-		{ "bg", gbgfx::kDataTypeBg },
-		{ "obj8", gbgfx::kDataTypeSprite8x8 },
-		{ "obj16", gbgfx::kDataTypeSprite8x16 },
+		{ "bg", gbgfx::kModeBg },
+		{ "spr8", gbgfx::kModeSprite8x8 },
+		{ "spr16", gbgfx::kModeSprite8x16 },
 	};
 
 	const Mapping tile_removal_mapping[] =
@@ -72,32 +37,25 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionStringToInteger(
 			"hardware", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
+		// mode
 		OptionStringToInteger(
-			"data-type", "Specify the data type", true, 'DATA', reinterpret_cast<int32_t*>(&out_options.data_type),
-			data_type_mapping, sizeof(data_type_mapping) / sizeof(data_type_mapping[0])),
+			"mode", "Specify the conversion mode", true, 'MODE', reinterpret_cast<int32_t*>(&out_options.mode),
+			mode_mapping, sizeof(mode_mapping) / sizeof(mode_mapping[0])),
 
 		// tileset
-		OptionInteger("starting-tile-row", "Starting tile row", false, 'STRO', &out_options.tileset.start_tile_row),
-		OptionInteger("tile-row-count", "Tile row count", false, 'ROWC', &out_options.tileset.tile_row_count),
-		OptionInteger("tileset-metatile-width", "Tileset metatile pixel width", false, 'TSMW', &out_options.tileset.metatile_width),
-		OptionInteger("tileset-metatile-height", "Tileset metatile pixel height", false, 'TSMH', &out_options.tileset.metatile_height),
-		OptionFlag("skip-empty-metatile", "Skip single color metatiles", 'SSME', &out_options.tileset.skip_single_color_metatiles),
 		OptionStringToInteger(
 			"tile-removal", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
-
-		// tilemap
-		OptionInteger("tilemap-metatile-width", "Tilemap metatile pixel width", false, 'TMMW', &out_options.tilemap.metatile_width),
-		OptionInteger("tilemap-metatile-height", "Tilemap metatile pixel height", false, 'TMMH', &out_options.tilemap.metatile_height),
 
 		// output
 		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
 		OptionInteger("tile-index-offset", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
 		OptionFlag("8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
 		OptionFlag("use-headers", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
-		OptionFlag("skip-export-palette", "Skip export of the palette set", 'SKIP', &out_options.output.skip_export_palette),
-		OptionFlag("skip-export-tileset", "Skip export of the tileset", 'SKIT', &out_options.output.skip_export_tileset),
-		OptionFlag("skip-export-tilemap", "Skip export of the tilemaps", 'SKIM', &out_options.output.skip_export_tilemaps),
+		OptionFlag("skip-export-palette", "Skip export of the palette set", 'SPAL', &out_options.output.skip_export_palette),
+		OptionFlag("skip-export-tileset", "Skip export of the tileset", 'STLS', &out_options.output.skip_export_tileset),
+		OptionFlag("skip-export-indices", "Skip export of the tilemaps", 'STLM', &out_options.output.skip_export_indices),
+		OptionFlag("skip-export-parameter", "Skip export of the tilemaps", 'SPRM', &out_options.output.skip_export_parameters),
 
 		// debug
 		OptionFlag("generate-png-palette", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),
@@ -111,7 +69,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	Parser cli_parser(
 		argv, argc,
 		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
-		"-hardware <hardware> -data-type <type> [options] <tileset_png> [tilemap_png...]");
+		"-hardware <hardware> -mode <mode> [options] <tileset_png> [tilemap_png...]");
 
 	uint32_t code;
 	const char* parameter;
@@ -123,10 +81,10 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 			case kRemainingCode:
 			{
 				const char** arguments = cli_parser.getRemainingArguments();
-				out_options.tileset.png_filename = arguments[0];
+				out_options.tileset.image_filename = arguments[0];
 				for(int32_t i = 1; i < cli_parser.getRemainingArgumentCount(); ++i)
 				{
-					out_options.tilemap.png_filenames.push_back(arguments[i]);
+					out_options.tilemap.image_filenames.push_back(arguments[i]);
 				}
 			}
 			default:
@@ -149,14 +107,12 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		return false;
 	}
 
-	if(out_options.tileset.png_filename == nullptr)
+	if(out_options.tileset.image_filename == nullptr)
 	{
-		cli_parser.printHelp();
-		out_is_help = true;
+		GBGFX_LOG_ERROR("One tileset image file must be specified");
 		return false;
 	}
 
 	return true;
 }
-#endif
 

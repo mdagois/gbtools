@@ -330,8 +330,8 @@ static bool writeToFile(
 ////////////////////////////////////////////////////////////////////////////////
 
 bool exportPaletteSet(
-	const PaletteSet& palette_set,
-	const char* output_filename, bool use_header)
+	const PaletteSet& palette_set, bool use_header,
+	const char* output_filename)
 {
 	PaletteSetData data;
 	assert(palette_set.size() < 256);
@@ -347,8 +347,8 @@ bool exportPaletteSet(
 ////////////////////////////////////////////////////////////////////////////////
 
 bool exportTileset(
-	const Tileset& tileset,
-	const char* output_filename, bool use_header)
+	const Tileset& tileset, bool use_header,
+	const char* output_filename)
 {
 	TilesetData data;
 	assert(tileset.size() < 65536);
@@ -365,10 +365,9 @@ bool exportTileset(
 
 bool exportTilemap(
 	const Tilemap& tilemap,
-	const char* indices_filename,
-	const char* parameters_filename,
 	bool use_header, bool use_8800_addressing_mode,
-	uint8_t palette_index_offset, uint8_t tile_index_offset)
+	uint8_t palette_index_offset, uint8_t tile_index_offset,
+	const char* indices_filename, const char* parameters_filename)
 {
 	if(!FEATURES.tilemap.enabled)
 	{

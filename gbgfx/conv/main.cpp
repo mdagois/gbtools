@@ -154,6 +154,20 @@ static bool exportData(const Options& options)
 int main(int argc, const char** argv)
 {
 #if 0
+	gbgfx::Tileset tileset;
+	gbgfx::PaletteSet palette_set;
+	const gbgfx::Division divisions =
+	{
+	};
+	if(!gbgfx::extractTileset(
+		tileset, palette_set,
+		divisions, sizeof(divisions) / sizeof(divisions[0]),
+		gbgfx::kTileRemovalFlips, argv[1]))
+	{
+		return 1;
+	}
+#endif
+
 	Options options;
 	bool is_help = 0;
 	if(!parseCliOptions(options, is_help, argc, argv))
@@ -162,6 +176,12 @@ int main(int argc, const char** argv)
 	}
 
 	gbgfx::setLogLevel(options.verbose ? gbgfx::kLogLevel_Info : gbgfx::kLogLevel_Error);
+	if(!gbgfx::initialize(options.hardware, options.mode))
+	{
+		return 1;
+	}
+
+#if 0
 	if(!applyHardwareLimits(options))
 	{
 		return 1;
@@ -171,6 +191,7 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 #endif
+
 	return 0;
 }
 
