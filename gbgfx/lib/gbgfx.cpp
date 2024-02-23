@@ -361,30 +361,26 @@ bool exportTileset(
 			output_filename);
 }
 
-#if 0
 ////////////////////////////////////////////////////////////////////////////////
 
 bool exportTilemap(
 	const Tilemap& tilemap,
 	const char* indices_filename,
 	const char* parameters_filename,
-	const char* attributes_filename,
 	bool use_header, bool use_8800_addressing_mode,
 	uint8_t palette_index_offset, uint8_t tile_index_offset)
 {
-	if(PROFILE.data.is_sprite)
+	if(!FEATURES.tilemap.enabled)
 	{
-		GBGFX_LOG_ERROR("Exporting tilemaps is not supported for sprites");
+		GBGFX_LOG_ERROR("Exporting tilemaps is not supported in this mode");
 		return false;
 	}
 
 	TilemapData data;
-	assert(tilemap.getColumnCount() < 256);
-	assert(tilemap.getRowCount() < 256);
-	const uint8_t header[2] =
+	const uint16_t header[2] =
 	{
-		static_cast<uint8_t>(tilemap.getColumnCount()),
-		static_cast<uint8_t>(tilemap.getRowCount())
+		static_cast<uint8_t>(data.getIndexDataSize()),
+		static_cast<uint8_t>(data.getParameterDataSize()),
 	};
 
 	if(!data.initialize(
@@ -393,38 +389,32 @@ bool exportTilemap(
 		return false;
 	}
 
-	if( indices_filename != nullptr &&
-		!writeToFile(
+	if( indices_filename != nullptr && data.getIndexDataSize() > 0)
+	{
+		if(!writeToFile(
 			data.getIndexData(), data.getIndexDataSize(),
 			use_header ? &header : nullptr, sizeof(header),
 			indices_filename))
-	{
-		return false;
+		{
+			return false;
+		}
 	}
 
-	if( parameters_filename != nullptr &&
-		PROFILE.tilemap.has_parameters &&
-		!writeToFile(
+	if( parameters_filename != nullptr && data.getParameterDataSize() > 0)
+	{
+		if(!writeToFile(
 			data.getParameterData(), data.getParameterDataSize(),
 			use_header ? &header : nullptr, sizeof(header),
 			parameters_filename))
-	{
-		return false;
-	}
-
-	if( attributes_filename != nullptr &&
-		PROFILE.tilemap.has_attributes &&
-		!writeToFile(
-			data.getAttributeData(), data.getAttributeDataSize(),
-			use_header ? &header : nullptr, sizeof(header),
-			attributes_filename))
-	{
-		return false;
+		{
+			return false;
+		}
 	}
 
 	return true;
 }
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Debug
 ////////////////////////////////////////////////////////////////////////////////

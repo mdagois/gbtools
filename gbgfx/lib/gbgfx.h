@@ -53,15 +53,12 @@ bool exportPaletteSet(
 bool exportTileset(
 	const Tileset& tileset,
 	const char* output_filename, bool use_header);
-#if 0
 bool exportTilemap(
 	const Tilemap& tilemap,
 	const char* indices_filename,
 	const char* parameter_filename,
-	const char* attributes_filename,
 	bool use_header, bool use_8800_addressing_mode,
 	uint8_t palette_index_offset, uint8_t tile_index_offset);
-#endif
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug
