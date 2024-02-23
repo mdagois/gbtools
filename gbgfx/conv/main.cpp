@@ -8,11 +8,26 @@
 
 static bool importData(
 	gbgfx::Tileset& out_tileset, gbgfx::PaletteSet& out_palette_set,
-	const gbgfx::Division* tileset_divisions, uint32_t tileset_division_count,
 	std::vector<gbgfx::Tilemap>& out_tilemaps,
-	const gbgfx::Division* tilemap_divisions, uint32_t tilemap_division_count,
 	const Options& options)
 {
+	////////////////////////////////////////
+	const gbgfx::Division tileset_divisions[] =
+	{
+		{ 32, 32, true },
+		{ 8, 16, true },
+		{ 8, 8, false },
+	};
+	const uint32_t tileset_division_count = sizeof(tileset_divisions) / sizeof(tileset_divisions[0]);
+
+	const gbgfx::Division tilemap_divisions[] =
+	{
+		{ 256, 256, true },
+		{ 8, 8, true },
+	};
+	const uint32_t tilemap_division_count = sizeof(tilemap_divisions) / sizeof(tilemap_divisions[0]);
+	////////////////////////////////////////
+
 	GBGFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.image_filename << "]");
 	if(!gbgfx::extractTileset(
 		out_tileset, out_palette_set,
@@ -42,22 +57,25 @@ static bool importData(
 	return true;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+
 static std::string getOutputFilename(const char* input_filename, const char* output_extension)
 {
 	return std::string(input_filename).append(output_extension);
 }
 
-#if 0
-static bool exportData(const Options& options)
-{
-	////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////
 
+static bool exportData(
+	gbgfx::Tileset& tileset, gbgfx::PaletteSet& palette_set,
+	std::vector<gbgfx::Tilemap>& tilemaps, const Options& options)
+{
 	if(!options.output.skip_export_palette)
 	{
 		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal");
 		GBGFX_LOG_INFO("Exporting palette set to [" << filename << "]");
 		if(!gbgfx::exportPaletteSet(
-			palette_set, filename.c_str(), options.output.add_binary_headers))
+			palette_set, options.output.add_binary_headers, filename.c_str()))
 		{
 			GBGFX_LOG_ERROR("Could not export palette set");
 			return false;
@@ -69,13 +87,14 @@ static bool exportData(const Options& options)
 		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr");
 		GBGFX_LOG_INFO("Exporting tileset to [" << filename << "]");
 		if(!gbgfx::exportTileset(
-			tileset, filename.c_str(), options.output.add_binary_headers))
+			tileset, options.output.add_binary_headers, filename.c_str()))
 		{
 			GBGFX_LOG_ERROR("Could not export tileset");
 			return false;
 		}
 	}
 
+#if 0
 	assert(tilemaps.size() == options.tilemap.image_filenames.size()); 
 	for(size_t i = 0; i < tilemaps.size(); ++i)
 	{
@@ -99,7 +118,14 @@ static bool exportData(const Options& options)
 			return false;
 		}
 	}
+#endif
 
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+#if 0
 	////////////////////////////////////////
 
 	if(options.debug.generate_palette_png)
@@ -152,28 +178,16 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	const gbgfx::Division tileset_divisions[] =
-	{
-		{ 32, 32, true },
-		{ 8, 16, true },
-		{ 8, 8, false },
-	};
-	const uint32_t tileset_division_count = sizeof(tileset_divisions) / sizeof(tileset_divisions[0]);
-
-	const gbgfx::Division tilemap_divisions[] =
-	{
-		{ 256, 256, true },
-		{ 8, 8, true },
-	};
-	const uint32_t tilemap_division_count = sizeof(tilemap_divisions) / sizeof(tilemap_divisions[0]);
-
 	gbgfx::Tileset tileset;
 	gbgfx::PaletteSet palette_set;
 	std::vector<gbgfx::Tilemap> tilemaps;
-	if(!importData(
-		tileset, palette_set, tileset_divisions, tileset_division_count,
-		tilemaps, tilemap_divisions, tilemap_division_count,
-		options))
+
+	if(!importData(tileset, palette_set, tilemaps, options))
+	{
+		return 1;
+	}
+
+	if(!exportData(tileset, palette_set, tilemaps, options))
 	{
 		return 1;
 	}
