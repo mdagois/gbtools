@@ -41,6 +41,8 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionStringToInteger(
 			"mode", "Specify the conversion mode", true, 'MODE', reinterpret_cast<int32_t*>(&out_options.mode),
 			mode_mapping, sizeof(mode_mapping) / sizeof(mode_mapping[0])),
+		// tileset
+		OptionString("tileset", "The tileset image", true, 'TLS ', &out_options.tileset.image_filename),
 
 		// tileset
 		OptionStringToInteger(
@@ -81,8 +83,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 			case kRemainingCode:
 			{
 				const char** arguments = cli_parser.getRemainingArguments();
-				out_options.tileset.image_filename = arguments[0];
-				for(int32_t i = 1; i < cli_parser.getRemainingArgumentCount(); ++i)
+				for(int32_t i = 0; i < cli_parser.getRemainingArgumentCount(); ++i)
 				{
 					out_options.tilemap.image_filenames.push_back(arguments[i]);
 				}
@@ -104,12 +105,6 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	if(error != Error::kNone)
 	{
 		GBGFX_LOG_ERROR(cli_parser.getLastErrorMessage());
-		return false;
-	}
-
-	if(out_options.tileset.image_filename == nullptr)
-	{
-		GBGFX_LOG_ERROR("One tileset image file must be specified");
 		return false;
 	}
 
