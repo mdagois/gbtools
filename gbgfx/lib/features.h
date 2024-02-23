@@ -14,12 +14,17 @@ enum Format : uint32_t
 {
 	kFormat_None,
 
+	// 2-bit color indices
+	kFormat_COL2222,
+	// 4-bit interleave color indices
+	kFormat_COL2222_COL2222_INTERLEAVED,
+
 	// Tilemap indices
 	kFormat_IDX8,
 	// CGB tilemap parameters
 	kFormat_PAL3_BNK1_X1_FLP2_PRI1,
 	// SGB screen attributes
-	kFormat_PAL2_PAL2_PAL2_PAL2,
+	kFormat_PAL2222,
 	// SFC tilemap parameters
 	kFormat_IDX8_X2_PAL3_X1_FLP2,
 
@@ -46,6 +51,8 @@ struct Features
 
 	struct
 	{
+		// Color index format
+		Format color_index_format;
 		// Basic tile dimension
 		uint32_t basic_tile_width;
 		uint32_t basic_tile_height;
@@ -61,10 +68,10 @@ struct Features
 	{
 		// Tilemap output is enabled
 		bool enabled;
-		// Format of the index data
-		Format index_format;
-		// Format of the parameter data
-		Format parameter_format;
+		// Format of the tile index
+		Format tile_index_format;
+		// Format of the tile parameter
+		Format tile_parameter_format;
 		// Tilemaps can use tile flips
 		bool supports_tile_flips;
 	} tilemap;

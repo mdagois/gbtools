@@ -38,6 +38,7 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.palette.insert_transparent_color = false;
 			s_features.palette.share_first_color = false;
 
+			s_features.tileset.color_index_format = kFormat_COL2222;
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
 			s_features.tileset.tile_max_count = (mode == kModeBg) ? 256 : 0xFFFFFFFFU;
@@ -45,8 +46,8 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.tileset.bank_max_count = 1;
 
 			s_features.tilemap.enabled = mode == kModeBg;
-			s_features.tilemap.index_format = kFormat_IDX8;
-			s_features.tilemap.parameter_format = kFormat_None;
+			s_features.tilemap.tile_index_format = kFormat_IDX8;
+			s_features.tilemap.tile_parameter_format = kFormat_None;
 			s_features.tilemap.supports_tile_flips = false;
 
 			s_features.sprite.enabled = mode != kModeBg;
@@ -61,6 +62,7 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.palette.insert_transparent_color = false;
 			s_features.palette.share_first_color = false;
 
+			s_features.tileset.color_index_format = kFormat_COL2222;
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
 			s_features.tileset.tile_max_count = (mode == kModeBg) ? 512 : 0xFFFFFFFFU;
@@ -68,8 +70,8 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.tileset.bank_max_count = 2;
 
 			s_features.tilemap.enabled = mode == kModeBg;
-			s_features.tilemap.index_format = kFormat_IDX8;
-			s_features.tilemap.parameter_format = kFormat_PAL3_BNK1_X1_FLP2_PRI1;
+			s_features.tilemap.tile_index_format = kFormat_IDX8;
+			s_features.tilemap.tile_parameter_format = kFormat_PAL3_BNK1_X1_FLP2_PRI1;
 			s_features.tilemap.supports_tile_flips = true;
 
 			s_features.sprite.enabled = mode != kModeBg;
@@ -84,6 +86,7 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.palette.insert_transparent_color = false;
 			s_features.palette.share_first_color = true;
 
+			s_features.tileset.color_index_format = kFormat_COL2222;
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
 			s_features.tileset.tile_max_count = (mode == kModeBg) ? 256 : 0xFFFFFFFFU;
@@ -91,8 +94,8 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.tileset.bank_max_count = 1;
 
 			s_features.tilemap.enabled = mode == kModeBg;
-			s_features.tilemap.index_format = kFormat_IDX8;
-			s_features.tilemap.parameter_format = kFormat_PAL2_PAL2_PAL2_PAL2;
+			s_features.tilemap.tile_index_format = kFormat_IDX8;
+			s_features.tilemap.tile_parameter_format = kFormat_PAL2222;
 			s_features.tilemap.supports_tile_flips = false;
 
 			s_features.sprite.enabled = mode != kModeBg;
@@ -107,6 +110,7 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.palette.insert_transparent_color = true;
 			s_features.palette.share_first_color = false;
 
+			s_features.tileset.color_index_format = kFormat_COL2222_COL2222_INTERLEAVED;
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
 			s_features.tileset.tile_max_count = (mode == kModeBg) ? 256 : 0xFFFFFFFFU;
@@ -114,8 +118,8 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 			s_features.tileset.bank_max_count = 1;
 
 			s_features.tilemap.enabled = mode == kModeBg;
-			s_features.tilemap.index_format = kFormat_None;
-			s_features.tilemap.parameter_format = kFormat_IDX8_X2_PAL3_X1_FLP2;
+			s_features.tilemap.tile_index_format = kFormat_None;
+			s_features.tilemap.tile_parameter_format = kFormat_IDX8_X2_PAL3_X1_FLP2;
 			s_features.tilemap.supports_tile_flips = true;
 
 			s_features.sprite.enabled = mode != kModeBg;
