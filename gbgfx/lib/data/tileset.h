@@ -23,10 +23,11 @@ struct TileFlip
 	TileFlip();
 
 	std::vector<uint8_t> color_indices;
-	uint32_t side_length;
+	uint32_t width;
+	uint32_t height;
 };
 
-void initializeTileFlip(TileFlip& out_tile_flip, uint32_t tile_side_length);
+void initializeTileFlip(TileFlip& out_tile_flip, uint32_t width, uint32_t height);
 bool operator==(const TileFlip& lhs, const TileFlip& rhs);
 bool operator<(const TileFlip& lhs, const TileFlip& rhs);
 

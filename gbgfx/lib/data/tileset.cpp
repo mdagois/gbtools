@@ -11,14 +11,16 @@ namespace gbgfx {
 ////////////////////////////////////////////////////////////////////////////////
 
 TileFlip::TileFlip()
-: side_length(0)
+: width(0)
+, height(0)
 {
 }
 
-void initializeTileFlip(TileFlip& out_tile_flip, uint32_t side_length)
+void initializeTileFlip(TileFlip& out_tile_flip, uint32_t width, uint32_t height)
 {
-	out_tile_flip.side_length = side_length;
-	out_tile_flip.color_indices.resize(side_length * side_length);
+	out_tile_flip.width = width;
+	out_tile_flip.height = height;
+	out_tile_flip.color_indices.resize(width * height);
 }
 
 bool operator==(const TileFlip& lhs, const TileFlip& rhs)
@@ -60,55 +62,56 @@ static void copyRow(uint8_t* out, const uint8_t* in, uint32_t row_length)
 static bool isTileFlipValid(const TileFlip& tile_flip)
 {
 	return
-		tile_flip.side_length > 0 &&
-		tile_flip.color_indices.size() == tile_flip.side_length * tile_flip.side_length;
+		tile_flip.width > 0 && tile_flip.height > 0 &&
+		tile_flip.color_indices.size() == tile_flip.width * tile_flip.height;
 }
 
 static void generateFlips(TileFlip* inout_tile_flips)
 {
 	const TileFlip& none = inout_tile_flips[kTileFlipType_None];
-	const uint32_t side_length = none.side_length;
+	const uint32_t width = none.width;
+	const uint32_t height = none.height;
 	assert(isTileFlipValid(none));
 
 	{
 		TileFlip& horizontal = inout_tile_flips[kTileFlipType_Horizontal];
-		initializeTileFlip(horizontal, side_length);
-		for(uint32_t i = 0; i < side_length; ++i)
+		initializeTileFlip(horizontal, width, height);
+		for(uint32_t i = 0; i < height; ++i)
 		{
-			const uint32_t base_index = i * side_length;
+			const uint32_t base_index = i * width;
 			flipRow(
 				horizontal.color_indices.data() + base_index,
 				none.color_indices.data() + base_index,
-				side_length);
+				width);
 		}
 	}
 
 	{
 		TileFlip& vertical = inout_tile_flips[kTileFlipType_Vertical];
-		initializeTileFlip(vertical, side_length);
-		for(uint32_t i = 0; i < side_length; ++i)
+		initializeTileFlip(vertical, width, height);
+		for(uint32_t i = 0; i < height; ++i)
 		{
-			const uint32_t in_index = i * side_length;
-			const uint32_t out_index = ((side_length - 1) - i) * side_length;
+			const uint32_t in_index = i * width;
+			const uint32_t out_index = ((width - 1) - i) * width;
 			copyRow(
 				vertical.color_indices.data() + out_index,
 				none.color_indices.data() + in_index,
-				side_length);
+				width);
 		}
 	}
 
 	{
 		TileFlip& both = inout_tile_flips[kTileFlipType_Both];
-		initializeTileFlip(both, side_length);
+		initializeTileFlip(both, width, height);
 		const TileFlip& horizontal = inout_tile_flips[kTileFlipType_Horizontal];
-		for(uint32_t i = 0; i < side_length; ++i)
+		for(uint32_t i = 0; i < height; ++i)
 		{
-			const uint32_t in_index = i * side_length;
-			const uint32_t out_index = ((side_length - 1) - i) * side_length;
+			const uint32_t in_index = i * width;
+			const uint32_t out_index = ((width - 1) - i) * width;
 			copyRow(
 				both.color_indices.data() + out_index,
 				horizontal.color_indices.data() + in_index,
-				side_length);
+				width);
 		}
 	}
 }

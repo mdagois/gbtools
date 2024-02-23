@@ -23,23 +23,23 @@ bool initialize(Hardware hardware, Mode mode)
 ////////////////////////////////////////////////////////////////////////////////
 // Utils
 ////////////////////////////////////////////////////////////////////////////////
-#if 0
-static bool extractTilePalette(Palette& out_tile_palette, const ImageTile& tile)
+
+static bool extractTilePalette(Palette& out_tile_palette, const ImageTile& image_tile)
 {
 	std::set<ColorRGBA> colors;
-	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	const uint32_t pixel_count = image_tile.getWidth() * image_tile.getHeight();
+	for(uint32_t i = 0; i < pixel_count; ++i)
 	{
-		colors.insert(tile[i]);
+		colors.insert(image_tile[i]);
 	}
-	if(colors.size() > PROFILE.palette.color_max_count)
+	if(colors.size() > FEATURES.palette.color_max_count)
 	{
-		GBGFX_LOG_ERROR("Too many colors in palette");
+		GBGFX_LOG_ERROR("Too many colors in image tile");
 		return false;
 	}
-
 	for(ColorRGBA color : colors)
 	{
-		out_tile_palette.push(color);
+		out_tile_palette.add(color);
 	}
 	return true;
 }
@@ -51,7 +51,7 @@ static bool generateTileFlip(
 	const ImageTile& image_tile, const PaletteSet& palette_set)
 {
 	{
-		Palette tile_palette;
+		Palette tile_palette(FEATURES.palette.insert_transparent_color);
 		if(!extractTilePalette(tile_palette, image_tile))
 		{
 			GBGFX_LOG_ERROR("Could not extract palette");
@@ -67,8 +67,11 @@ static bool generateTileFlip(
 		out_palette_index = palette_index;
 	}
 
+	initializeTileFlip(out_tile_flip, image_tile.getWidth(), image_tile.getHeight());
+
 	const Palette& palette = palette_set[out_palette_index];
-	for(uint32_t i = 0; i < kPixelsPerTile; ++i)
+	const uint32_t pixel_count = image_tile.getWidth() * image_tile.getHeight();
+	for(uint32_t i = 0; i < pixel_count; ++i)
 	{
 		uint8_t color_index = 0;
 		if(!palette.findColorIndex(color_index, image_tile[i]))
@@ -98,30 +101,10 @@ static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Pale
 // Import
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool areSingleColorTiles(const std::vector<ImageTile>& tiles)
-{
-	assert(tiles.size() > 0);
-	const ColorRGBA& single_color = tiles[0][0];
-	for(size_t t = 0; t < tiles.size(); ++t)
-	{
-		const ImageTile& tile = tiles[t];
-		for(uint32_t c = 0; c < tile.size(); ++c)
-		{
-			if(tile[c] != single_color)
-			{
-				return false;
-			}
-		}
-	}
-	return true;
-}
-
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	uint32_t start_tile_row, uint32_t tile_row_count,
-	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, TileRemoval tile_removal,
-	const char* image_filename)
+	const Division* divisions, uint32_t division_count,
+	TileRemoval tile_removal, const char* image_filename)
 {
 	Image image;
 	if(!image.read(image_filename))
@@ -130,81 +113,72 @@ bool extractTileset(
 	}
 	return extractTileset(
 		out_tileset, out_palette_set,
-		start_tile_row, tile_row_count,
-		metatile_width, metatile_height,
-		skip_single_color_metatiles, tile_removal,
-		image);
+		divisions, division_count,
+		tile_removal, image);
 }
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	uint32_t start_tile_row, uint32_t tile_row_count,
-	uint32_t metatile_width, uint32_t metatile_height,
-	bool skip_single_color_metatiles, TileRemoval tile_removal,
-	const Image& image)
+	const Division* divisions, uint32_t division_count,
+	TileRemoval tile_removal, const Image& image)
 {
-	assert(isProfileValid());
+	assert(areFeaturesInitialized());
 
-	const uint32_t tiles_per_metatile = (metatile_width / kTileSize) * (metatile_height / kTileSize);
-	std::vector<ImageTile> metatile_tiles;
-	std::vector<ImageTile> image_tiles;
 	if(!image.iterateTiles(
-		start_tile_row, tile_row_count, metatile_width, metatile_height,
-		[&metatile_tiles, &image_tiles, &out_palette_set,
-		 &image, tiles_per_metatile, skip_single_color_metatiles](const ImageTile& tile, uint32_t x, uint32_t y)
+		divisions, division_count,
+		[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
-			Palette palette;
-			if(!extractTilePalette(palette, tile))
+			Palette palette(FEATURES.palette.insert_transparent_color);
+			if(!extractTilePalette(palette, image_tile))
 			{
 				GBGFX_LOG_ERROR(
-					"Could not extract palette from metatile ("
+					"Could not extract palette from tile ("
 					<< x << "," << y << ") in [" << image.getFilename() << "]");
 				return false;
 			}
-			out_palette_set.push(palette);
-			metatile_tiles.push_back(tile);
-			if(metatile_tiles.size() == tiles_per_metatile)
-			{
-				if(!skip_single_color_metatiles || !areSingleColorTiles(metatile_tiles))
-				{
-					for(auto& metatile_tile : metatile_tiles)
-					{
-						image_tiles.push_back(metatile_tile);
-					}
-				}
-				metatile_tiles.clear();
-			}
+			out_palette_set.add(palette);
 			return true;
 		}))
 	{
 		return false;
 	}
 
-	if(!out_palette_set.optimize())
+	if(!out_palette_set.optimize(FEATURES.palette.color_max_count, FEATURES.palette.share_first_color, true))
 	{
 		return false;
 	}
 
-	for(uint32_t i = 0; i < image_tiles.size(); ++i)
-	{
-		Tile tile;
-		if(!generateTile(tile, image_tiles[i], out_palette_set))
+	if(!image.iterateTiles(
+		divisions, division_count,
+		[&out_tileset, &out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
-			GBGFX_LOG_ERROR(
-				"Could not generate tile ("
-				<< i << ") in [" << image.getFilename() << "]");
-			return false;
-		}
-		out_tileset.push(tile);
+			Tile tile;
+			if(!generateTile(tile, image_tile, out_palette_set))
+			{
+				GBGFX_LOG_ERROR(
+					"Could not generate tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+			out_tileset.add(tile);
+			return true;
+		}))
+	{
+		return false;
 	}
 
 	if(tile_removal != kTileRemovalNone)
 	{
-		if(tile_removal > PROFILE.tileset.tile_removal_max)
+		const bool has_flips =
+			(FEATURES.tilemap.enabled && FEATURES.tilemap.supports_tile_flips) ||
+			(FEATURES.sprite.enabled && FEATURES.sprite.supports_tile_flips);
+		if(!has_flips && tile_removal == kTileRemovalFlips)
 		{
 			GBGFX_LOG_WARN(
-				"Downgraded tile removal from " << tile_removal << " to " << PROFILE.tileset.tile_removal_max);
-			tile_removal = PROFILE.tileset.tile_removal_max;
+				"Downgraded tile removal from " << tile_removal
+				<< " to " << kTileRemovalDoubles
+				<< " as the hardware does not support flips in that mode");
+			tile_removal = kTileRemovalDoubles;
 		}
 		out_tileset.removeDoubles(tile_removal == kTileRemovalFlips);
 	}
@@ -213,16 +187,19 @@ bool extractTileset(
 		"Tile count is " << out_tileset.size()
 		<< " and palette count is " << out_palette_set.size()
 		<< " in [" << image.getFilename() << "]"); 
-	if(!PROFILE.data.is_sprite && out_tileset.size() > PROFILE.tileset.tile_max_count)
+	if(out_tileset.size() > FEATURES.tileset.tile_max_count)
 	{
-		GBGFX_LOG_INFO("The tile count [" << out_tileset.size() << " is over the maximum [" << PROFILE.tileset.tile_max_count);
+		GBGFX_LOG_INFO(
+			"The tile count " << out_tileset.size()
+			<< " is over the maximum of " << FEATURES.tileset.tile_max_count);
 		return false;
 	}
+
 	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-
+#if 0
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,

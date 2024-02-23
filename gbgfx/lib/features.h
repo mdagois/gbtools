@@ -59,19 +59,25 @@ struct Features
 
 	struct
 	{
+		// Tilemap output is enabled
+		bool enabled;
 		// Format of the index data
 		Format index_format;
 		// Format of the parameter data
 		Format parameter_format;
-		// The tilemap can use tile flips
+		// Tilemaps can use tile flips
 		bool supports_tile_flips;
 	} tilemap;
 
 	struct
 	{
+		// Sprite output is enabled
+		bool enabled;
 		// Extended tile dimension for sprites
 		uint32_t extended_tile_width;
 		uint32_t extended_tile_height;
+		// Sprites can use tile flips
+		bool supports_tile_flips;
 	} sprite;
 };
 

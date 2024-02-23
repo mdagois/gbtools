@@ -40,16 +40,19 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
-			s_features.tileset.tile_max_count = 256;
+			s_features.tileset.tile_max_count = (mode == kModeBg) ? 256 : 0xFFFFFFFFU;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 1;
 
+			s_features.tilemap.enabled = mode == kModeBg;
 			s_features.tilemap.index_format = kFormat_IDX8;
 			s_features.tilemap.parameter_format = kFormat_None;
 			s_features.tilemap.supports_tile_flips = false;
 
-			s_features.sprite.extended_tile_width = (mode == kModeBg) ? 0 : 8;
-			s_features.sprite.extended_tile_height = (mode == kModeBg) ? 0 : (mode == kModeSprite8x16 ? 16 : 8);
+			s_features.sprite.enabled = mode != kModeBg;
+			s_features.sprite.extended_tile_width = 8;
+			s_features.sprite.extended_tile_height = (mode == kModeSprite8x16) ? 16 : 8;
+			s_features.sprite.supports_tile_flips = true;
 			break;
 		case kHardwareCgb:
 			s_features.palette.base_index = 0;
@@ -60,16 +63,19 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
-			s_features.tileset.tile_max_count = 512;
+			s_features.tileset.tile_max_count = (mode == kModeBg) ? 512 : 0xFFFFFFFFU;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 2;
 
+			s_features.tilemap.enabled = mode == kModeBg;
 			s_features.tilemap.index_format = kFormat_IDX8;
 			s_features.tilemap.parameter_format = kFormat_PAL3_BNK1_X1_FLP2_PRI1;
 			s_features.tilemap.supports_tile_flips = true;
 
-			s_features.sprite.extended_tile_width = (mode == kModeBg) ? 0 : 8;
-			s_features.sprite.extended_tile_height = (mode == kModeBg) ? 0 : (mode == kModeSprite8x16 ? 16 : 8);
+			s_features.sprite.enabled = mode != kModeBg;
+			s_features.sprite.extended_tile_width =  8;
+			s_features.sprite.extended_tile_height = (mode == kModeSprite8x16) ? 16 : 8;
+			s_features.sprite.supports_tile_flips = true;
 			break;
 		case kHardwareSgb:
 			s_features.palette.base_index = 0;
@@ -80,16 +86,19 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
-			s_features.tileset.tile_max_count = 256;
+			s_features.tileset.tile_max_count = (mode == kModeBg) ? 256 : 0xFFFFFFFFU;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 1;
 
+			s_features.tilemap.enabled = mode == kModeBg;
 			s_features.tilemap.index_format = kFormat_IDX8;
 			s_features.tilemap.parameter_format = kFormat_PAL2_PAL2_PAL2_PAL2;
 			s_features.tilemap.supports_tile_flips = false;
 
-			s_features.sprite.extended_tile_width = (mode == kModeBg) ? 0 : 8;
-			s_features.sprite.extended_tile_height = (mode == kModeBg) ? 0 : (mode == kModeSprite8x16 ? 16 : 8);
+			s_features.sprite.enabled = mode != kModeBg;
+			s_features.sprite.extended_tile_width = 8;
+			s_features.sprite.extended_tile_height = (mode == kModeSprite8x16) ? 16 : 8;
+			s_features.sprite.supports_tile_flips = false;
 			break;
 		case kHardwareSfc:
 			s_features.palette.base_index = 4;
@@ -100,16 +109,19 @@ bool initializeFeatures(Hardware hardware, Mode mode)
 
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
-			s_features.tileset.tile_max_count = 256;
+			s_features.tileset.tile_max_count = (mode == kModeBg) ? 256 : 0xFFFFFFFFU;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 1;
 
+			s_features.tilemap.enabled = mode == kModeBg;
 			s_features.tilemap.index_format = kFormat_None;
 			s_features.tilemap.parameter_format = kFormat_IDX8_X2_PAL3_X1_FLP2;
 			s_features.tilemap.supports_tile_flips = true;
 
-			s_features.sprite.extended_tile_width = (mode == kModeBg) ? 0 : 8;
-			s_features.sprite.extended_tile_height = (mode == kModeBg) ? 0 : (mode == kModeSprite8x16 ? 16 : 8);
+			s_features.sprite.enabled = mode != kModeBg;
+			s_features.sprite.extended_tile_width = 8;
+			s_features.sprite.extended_tile_height = (mode == kModeSprite8x16) ? 16 : 8;
+			s_features.sprite.supports_tile_flips = false;
 			break;
 		default:
 			assert(false);
