@@ -4,6 +4,7 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "third_party/stb_image_write.h"
 
+#include "export/export.h"
 #include "features.h"
 #include "gbgfx.h"
 #include "import/image.h"
@@ -290,7 +291,6 @@ bool extractTilemap(
 	return true;
 }
 
-#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Export
 ////////////////////////////////////////////////////////////////////////////////
@@ -346,6 +346,7 @@ bool exportPaletteSet(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+#if 0
 bool exportTileset(
 	const Tileset& tileset,
 	const char* output_filename, bool use_header)

@@ -1,7 +1,6 @@
 #pragma once
 
 //TODO Support OAM export
-//TODO Support metatiles in tilemap extraction
 //TODO Support forcing the palette set instead of extracting it
 //TODO Allow to set an output directory
 //TODO Support short name for options
@@ -48,10 +47,10 @@ bool extractTilemap(
 // Export
 ////////////////////////////////////////////////////////////////////////////////
 
-#if 0
 bool exportPaletteSet(
 	const PaletteSet& palette_set,
 	const char* output_filename, bool use_header);
+#if 0
 bool exportTileset(
 	const Tileset& tileset,
 	const char* output_filename, bool use_header);

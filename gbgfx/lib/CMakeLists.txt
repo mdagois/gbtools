@@ -24,7 +24,7 @@ list(TRANSFORM UTILS_SRC PREPEND utils/)
 add_library(
 	gbgfx
 	STATIC
-#	${EXPORT_SRC}
+	${EXPORT_SRC}
 	${IMPORT_SRC}
 	${DATA_SRC}
 	${UTILS_SRC}

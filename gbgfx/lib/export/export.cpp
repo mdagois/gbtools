@@ -1,8 +1,7 @@
 #include <cassert>
 
 #include "export.h"
-#include "log.h"
-#include "profile.h"
+#include "features.h"
 
 namespace gbgfx {
 
@@ -10,7 +9,12 @@ namespace gbgfx {
 // BGR555
 ////////////////////////////////////////////////////////////////////////////////
 
-ColorBGR555 convertColor(ColorRGBA rgba)
+enum : ColorBGR555
+{
+	kBGR555_Invalid = 0x8000U,
+};
+
+static ColorBGR555 convertColor(ColorRGBA rgba)
 {
 	const uint8_t red = rgba.r / 8;
 	const uint8_t green = rgba.g / 8;
@@ -19,6 +23,8 @@ ColorBGR555 convertColor(ColorRGBA rgba)
 	return (blue << 10) | (green << 5) | red;
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Palette
 ////////////////////////////////////////////////////////////////////////////////
 
 PaletteSetData::PaletteSetData()
@@ -40,7 +46,7 @@ bool PaletteSetData::initialize(const PaletteSet& palette_set)
 		{
 			m_data.push_back(convertColor(palette[c]));
 		}
-		for(; c < PROFILE.palette.color_max_count; ++c)
+		for(; c < FEATURES.palette.color_max_count; ++c)
 		{
 			m_data.push_back(kBGR555_Invalid);
 		}
@@ -65,7 +71,10 @@ uint32_t PaletteSetData::getDataSize() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Tileset
+////////////////////////////////////////////////////////////////////////////////
 
+#if 0
 TilesetData::TilesetData()
 : m_tile_count(0)
 {
@@ -125,6 +134,8 @@ uint32_t TilesetData::getDataSize() const
 	return static_cast<uint32_t>(m_data.size() * sizeof(uint8_t));
 }
 
+////////////////////////////////////////////////////////////////////////////////
+// Tilemap
 ////////////////////////////////////////////////////////////////////////////////
 
 TilemapData::TilemapData()
@@ -311,6 +322,7 @@ uint32_t TilemapData::getAttributeDataSize() const
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+#endif
 
 }
 
