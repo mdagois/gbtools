@@ -1,3 +1,4 @@
+#include <cassert>
 #include <string>
 #include <vector>
 
@@ -22,7 +23,7 @@ static bool importData(
 
 	const gbgfx::Division tilemap_divisions[] =
 	{
-		{ 256, 256, true },
+		//{ 256, 256, true },
 		{ 8, 8, true },
 	};
 	const uint32_t tilemap_division_count = sizeof(tilemap_divisions) / sizeof(tilemap_divisions[0]);
@@ -94,31 +95,27 @@ static bool exportData(
 		}
 	}
 
-#if 0
-	assert(tilemaps.size() == options.tilemap.image_filenames.size()); 
-	for(size_t i = 0; i < tilemaps.size(); ++i)
+	if(!options.output.skip_export_indices || !options.output.skip_export_parameters)
 	{
-		const char* image_filename = options.tilemap.image_filenames[i];
-		const std::string idx_filename = getOutputFilename(image_filename, ".idx");
-		const std::string prm_filename = getOutputFilename(image_filename, ".prm");
-		const std::string atr_filename = getOutputFilename(image_filename, ".atr");
-		GBGFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
-		if(	!options.output.skip_export_tilemaps &&
-			!gbgfx::exportTilemap(
-				tilemaps[i],
-				idx_filename.c_str(),
-				options.output.skip_export_parameters ? nullptr : prm_filename.c_str(),
-				options.output.skip_export_attributes ? nullptr : atr_filename.c_str(),
-				options.output.add_binary_headers,
-				options.output.use_8800_addressing_mode,
-				options.output.palette_index_offset,
-				options.output.tile_index_offset))
+		assert(tilemaps.size() == options.tilemap.image_filenames.size());
+		for(size_t i = 0; i < tilemaps.size(); ++i)
 		{
-			GBGFX_LOG_ERROR("Could not export tilemap");
-			return false;
+			const char* image_filename = options.tilemap.image_filenames[i];
+			const std::string idx_filename = getOutputFilename(image_filename, ".idx");
+			const std::string prm_filename = getOutputFilename(image_filename, ".prm");
+			GBGFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
+			if(!gbgfx::exportTilemap(
+				tilemaps[i],
+				options.output.add_binary_headers, options.output.use_8800_addressing_mode,
+				options.output.palette_index_offset, options.output.tile_index_offset,
+				options.output.skip_export_indices ? nullptr : idx_filename.c_str(),
+				options.output.skip_export_parameters ? nullptr : prm_filename.c_str()))
+			{
+				GBGFX_LOG_ERROR("Could not export tilemap");
+				return false;
+			}
 		}
 	}
-#endif
 
 	return true;
 }
