@@ -30,10 +30,11 @@ void log(LogLevel level, const char* message)
 
 	static const char* headers[] =
 	{
-		"[NONE]  ",
+		"[NONE ] ",
 		"[ERROR] ",
-		"[WARN]  ",
-		"[INFO]  ",
+		"[WARN ] ",
+		"[INFO ] ",
+		"[DEBUG] ",
 	};
 	static_assert(sizeof(headers) / sizeof(headers[0]) == kLogLevel_All);
 	if(level == kLogLevel_Error)

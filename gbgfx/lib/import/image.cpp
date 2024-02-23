@@ -30,8 +30,6 @@ public:
 	uint32_t getY() const;
 	uint32_t getWidth() const;
 	uint32_t getHeight() const;
-
-private:
 	bool isTransparent() const;
 
 private:
@@ -67,6 +65,12 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 	assert(m_width % division->width == 0);
 	assert(m_height % division->height == 0);
 
+	GBGFX_LOG_DEBUG(
+		"Checking area (x=" << m_x << ", y=" << m_y
+		<< ", w=" << m_width << ", h=" << m_height << ") with division ("
+		<< division->width << "," << division->height << ","
+		<< (division->skip_transparent ? "s" : "-") << "," << (isTransparent() ? "t" : "-") << ")");
+
 	const uint32_t row_count = m_height / division->height;
 	const uint32_t column_count = m_width / division->width;
 	for(uint32_t j = 0; j < row_count; ++j)
@@ -80,7 +84,7 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 				GBGFX_LOG_INFO(
 					"Skipping transparent area (x=" << sub_area.m_x << ", y=" << sub_area.m_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
-				return true;
+				continue;
 			}
 			if(!area_callback(sub_area, division, level))
 			{
@@ -297,6 +301,10 @@ bool Image::iterateTiles(
 		{
 			ImageTile image_tile;
 			image_tile.setImageArea(&area);
+			GBGFX_LOG_DEBUG(
+				"Checking tile (x=" << area.getX() << ", y=" << area.getY()
+				<< ", w=" << area.getWidth() << ", h=" << area.getHeight() << ","
+				<< (division->skip_transparent ? "s" : "-") << "," << (area.isTransparent() ? "t" : "-") << ")");
 			return tile_callback(image_tile, area.getX(), area.getY());
 		}
 		else
