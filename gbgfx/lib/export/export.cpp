@@ -148,14 +148,11 @@ uint32_t TilesetData::getDataSize() const
 	return static_cast<uint32_t>(m_data.size() * sizeof(uint8_t));
 }
 
-#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Tilemap
 ////////////////////////////////////////////////////////////////////////////////
 
 TilemapData::TilemapData()
-: m_row_count(0)
-, m_column_count(0)
 {
 }
 
@@ -168,18 +165,18 @@ bool TilemapData::initialize(
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	bool use_8800_addressing_mode)
 {
-	if(palette_index_offset >= PROFILE.palette.max_count)
+	if(palette_index_offset >= FEATURES.palette.max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The palette offset [" << palette_index_offset
-			<< "] is over the palette max count [" << PROFILE.palette.max_count << "]");
+			<< "] is over the palette max count [" << FEATURES.palette.max_count << "]");
 		return false;
 	}
-	if(tile_index_offset >= PROFILE.tileset.tile_max_count)
+	if(tile_index_offset >= FEATURES.tileset.tile_max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The tile offset [" << tile_index_offset
-			<< "] is over the tile max count [" << PROFILE.tileset.tile_max_count << "]");
+			<< "] is over the tile max count [" << FEATURES.tileset.tile_max_count << "]");
 		return false;
 	}
 
@@ -189,32 +186,32 @@ bool TilemapData::initialize(
 	{
 		TilemapEntry entry = tilemap[i];
 
-		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= PROFILE.palette.max_count)
+		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= FEATURES.palette.max_count)
 		{
 			GBGFX_LOG_ERROR(
 				"The palette index with offset [" << entry.palette_index + palette_index_offset
-				<< "] is over the palette max count [" << PROFILE.palette.max_count << "]");
+				<< "] is over the palette max count [" << FEATURES.palette.max_count << "]");
 			return false;
 		}
 
 		if(tile_index_offset > 0)
 		{
-			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * kTilesPerBank);
+			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * FEATURES.tileset.tiles_per_bank);
 			global_tile_index += tile_index_offset;
-			if(global_tile_index >= PROFILE.tileset.tile_max_count)
+			if(global_tile_index >= FEATURES.tileset.tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index with offset [" << entry.tile_index + tile_index_offset
-					<< "] is over the tile max count [" << PROFILE.tileset.tile_max_count << "]");
+					<< "] is over the tile max count [" << FEATURES.tileset.tile_max_count << "]");
 				return false;
 			}
-			entry.tile_index = global_tile_index % kTilesPerBank;
-			entry.bank = global_tile_index / kTilesPerBank;
-			if(entry.bank >= PROFILE.tileset.bank_max_count)
+			entry.tile_index = global_tile_index % FEATURES.tileset.tiles_per_bank;
+			entry.bank = global_tile_index / FEATURES.tileset.tiles_per_bank;
+			if(entry.bank >= FEATURES.tileset.bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank (after applying the tile offset) [" << entry.bank
-					<< "] is over the bank max count [" << PROFILE.tileset.bank_max_count << "]");
+					<< "] is over the bank max count [" << FEATURES.tileset.bank_max_count << "]");
 				return false;
 			}
 		}
@@ -224,68 +221,54 @@ bool TilemapData::initialize(
 			entry.tile_index += 128;
 		}
 
-		const uint8_t palette_index = entry.palette_index + palette_index_offset + PROFILE.palette.base_index;
+		const uint8_t palette_index = entry.palette_index + palette_index_offset + FEATURES.palette.base_index;
 
-		m_indices.push_back(entry.tile_index + tile_index_offset);
-
-		assert(
-			PROFILE.tilemap.parameter_bit_depth == 0 ||
-			PROFILE.tilemap.parameter_bit_depth == 8 ||
-			PROFILE.tilemap.parameter_bit_depth == 16);
-		if(PROFILE.tilemap.parameter_bit_depth == 8)
+		if(FEATURES.tilemap.tile_index_format == kFormat_IDX8)
 		{
-			m_parameters_8.push_back(
-				(palette_index & 0x07) |
-				((entry.bank & 0x01) << 3) |
-				(entry.flip_horizontal ? 0x20 : 0x00) |
-				(entry.flip_vertical ? 0x40 : 0x00) |
-				(entry.priority ? 0x80 : 0x00));
-		}
-		else if(PROFILE.tilemap.parameter_bit_depth == 16)
-		{
-			m_parameters_16.push_back(
-				((entry.tile_index + tile_index_offset) & 0xFF) |
-				((palette_index & 0x03) << 10) |
-				(entry.flip_horizontal ? 0x4000 : 0x0000) |
-				(entry.flip_vertical ? 0x8000 : 0x0000));
+			m_indices.push_back(entry.tile_index + tile_index_offset);
 		}
 
-		if(PROFILE.tilemap.has_attributes)
+		switch(FEATURES.tilemap.tile_parameter_format)
 		{
-			attribute |= ((palette_index & 0x3) << attribute_shift);
-			if(attribute_shift == 0)
-			{
-				m_attributes.push_back(attribute);
-				attribute = 0;
-				attribute_shift = 6;
-			}
-			else
-			{
-				attribute_shift -= 2;
-			}
+			case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
+				m_parameters_8.push_back(
+					(palette_index & 0x07) |
+					((entry.bank & 0x01) << 3) |
+					(entry.flip_horizontal ? 0x20 : 0x00) |
+					(entry.flip_vertical ? 0x40 : 0x00) |
+					(entry.priority ? 0x80 : 0x00));
+				break;
+			case kFormat_IDX8_X2_PAL3_X1_FLP2:
+				m_parameters_16.push_back(
+					((entry.tile_index + tile_index_offset) & 0xFF) |
+					((palette_index & 0x03) << 10) |
+					(entry.flip_horizontal ? 0x4000 : 0x0000) |
+					(entry.flip_vertical ? 0x8000 : 0x0000));
+				break;
+			case kFormat_PAL2222:
+				attribute |= ((palette_index & 0x3) << attribute_shift);
+				if(attribute_shift == 0)
+				{
+					m_parameters_8.push_back(attribute);
+					attribute = 0;
+					attribute_shift = 6;
+				}
+				else
+				{
+					attribute_shift -= 2;
+				}
+				break;
+			default:
+				break;
 		}
 	}
-	if(PROFILE.tilemap.has_attributes)
+	if(	FEATURES.tilemap.tile_parameter_format == kFormat_PAL2222 &&
+		attribute_shift != 0)
 	{
-		if(attribute_shift != 0)
-		{
-			m_attributes.push_back(attribute);
-		}
+		m_parameters_8.push_back(attribute);
 	}
 
-	m_row_count = tilemap.getRowCount();
-	m_column_count = tilemap.getColumnCount();
 	return true;
-}
-
-uint32_t TilemapData::getRowCount() const
-{
-	return m_row_count;
-}
-
-uint32_t TilemapData::getColumnCount() const
-{
-	return m_column_count;
 }
 
 const uint8_t* TilemapData::getIndexData() const
@@ -295,21 +278,17 @@ const uint8_t* TilemapData::getIndexData() const
 
 const uint8_t* TilemapData::getParameterData() const
 {
-	assert(PROFILE.tilemap.parameter_bit_depth == 8 || PROFILE.tilemap.parameter_bit_depth == 16);
-	if(PROFILE.tilemap.parameter_bit_depth == 8)
+	switch(FEATURES.tilemap.tile_parameter_format)
 	{
-		return reinterpret_cast<const uint8_t*>(m_parameters_8.data());
-	}
-	if(PROFILE.tilemap.parameter_bit_depth == 16)
-	{
-		return reinterpret_cast<const uint8_t*>(m_parameters_16.data());
+		case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
+		case kFormat_PAL2222:
+			return reinterpret_cast<const uint8_t*>(m_parameters_8.data());
+		case kFormat_IDX8_X2_PAL3_X1_FLP2:
+			return reinterpret_cast<const uint8_t*>(m_parameters_16.data());
+		default:
+			break;
 	}
 	return nullptr;
-}
-
-const uint8_t* TilemapData::getAttributeData() const
-{
-	return reinterpret_cast<const uint8_t*>(m_attributes.data());
 }
 
 uint32_t TilemapData::getIndexDataSize() const
@@ -319,25 +298,20 @@ uint32_t TilemapData::getIndexDataSize() const
 
 uint32_t TilemapData::getParameterDataSize() const
 {
-	assert(PROFILE.tilemap.parameter_bit_depth == 8 || PROFILE.tilemap.parameter_bit_depth == 16);
-	if(PROFILE.tilemap.parameter_bit_depth == 8)
+	switch(FEATURES.tilemap.tile_parameter_format)
 	{
-		return static_cast<uint32_t>(m_parameters_8.size() * sizeof(uint8_t));
-	}
-	if(PROFILE.tilemap.parameter_bit_depth == 16)
-	{
-		return static_cast<uint32_t>(m_parameters_16.size() * sizeof(uint16_t));
+		case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
+		case kFormat_PAL2222:
+			return static_cast<uint32_t>(m_parameters_8.size() * sizeof(uint8_t));
+		case kFormat_IDX8_X2_PAL3_X1_FLP2:
+			return static_cast<uint32_t>(m_parameters_16.size() * sizeof(uint16_t));
+		default:
+			break;
 	}
 	return 0;
 }
 
-uint32_t TilemapData::getAttributeDataSize() const
-{
-	return static_cast<uint32_t>(m_attributes.size() * sizeof(uint8_t));
-}
-
 ////////////////////////////////////////////////////////////////////////////////
-#endif
 
 }
 

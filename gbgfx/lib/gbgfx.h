@@ -50,10 +50,10 @@ bool extractTilemap(
 bool exportPaletteSet(
 	const PaletteSet& palette_set,
 	const char* output_filename, bool use_header);
-#if 0
 bool exportTileset(
 	const Tileset& tileset,
 	const char* output_filename, bool use_header);
+#if 0
 bool exportTilemap(
 	const Tilemap& tilemap,
 	const char* indices_filename,

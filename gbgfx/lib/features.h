@@ -21,6 +21,7 @@ enum Format : uint32_t
 
 	// Tilemap indices
 	kFormat_IDX8,
+
 	// CGB tilemap parameters
 	kFormat_PAL3_BNK1_X1_FLP2_PRI1,
 	// SGB screen attributes

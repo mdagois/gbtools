@@ -346,7 +346,6 @@ bool exportPaletteSet(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#if 0
 bool exportTileset(
 	const Tileset& tileset,
 	const char* output_filename, bool use_header)
@@ -362,6 +361,7 @@ bool exportTileset(
 			output_filename);
 }
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 
 bool exportTilemap(
