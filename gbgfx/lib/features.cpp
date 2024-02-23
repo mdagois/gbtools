@@ -142,6 +142,10 @@ bool areFeaturesInitialized()
 
 const Features& getFeatures()
 {
+	if(!areFeaturesInitialized())
+	{
+		GBGFX_LOG_ERROR("Features are not initialized");
+	}
 	return s_features;
 }
 

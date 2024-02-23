@@ -199,11 +199,11 @@ bool extractTileset(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-#if 0
+
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	uint32_t metatile_width, uint32_t metatile_height,
+	const Division* divisions, uint32_t division_count,
 	const char* image_filename)
 {
 	Image image;
@@ -211,24 +211,19 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, tileset, palette_set, metatile_width, metatile_height, image);
+	return extractTilemap(out_tilemap, tileset, palette_set, divisions, division_count, image);
 }
 
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	uint32_t metatile_width, uint32_t metatile_height,
+	const Division* divisions, uint32_t division_count,
 	const Image& image)
 {
-	assert(isProfileValid());
+	assert(areFeaturesInitialized());
 
-	if(!out_tilemap.initialize(image.getHeight() / kTileSize, image.getWidth() / kTileSize))
-	{
-		GBGFX_LOG_ERROR("Could not initialize tilemap from [" << image.getFilename() << "]");
-		return false;
-	}
 	if(!image.iterateTiles(
-		0, kIterateAllRows, metatile_width, metatile_height,
+		divisions, division_count,
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
@@ -236,8 +231,7 @@ bool extractTilemap(
 			{
 				GBGFX_LOG_ERROR(
 					"Could not generate tile ("
-					<< x << "," << y << ") in ["
-					<< image.getFilename() << "]");
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
 				return false;
 			}
 
@@ -246,41 +240,41 @@ bool extractTilemap(
 			TileFlipType flip_type;
 			if(!tileset.findTileIndex(
 				tile_index, palette_index, flip_type, tile,
-				PROFILE.tileset.tile_removal_max >= kTileRemovalFlips))
+				FEATURES.tilemap.supports_tile_flips))
 			{
 				GBGFX_LOG_ERROR(
 					"Could not find tile ("
-					<< x << "," << y << ") in tileset in ["
-					<< image.getFilename() << "]");
+					<< x << "," << y << ") in tileset from [" << image.getFilename() << "]");
 				return false;
 			}
 
-			assert(tile_index <= PROFILE.tileset.tile_max_count);
-			constexpr uint32_t priority = 0;
-			const uint32_t bank = tile_index / kTilesPerBank;
-			if(tile_index >= PROFILE.tileset.tile_max_count)
+			if(tile_index >= FEATURES.tileset.tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index [" << tile_index
-					<< "] is over the tile max count [" << PROFILE.tileset.tile_max_count << "]");
+					<< "] is over the tile max count [" << FEATURES.tileset.tile_max_count << "]");
 				return false;
 			}
-			if(palette_index >= PROFILE.palette.max_count)
+			if(palette_index >= FEATURES.palette.max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The palette index [" << palette_index
-					<< "] is over the palette max count [" << PROFILE.palette.max_count << "]");
+					<< "] is over the palette max count [" << FEATURES.palette.max_count << "]");
 				return false;
 			}
-			if(bank >= PROFILE.tileset.bank_max_count)
+
+			const uint32_t bank = tile_index / FEATURES.tileset.tiles_per_bank;
+			if(bank >= FEATURES.tileset.bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank index [" << bank
-					<< "] is over the bank max count [" << PROFILE.tileset.bank_max_count << "]");
+					<< "] is over the bank max count [" << FEATURES.tileset.bank_max_count << "]");
 				return false;
 			}
-			out_tilemap.push(
-				tile_index % kTilesPerBank, palette_index, bank,
+
+			constexpr uint32_t priority = 0;
+			out_tilemap.add(
+				tile_index % FEATURES.tileset.tiles_per_bank, palette_index, bank,
 				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
 				flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
 				priority);
@@ -291,11 +285,12 @@ bool extractTilemap(
 	}
 
 	GBGFX_LOG_INFO(
-		"Tilemap size is " << out_tilemap.getColumnCount() << "x" << out_tilemap.getRowCount()
+		"Tilemap size is " << out_tilemap.size()
 		<< " in [" << image.getFilename() << "]"); 
 	return true;
 }
 
+#if 0
 ////////////////////////////////////////////////////////////////////////////////
 // Export
 ////////////////////////////////////////////////////////////////////////////////
