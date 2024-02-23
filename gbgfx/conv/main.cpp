@@ -42,23 +42,14 @@ static bool importData(
 	return true;
 }
 
-#if 0
 static std::string getOutputFilename(const char* input_filename, const char* output_extension)
 {
 	return std::string(input_filename).append(output_extension);
 }
 
+#if 0
 static bool exportData(const Options& options)
 {
-	GBGFX_LOG_INFO("Exporting data");
-	gbgfx::Tileset tileset;
-	gbgfx::PaletteSet palette_set;
-	std::vector<gbgfx::Tilemap> tilemaps;
-	if(!loadDataFromImages(tileset, palette_set, tilemaps, options))
-	{
-		return false;
-	}
-
 	////////////////////////////////////////
 
 	if(!options.output.skip_export_palette)

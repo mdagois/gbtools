@@ -26,16 +26,16 @@ public:
 	bool iterateArea(const Division* division, uint32_t level, AreaCallback area_callback) const;
 
 	const ColorRGBA operator[](int32_t index) const;
-	uint32_t getX() const;
-	uint32_t getY() const;
+	uint32_t getOffsetX() const;
+	uint32_t getOffsetY() const;
 	uint32_t getWidth() const;
 	uint32_t getHeight() const;
 	bool isTransparent() const;
 
 private:
 	const ColorRGBA* m_pixels;
-	uint32_t m_x;
-	uint32_t m_y;
+	uint32_t m_offset_x;
+	uint32_t m_offset_y;
 	uint32_t m_width;
 	uint32_t m_height;
 	uint32_t m_pitch;
@@ -45,11 +45,11 @@ private:
 
 ImageArea::ImageArea(
 	const ColorRGBA* pixels,
-	uint32_t x, uint32_t y, uint32_t width, uint32_t height,
+	uint32_t offset_x, uint32_t offset_y, uint32_t width, uint32_t height,
 	uint32_t pitch)
 : m_pixels(pixels)
-, m_x(x)
-, m_y(y)
+, m_offset_x(offset_x)
+, m_offset_y(offset_y)
 , m_width(width)
 , m_height(height)
 , m_pitch(pitch)
@@ -66,7 +66,7 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 	assert(m_height % division->height == 0);
 
 	GBGFX_LOG_DEBUG(
-		"Checking area (x=" << m_x << ", y=" << m_y
+		"Processing area (x=" << m_offset_x << ", y=" << m_offset_y
 		<< ", w=" << m_width << ", h=" << m_height << ") with division ("
 		<< division->width << "," << division->height << ","
 		<< (division->skip_transparent ? "s" : "-") << "," << (isTransparent() ? "t" : "-") << ")");
@@ -77,19 +77,24 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 	{
 		for(uint32_t i = 0; i < column_count; ++i)
 		{
-			const ColorRGBA* area_pixels = m_pixels + (j * division->height * m_pitch) + (i * division->width);
-			const ImageArea sub_area(area_pixels, i, j, division->width, division->height, m_pitch);
+			const uint32_t relative_offset_x = i * division->width;
+			const uint32_t relative_offset_y = j * division->height;
+			const ColorRGBA* area_pixels = m_pixels + (relative_offset_y * m_pitch) + relative_offset_x;
+			const ImageArea sub_area(
+				area_pixels,
+				m_offset_x + relative_offset_x, m_offset_y + relative_offset_y,
+				division->width, division->height, m_pitch);
 			if(division->skip_transparent && sub_area.isTransparent())
 			{
 				GBGFX_LOG_INFO(
-					"Skipping transparent area (x=" << sub_area.m_x << ", y=" << sub_area.m_y
+					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
 				continue;
 			}
 			if(!area_callback(sub_area, division, level))
 			{
 				GBGFX_LOG_ERROR(
-					"Error in callback for area (x=" << sub_area.m_x << ", y=" << sub_area.m_y
+					"Error in callback for area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
 				return false;
 			}
@@ -107,14 +112,14 @@ const ColorRGBA ImageArea::operator[](int32_t index) const
 	return m_pixels[row * m_pitch + column];
 }
 
-uint32_t ImageArea::getX() const
+uint32_t ImageArea::getOffsetX() const
 {
-	return m_x;
+	return m_offset_x;
 }
 
-uint32_t ImageArea::getY() const
+uint32_t ImageArea::getOffsetY() const
 {
-	return m_y;
+	return m_offset_y;
 }
 
 uint32_t ImageArea::getWidth() const
@@ -302,10 +307,10 @@ bool Image::iterateTiles(
 			ImageTile image_tile;
 			image_tile.setImageArea(&area);
 			GBGFX_LOG_DEBUG(
-				"Checking tile (x=" << area.getX() << ", y=" << area.getY()
+				"New tile (x=" << area.getOffsetX() << ", y=" << area.getOffsetY()
 				<< ", w=" << area.getWidth() << ", h=" << area.getHeight() << ","
 				<< (division->skip_transparent ? "s" : "-") << "," << (area.isTransparent() ? "t" : "-") << ")");
-			return tile_callback(image_tile, area.getX(), area.getY());
+			return tile_callback(image_tile, area.getOffsetX(), area.getOffsetY());
 		}
 		else
 		{
