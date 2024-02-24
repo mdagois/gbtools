@@ -11,19 +11,19 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	const Mapping hardware_mapping[] =
 	{
-		{ "dmg-background", gbgfx::kHardware_Dmg_Background },
-		{ "dmg-sprite", gbgfx::kHardware_Dmg_Sprite },
-		{ "cgb-background", gbgfx::kHardware_Cgb_Background },
-		{ "cgb-sprite", gbgfx::kHardware_Cgb_Sprite },
-		{ "sgb-background", gbgfx::kHardware_Sgb_Background },
-		{ "sgb-border", gbgfx::kHardware_Sgb_Border },
+		{ "dmg-bg", "DMG background", gbgfx::kHardware_Dmg_Background },
+		{ "dmg-sp", "DMG sprites", gbgfx::kHardware_Dmg_Sprite },
+		{ "cgb-bg", "CGB background", gbgfx::kHardware_Cgb_Background },
+		{ "cgb-sp", "CGB sprites", gbgfx::kHardware_Cgb_Sprite },
+		{ "sgb-bg", "SGB background", gbgfx::kHardware_Sgb_Background },
+		{ "sgb-border", "SGB border", gbgfx::kHardware_Sgb_Border },
 	};
 
 	const Mapping tile_removal_mapping[] =
 	{
-		{ "none", gbgfx::kTileRemovalNone },
-		{ "doubles", gbgfx::kTileRemovalDoubles },
-		{ "flips", gbgfx::kTileRemovalFlips },
+		{ "none", "no tiles are removed", gbgfx::kTileRemovalNone },
+		{ "doubles", "double tiles are removed", gbgfx::kTileRemovalDoubles },
+		{ "flips", "tile flips are removed", gbgfx::kTileRemovalFlips },
 	};
 
 	Option cli_options[] =

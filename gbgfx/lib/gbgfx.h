@@ -1,11 +1,9 @@
 #pragma once
 
 //TODO Add divisions to CLI
+//TODO Allow to set an output directory
 //TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
-//TODO Allow to set an output directory
-//TODO Support short name for options
-//TODO Support desc of mappings
 
 #include "data/palette.h"
 #include "data/tilemap.h"

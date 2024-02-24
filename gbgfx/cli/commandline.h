@@ -43,6 +43,7 @@ enum class Error : uint32_t
 struct Mapping
 {
 	const char* key;
+	const char* desc;
 	int32_t value;
 };
 
@@ -114,6 +115,7 @@ private:
 
 	const char* m_description;
 	uint32_t m_option_name_max_len;
+	uint32_t m_option_short_name_max_len;
 	uint32_t m_option_required_mask;
 
 	int32_t m_next_argument_index;

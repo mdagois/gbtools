@@ -79,6 +79,7 @@ Parser::Parser(const char** argv, int32_t argc, const Option* options, uint32_t 
 , m_option_count(option_count)
 , m_description(description)
 , m_option_name_max_len(0)
+, m_option_short_name_max_len(0)
 , m_option_required_mask(0)
 , m_next_argument_index(1)
 , m_last_error(Error::kNone)
@@ -91,6 +92,7 @@ Parser::Parser(const char** argv, int32_t argc, const Option* options, uint32_t 
 	for(uint32_t i = 0; i < option_count; ++i)
 	{
 		m_option_name_max_len = std::max(m_option_name_max_len, static_cast<uint32_t>(strlen(options[i].name)));
+		m_option_short_name_max_len = std::max(m_option_short_name_max_len, static_cast<uint32_t>(strlen(options[i].short_name)));
 		if(options[i].required)
 		{
 			m_option_required_mask |= 1 << i;
@@ -412,28 +414,25 @@ void Parser::printHelp() const
 			required = "<req>";
 		}
 
-		//xxx
+		const uint32_t kShortOptionSpace = m_option_short_name_max_len + 2;
 		const uint32_t kOptionSpace = m_option_name_max_len + 2;
 		const uint32_t kArgSpace = 10;
-		const uint32_t kTotalSpace = kOptionSpace + kArgSpace + kArgSpace;
-		printf("  -%-*s %-*s %-*s%s\n", kOptionSpace, option.name, kArgSpace, arg, kArgSpace, required, desc);
+		const uint32_t kTotalSpace = kShortOptionSpace + kOptionSpace + kArgSpace + kArgSpace;
+		printf("  -%-*s -%-*s %-*s %-*s%s\n", kShortOptionSpace, option.short_name, kOptionSpace, option.name, kArgSpace, arg, kArgSpace, required, desc);
 		if(option.option_type == OptionType::kStringToInteger)
 		{
 			for(uint32_t j = 0; j < option.string_to_integer.mapping_count; ++j)
 			{
 				const Mapping& mapping = option.string_to_integer.mappings[j];
-				if(j % 5 == 0)
+				if(mapping.desc == nullptr)
 				{
-					if(j != 0)
-					{
-						printf("\n");
-					}
-					printf("     %-*s", kTotalSpace, "");
+					printf("       %-*s* %s\n", kTotalSpace, "", mapping.key);
 				}
-				const char* pattern = (j == option.string_to_integer.mapping_count - 1) ? "%s" : "%s | ";
-				printf(pattern, mapping.key);
+				else
+				{
+					printf("       %-*s* %s: %s\n", kTotalSpace, "", mapping.key, mapping.desc);
+				}
 			}
-			printf("\n");
 		}
 	}
 }
