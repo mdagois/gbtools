@@ -12,27 +12,10 @@ static bool importData(
 	std::vector<gbgfx::Tilemap>& out_tilemaps,
 	const Options& options)
 {
-	////////////////////////////////////////
-	const gbgfx::Division tileset_divisions[] =
-	{
-		//{ 32, 32, true },
-		//{ 8, 16, true },
-		{ 8, 8, false },
-	};
-	const uint32_t tileset_division_count = sizeof(tileset_divisions) / sizeof(tileset_divisions[0]);
-
-	const gbgfx::Division tilemap_divisions[] =
-	{
-		//{ 256, 256, true },
-		{ 8, 8, true },
-	};
-	const uint32_t tilemap_division_count = sizeof(tilemap_divisions) / sizeof(tilemap_divisions[0]);
-	////////////////////////////////////////
-
 	GBGFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.image_filename << "]");
 	if(!gbgfx::extractTileset(
 		out_tileset, out_palette_set,
-		tileset_divisions, tileset_division_count,
+		options.tileset.divisions, options.tileset.division_count,
 		options.tileset.tile_removal, options.tileset.image_filename))
 	{
 		GBGFX_LOG_ERROR("Could not extract tileset from [" << options.tileset.image_filename << "]");
@@ -47,7 +30,7 @@ static bool importData(
 		out_tilemaps.resize(size + 1);
 		if(!gbgfx::extractTilemap(
 			out_tilemaps[size], out_tileset, out_palette_set,
-			tilemap_divisions, tilemap_division_count,
+			options.tilemap.divisions, options.tilemap.division_count,
 			image_filename))
 		{
 			GBGFX_LOG_ERROR("Could not extract tilemap from [" << image_filename << "]");

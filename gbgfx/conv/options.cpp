@@ -1,5 +1,35 @@
+#include <regex>
+#include <string>
+
 #include "commandline.h"
 #include "options.h"
+
+////////////////////////////////////////////////////////////////////////////////
+
+static bool parseDivisions(gbgfx::Division* out_divisions, uint32_t& out_division_count, std::string sequence)
+{
+	std::regex pattern("(\\d+)x(\\d+)([ks])");
+	auto match_begin = std::sregex_iterator(sequence.begin(), sequence.end(), pattern);
+	auto match_end = std::sregex_iterator();
+	for(std::sregex_iterator it = match_begin; it != match_end; ++it)
+	{
+		std::smatch match = *it;
+		if(match.size() != 4)
+		{
+			GBGFX_LOG_ERROR("Unspected error when matching the division sequence");
+			return false;
+		}
+
+		gbgfx::Division& division = out_divisions[out_division_count];
+		++out_division_count;
+		division.width = std::stoi(match[1]);
+		division.height = std::stoi(match[2]);
+		division.skip_transparent = (match[3].str())[0] == 's';
+
+		GBGFX_LOG_INFO("Adding division " << division.width << "x" << division.height << "x" << (division.skip_transparent ? 1 : 0));
+	}
+	return true;
+}
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -26,6 +56,9 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		{ "flips", "tile flips are removed", gbgfx::kTileRemovalFlips },
 	};
 
+	const char* tileset_divisions = nullptr;
+	const char* tilemap_divisions = nullptr;
+
 	Option cli_options[] =
 	{
 		// hardware
@@ -33,10 +66,13 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 			"hardware", "hw", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
 		// tileset
-		OptionString("tileset", "tls", "The tileset image", true, 'TLS ', &out_options.tileset.image_filename),
+		OptionString("tileset", "ts", "The tileset image", true, 'TLS ', &out_options.tileset.image_filename),
+		OptionString("tileset-divisions", "tsd", "The tileset division", false, 'TLSD', &tileset_divisions),
 		OptionStringToInteger(
 			"tile-removal", "trm", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
+		// tilemap
+		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, 'TLMD', &tilemap_divisions),
 		// output
 		OptionInteger("palette-index-offset", "pio", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
 		OptionInteger("tile-index-offset", "tio", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
@@ -91,6 +127,19 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	if(error != Error::kNone)
 	{
 		GBGFX_LOG_ERROR(cli_parser.getLastErrorMessage());
+		return false;
+	}
+
+	if( tileset_divisions != nullptr &&
+		!parseDivisions(out_options.tileset.divisions, out_options.tileset.division_count, tileset_divisions))
+	{
+		GBGFX_LOG_ERROR("Cannot parse tileset divisions");
+		return false;
+	}
+	if( tilemap_divisions != nullptr &&
+		!parseDivisions(out_options.tilemap.divisions, out_options.tilemap.division_count, tilemap_divisions))
+	{
+		GBGFX_LOG_ERROR("Cannot parse tilemap divisions");
 		return false;
 	}
 

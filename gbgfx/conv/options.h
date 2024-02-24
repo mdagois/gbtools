@@ -1,6 +1,5 @@
 #pragma once
 
-#include <algorithm>
 #include <vector>
 
 #include "gbgfx.h"
@@ -8,6 +7,11 @@
 ////////////////////////////////////////////////////////////////////////////////
 // Options
 ////////////////////////////////////////////////////////////////////////////////
+
+enum
+{
+	kDivisionMaxCount = 16,
+};
 
 struct Options
 {
@@ -17,12 +21,16 @@ struct Options
 	{
 		const char* image_filename = nullptr;
 		gbgfx::TileRemoval tile_removal = gbgfx::kTileRemovalNone;
+		gbgfx::Division divisions[kDivisionMaxCount];
+		uint32_t division_count = 0;
 	}
 	tileset;
 
 	struct
 	{
 		std::vector<const char*> image_filenames;
+		gbgfx::Division divisions[kDivisionMaxCount];
+		uint32_t division_count = 0;
 	}
 	tilemap;
 
