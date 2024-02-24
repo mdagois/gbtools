@@ -49,6 +49,7 @@ struct Mapping
 struct Option
 {
 	const char* name;
+	const char* short_name;
 	const char* description;
 	uint32_t code;
 	ParameterType parameter_type;
@@ -80,11 +81,11 @@ struct Option
 
 ////////////////////////////////////////////////////////////////////////////////
 
-Option OptionCustom(const char* name, const char* description, bool required, uint32_t code, ParameterType parameter_type);
-Option OptionFlag(const char* name, const char* description, uint32_t code, bool* write_back_address);
-Option OptionInteger(const char* name, const char* description, bool required, uint32_t code, int32_t* write_back_address);
-Option OptionString(const char* name, const char* description, bool required, uint32_t code, const char** write_back_address);
-Option OptionStringToInteger(const char* name, const char* description, bool required, uint32_t code, int32_t* write_back_address, const Mapping* mappings, uint32_t mapping_count);
+Option OptionCustom(const char* name, const char* short_name, const char* description, bool required, uint32_t code, ParameterType parameter_type);
+Option OptionFlag(const char* name, const char* short_name, const char* description, uint32_t code, bool* write_back_address);
+Option OptionInteger(const char* name, const char* short_name, const char* description, bool required, uint32_t code, int32_t* write_back_address);
+Option OptionString(const char* name, const char* short_name, const char* description, bool required, uint32_t code, const char** write_back_address);
+Option OptionStringToInteger(const char* name, const char* short_name, const char* description, bool required, uint32_t code, int32_t* write_back_address, const Mapping* mappings, uint32_t mapping_count);
 
 ////////////////////////////////////////////////////////////////////////////////
 

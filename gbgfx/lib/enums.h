@@ -8,21 +8,13 @@ namespace gbgfx {
 
 enum Hardware : uint32_t
 {
-	kHardwareDmg,
-	kHardwareCgb,
-	kHardwareSgb,
-	kHardwareSfc,
+	kHardware_Dmg_Background,
+	kHardware_Dmg_Sprite,
+	kHardware_Cgb_Background,
+	kHardware_Cgb_Sprite,
+	kHardware_Sgb_Background,
+	kHardware_Sgb_Border,
 	kHardwareCount,
-};
-
-////////////////////////////////////////////////////////////////////////////////
-
-enum Mode : uint32_t
-{
-	kModeBg,
-	kModeSprite8x8,
-	kModeSprite8x16,
-	kModeCount,
 };
 
 ////////////////////////////////////////////////////////////////////////////////

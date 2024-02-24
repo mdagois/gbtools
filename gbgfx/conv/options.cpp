@@ -11,17 +11,12 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	const Mapping hardware_mapping[] =
 	{
-		{ "dmg", gbgfx::kHardwareDmg },
-		{ "cgb", gbgfx::kHardwareCgb },
-		{ "sgb", gbgfx::kHardwareSgb },
-		{ "sfc", gbgfx::kHardwareSfc },
-	};
-
-	const Mapping mode_mapping[] =
-	{
-		{ "bg", gbgfx::kModeBg },
-		{ "spr8", gbgfx::kModeSprite8x8 },
-		{ "spr16", gbgfx::kModeSprite8x16 },
+		{ "dmg-background", gbgfx::kHardware_Dmg_Background },
+		{ "dmg-sprite", gbgfx::kHardware_Dmg_Sprite },
+		{ "cgb-background", gbgfx::kHardware_Cgb_Background },
+		{ "cgb-sprite", gbgfx::kHardware_Cgb_Sprite },
+		{ "sgb-background", gbgfx::kHardware_Sgb_Background },
+		{ "sgb-border", gbgfx::kHardware_Sgb_Border },
 	};
 
 	const Mapping tile_removal_mapping[] =
@@ -35,43 +30,34 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	{
 		// hardware
 		OptionStringToInteger(
-			"hardware", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
+			"hardware", "hw", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
-		// mode
-		OptionStringToInteger(
-			"mode", "Specify the conversion mode", true, 'MODE', reinterpret_cast<int32_t*>(&out_options.mode),
-			mode_mapping, sizeof(mode_mapping) / sizeof(mode_mapping[0])),
 		// tileset
-		OptionString("tileset", "The tileset image", true, 'TLS ', &out_options.tileset.image_filename),
-
-		// tileset
+		OptionString("tileset", "tls", "The tileset image", true, 'TLS ', &out_options.tileset.image_filename),
 		OptionStringToInteger(
-			"tile-removal", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
+			"tile-removal", "trm", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
-
 		// output
-		OptionInteger("palette-index-offset", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
-		OptionInteger("tile-index-offset", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
-		OptionFlag("8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
-		OptionFlag("use-headers", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
-		OptionFlag("skip-export-palette", "Skip export of the palette set", 'SPAL', &out_options.output.skip_export_palette),
-		OptionFlag("skip-export-tileset", "Skip export of the tileset", 'STLS', &out_options.output.skip_export_tileset),
-		OptionFlag("skip-export-indices", "Skip export of the tilemaps", 'STLM', &out_options.output.skip_export_indices),
-		OptionFlag("skip-export-parameter", "Skip export of the tilemaps", 'SPRM', &out_options.output.skip_export_parameters),
-
+		OptionInteger("palette-index-offset", "pio", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
+		OptionInteger("tile-index-offset", "tio", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
+		OptionFlag("8800-addressing", "8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
+		OptionFlag("use-headers", "hd", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
+		OptionFlag("skip-export-palette", "spal", "Skip export of the palette set", 'SPAL', &out_options.output.skip_export_palette),
+		OptionFlag("skip-export-tileset", "stls", "Skip export of the tileset", 'STLS', &out_options.output.skip_export_tileset),
+		OptionFlag("skip-export-indices", "sidx", "Skip export of the tilemaps", 'STLM', &out_options.output.skip_export_indices),
+		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemaps", 'SPRM', &out_options.output.skip_export_parameters),
 		// debug
-		OptionFlag("generate-png-palette", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),
-		OptionFlag("generate-png-tileset", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.generate_tileset_png),
-
+		OptionFlag("generate-png-palette", "gpal", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),
+		OptionFlag("generate-png-tileset", "gtls", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.generate_tileset_png),
 		// misc
-		OptionFlag("v", "Enable verbose mode", 'VERB', &out_options.verbose),
-		OptionFlag("h", "Show help", 'HELP', &out_options.help),
+		OptionFlag("verbose", "v", "Enable verbose mode", 'VERB', &out_options.verbose),
+		OptionFlag("help", "h", "Show help", 'HELP', &out_options.help),
 	};
 
 	Parser cli_parser(
 		argv, argc,
 		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
-		"-hardware <hardware> -mode <mode> [options] <tileset_png> [tilemap_png...]");
+		"-hardware <hardware> -tileset <tileset_png> [options] [tilemap_png...]");
 
 	uint32_t code;
 	const char* parameter;

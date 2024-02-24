@@ -9,12 +9,13 @@ namespace cli {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static void fillOptionBase(Option& out_option, const char* name, const char* description, bool required, uint32_t code, ParameterType parameter_type, OptionType option_type)
+static void fillOptionBase(Option& out_option, const char* name, const char* short_name, const char* description, bool required, uint32_t code, ParameterType parameter_type, OptionType option_type)
 {
 	assert(name != nullptr);
 	assert(code != kRemainingCode && code != kIgnoreCode);
 	memset(&out_option, 0, sizeof(Option));
 	out_option.name = name;
+	out_option.short_name = short_name;
 	out_option.description = description;
 	out_option.code = code;
 	out_option.parameter_type = parameter_type;
@@ -22,47 +23,47 @@ static void fillOptionBase(Option& out_option, const char* name, const char* des
 	out_option.required = required;
 }
 
-Option OptionCustom(const char* name, const char* description, bool required, uint32_t code, ParameterType parameter_type)
+Option OptionCustom(const char* name, const char* short_name, const char* description, bool required, uint32_t code, ParameterType parameter_type)
 {
 	Option option;
-	fillOptionBase(option, name, description, required, code, parameter_type, OptionType::kCustom);
+	fillOptionBase(option, name, short_name, description, required, code, parameter_type, OptionType::kCustom);
 	return option;
 }
 
-Option OptionFlag(const char* name, const char* description, uint32_t code, bool* write_back_address)
+Option OptionFlag(const char* name, const char* short_name, const char* description, uint32_t code, bool* write_back_address)
 {
 	assert(write_back_address != nullptr);
 	Option option;
-	fillOptionBase(option, name, description, false, code, ParameterType::kNone, OptionType::kFlag);
+	fillOptionBase(option, name, short_name, description, false, code, ParameterType::kNone, OptionType::kFlag);
 	option.flag.write_back_address = write_back_address;
 	return option;
 }
 
-Option OptionInteger(const char* name, const char* description, bool required, uint32_t code, int32_t* write_back_address)
+Option OptionInteger(const char* name, const char* short_name, const char* description, bool required, uint32_t code, int32_t* write_back_address)
 {
 	assert(write_back_address != nullptr);
 	Option option;
-	fillOptionBase(option, name, description, required, code, ParameterType::kRequired, OptionType::kInteger);
+	fillOptionBase(option, name, short_name, description, required, code, ParameterType::kRequired, OptionType::kInteger);
 	option.integer.write_back_address = write_back_address;
 	return option;
 }
 
-Option OptionString(const char* name, const char* description, bool required, uint32_t code, const char** write_back_address)
+Option OptionString(const char* name, const char* short_name, const char* description, bool required, uint32_t code, const char** write_back_address)
 {
 	assert(write_back_address != nullptr);
 	Option option;
-	fillOptionBase(option, name, description, required, code, ParameterType::kRequired, OptionType::kString);
+	fillOptionBase(option, name, short_name, description, required, code, ParameterType::kRequired, OptionType::kString);
 	option.string.write_back_address = write_back_address;
 	return option;
 }
 
-Option OptionStringToInteger(const char* name, const char* description, bool required, uint32_t code, int32_t* write_back_address, const Mapping* mappings, uint32_t mapping_count)
+Option OptionStringToInteger(const char* name, const char* short_name, const char* description, bool required, uint32_t code, int32_t* write_back_address, const Mapping* mappings, uint32_t mapping_count)
 {
 	assert(write_back_address != nullptr);
 	assert(mappings != nullptr);
 	assert(mapping_count > 0);
 	Option option;
-	fillOptionBase(option, name, description, required, code, ParameterType::kRequired, OptionType::kStringToInteger);
+	fillOptionBase(option, name, short_name, description, required, code, ParameterType::kRequired, OptionType::kStringToInteger);
 	option.string_to_integer.write_back_address = write_back_address;
 	option.string_to_integer.mappings = mappings;
 	option.string_to_integer.mapping_count = mapping_count;
@@ -325,7 +326,7 @@ const Option* Parser::findOption(const char* name, uint32_t& out_index) const
 	for(uint32_t i = 0; i < m_option_count; ++i)
 	{
 		const Option* option = m_options + i;
-		if(strcmp(option->name, name) == 0)
+		if(strcmp(option->name, name) == 0 || strcmp(option->short_name, name) == 0)
 		{
 			out_index = i;
 			return option;
@@ -411,6 +412,7 @@ void Parser::printHelp() const
 			required = "<req>";
 		}
 
+		//xxx
 		const uint32_t kOptionSpace = m_option_name_max_len + 2;
 		const uint32_t kArgSpace = 10;
 		const uint32_t kTotalSpace = kOptionSpace + kArgSpace + kArgSpace;

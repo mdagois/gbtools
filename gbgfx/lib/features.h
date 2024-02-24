@@ -81,9 +81,6 @@ struct Features
 	{
 		// Sprite output is enabled
 		bool enabled;
-		// Extended tile dimension for sprites
-		uint32_t extended_tile_width;
-		uint32_t extended_tile_height;
 		// Sprites can use tile flips
 		bool supports_tile_flips;
 	} sprite;
@@ -91,7 +88,7 @@ struct Features
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool initializeFeatures(Hardware hardware, Mode mode);
+bool initializeFeatures(Hardware hardware);
 bool areFeaturesInitialized();
 const Features& getFeatures();
 

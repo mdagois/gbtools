@@ -166,7 +166,7 @@ int main(int argc, const char** argv)
 	}
 
 	gbgfx::setLogLevel(options.verbose ? gbgfx::kLogLevel_Info : gbgfx::kLogLevel_Error);
-	if(!gbgfx::initialize(options.hardware, options.mode))
+	if(!gbgfx::initialize(options.hardware))
 	{
 		return 1;
 	}

@@ -12,7 +12,6 @@
 struct Options
 {
 	gbgfx::Hardware hardware = gbgfx::kHardwareCount;
-	gbgfx::Mode mode = gbgfx::kModeCount;
 
 	struct
 	{

@@ -16,9 +16,9 @@ namespace gbgfx {
 // Initialization
 ////////////////////////////////////////////////////////////////////////////////
 
-bool initialize(Hardware hardware, Mode mode)
+bool initialize(Hardware hardware)
 {
-	return initializeFeatures(hardware, mode);
+	return initializeFeatures(hardware);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -178,7 +178,7 @@ bool extractTileset(
 			GBGFX_LOG_WARN(
 				"Downgraded tile removal from " << tile_removal
 				<< " to " << kTileRemovalDoubles
-				<< " as the hardware does not support flips in that mode");
+				<< " as the hardware does not support flips");
 			tile_removal = kTileRemovalDoubles;
 		}
 		out_tileset.removeDoubles(tile_removal == kTileRemovalFlips);
@@ -371,7 +371,7 @@ bool exportTilemap(
 {
 	if(!FEATURES.tilemap.enabled)
 	{
-		GBGFX_LOG_ERROR("Exporting tilemaps is not supported in this mode");
+		GBGFX_LOG_ERROR("Exporting tilemaps is not supported in this configuration");
 		return false;
 	}
 
