@@ -6,7 +6,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool parseDivisions(gbgfx::Division* out_divisions, uint32_t& out_division_count, std::string sequence)
+static bool parseDivisions(std::vector<gbgfx::Division>& out_divisions, std::string sequence)
 {
 	std::regex pattern("(\\d+)x(\\d+)([ks])");
 	auto match_begin = std::sregex_iterator(sequence.begin(), sequence.end(), pattern);
@@ -20,13 +20,11 @@ static bool parseDivisions(gbgfx::Division* out_divisions, uint32_t& out_divisio
 			return false;
 		}
 
-		gbgfx::Division& division = out_divisions[out_division_count];
-		++out_division_count;
+		gbgfx::Division division;
 		division.width = std::stoi(match[1]);
 		division.height = std::stoi(match[2]);
 		division.skip_transparent = (match[3].str())[0] == 's';
-
-		GBGFX_LOG_INFO("Adding division " << division.width << "x" << division.height << "x" << (division.skip_transparent ? 1 : 0));
+		out_divisions.push_back(division);
 	}
 	return true;
 }
@@ -131,13 +129,13 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	}
 
 	if( tileset_divisions != nullptr &&
-		!parseDivisions(out_options.tileset.divisions, out_options.tileset.division_count, tileset_divisions))
+		!parseDivisions(out_options.tileset.divisions, tileset_divisions))
 	{
 		GBGFX_LOG_ERROR("Cannot parse tileset divisions");
 		return false;
 	}
 	if( tilemap_divisions != nullptr &&
-		!parseDivisions(out_options.tilemap.divisions, out_options.tilemap.division_count, tilemap_divisions))
+		!parseDivisions(out_options.tilemap.divisions, tilemap_divisions))
 	{
 		GBGFX_LOG_ERROR("Cannot parse tilemap divisions");
 		return false;

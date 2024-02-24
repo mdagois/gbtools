@@ -1,9 +1,10 @@
 #pragma once
 
-//TODO Add divisions to CLI
 //TODO Allow to set an output directory
 //TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
+
+#include <vector>
 
 #include "data/palette.h"
 #include "data/tilemap.h"
@@ -26,22 +27,22 @@ bool initialize(Hardware hardware);
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename);
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image);
 
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	const char* image_filename);
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	const Image& image);
 
 ////////////////////////////////////////////////////////////////////////////////

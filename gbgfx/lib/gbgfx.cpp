@@ -98,13 +98,25 @@ static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Pale
 	return true;
 }
 
+static std::vector<Division> addBasicTileSize(const std::vector<Division>& divisions)
+{
+	const Division& last = divisions.back();
+	if(last.width == FEATURES.tileset.basic_tile_width && last.height == FEATURES.tileset.basic_tile_height)
+	{
+		return divisions;
+	}
+	std::vector<Division> updated = divisions;
+	updated.push_back({ FEATURES.tileset.basic_tile_width, FEATURES.tileset.basic_tile_height, false });
+	return updated;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Import
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename)
 {
 	Image image;
@@ -114,19 +126,20 @@ bool extractTileset(
 	}
 	return extractTileset(
 		out_tileset, out_palette_set,
-		divisions, division_count,
-		tile_removal, image);
+		divisions, tile_removal, image);
 }
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image)
 {
 	assert(areFeaturesInitialized());
 
+	std::vector<Division> final_divisions = addBasicTileSize(divisions);
+
 	if(!image.iterateTiles(
-		divisions, division_count,
+		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Palette palette(FEATURES.palette.insert_transparent_color);
@@ -150,7 +163,7 @@ bool extractTileset(
 	}
 
 	if(!image.iterateTiles(
-		divisions, division_count,
+		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tileset, &out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;
@@ -204,7 +217,7 @@ bool extractTileset(
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	const char* image_filename)
 {
 	Image image;
@@ -212,19 +225,21 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, tileset, palette_set, divisions, division_count, image);
+	return extractTilemap(out_tilemap, tileset, palette_set, divisions, image);
 }
 
 bool extractTilemap(
 	Tilemap& out_tilemap,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const Division* divisions, uint32_t division_count,
+	const std::vector<Division>& divisions,
 	const Image& image)
 {
 	assert(areFeaturesInitialized());
 
+	std::vector<Division> final_divisions = addBasicTileSize(divisions);
+
 	if(!image.iterateTiles(
-		divisions, division_count,
+		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Tile tile;

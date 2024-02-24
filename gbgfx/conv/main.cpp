@@ -14,8 +14,7 @@ static bool importData(
 {
 	GBGFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.image_filename << "]");
 	if(!gbgfx::extractTileset(
-		out_tileset, out_palette_set,
-		options.tileset.divisions, options.tileset.division_count,
+		out_tileset, out_palette_set, options.tileset.divisions,
 		options.tileset.tile_removal, options.tileset.image_filename))
 	{
 		GBGFX_LOG_ERROR("Could not extract tileset from [" << options.tileset.image_filename << "]");
@@ -30,8 +29,7 @@ static bool importData(
 		out_tilemaps.resize(size + 1);
 		if(!gbgfx::extractTilemap(
 			out_tilemaps[size], out_tileset, out_palette_set,
-			options.tilemap.divisions, options.tilemap.division_count,
-			image_filename))
+			options.tilemap.divisions, image_filename))
 		{
 			GBGFX_LOG_ERROR("Could not extract tilemap from [" << image_filename << "]");
 			return false;
