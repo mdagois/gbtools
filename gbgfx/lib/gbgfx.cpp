@@ -98,16 +98,23 @@ static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Pale
 	return true;
 }
 
-static std::vector<Division> addBasicTileSize(const std::vector<Division>& divisions)
+static bool addBasicTileSize(std::vector<Division>& divisions)
 {
 	const Division& last = divisions.back();
 	if(last.width == FEATURES.tileset.basic_tile_width && last.height == FEATURES.tileset.basic_tile_height)
 	{
-		return divisions;
+		return true;
 	}
-	std::vector<Division> updated = divisions;
-	updated.push_back({ FEATURES.tileset.basic_tile_width, FEATURES.tileset.basic_tile_height, false });
-	return updated;
+	if(last.width < FEATURES.tileset.basic_tile_width || last.height < FEATURES.tileset.basic_tile_height)
+	{
+		GBGFX_LOG_ERROR(
+			"The last division " << last.width << "x" << last.height
+			<< " is smaller than the basic tile "
+			<< FEATURES.tileset.basic_tile_width << "x" << FEATURES.tileset.basic_tile_height);
+		return false;
+	}
+	divisions.push_back({ FEATURES.tileset.basic_tile_width, FEATURES.tileset.basic_tile_height, false });
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -136,7 +143,11 @@ bool extractTileset(
 {
 	assert(areFeaturesInitialized());
 
-	std::vector<Division> final_divisions = addBasicTileSize(divisions);
+	std::vector<Division> final_divisions = divisions;
+	if(!addBasicTileSize(final_divisions))
+	{
+		return false;
+	}
 
 	if(!image.iterateTiles(
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
@@ -236,7 +247,11 @@ bool extractTilemap(
 {
 	assert(areFeaturesInitialized());
 
-	std::vector<Division> final_divisions = addBasicTileSize(divisions);
+	std::vector<Division> final_divisions = divisions;
+	if(!addBasicTileSize(final_divisions))
+	{
+		return false;
+	}
 
 	if(!image.iterateTiles(
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),

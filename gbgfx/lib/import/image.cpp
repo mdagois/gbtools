@@ -225,6 +225,7 @@ static bool validateDivisions(
 			GBGFX_LOG_ERROR(
 				"Division " << i << " (" << current.width << "x" << current.height << ") "
 				<< "dimension must divide exactly " << previous_width << "x" << previous_height);
+			return false;
 		}
 		previous_width = current.width;
 		previous_height = current.height;
