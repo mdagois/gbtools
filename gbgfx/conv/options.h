@@ -29,6 +29,7 @@ struct Options
 
 	struct
 	{
+		const char* directory = nullptr;
 		int32_t palette_index_offset = 0;
 		int32_t tile_index_offset = 0;
 		bool use_8800_addressing_mode = false;

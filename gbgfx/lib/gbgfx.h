@@ -1,6 +1,6 @@
 #pragma once
 
-//TODO Allow to set an output directory
+//TODO Control column count of debug generated PNG
 //TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
 

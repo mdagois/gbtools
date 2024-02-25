@@ -72,6 +72,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		// tilemap
 		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, 'TLMD', &tilemap_divisions),
 		// output
+		OptionString("output-directory", "o", "The output directory", false, 'OUTD', &out_options.output.directory),
 		OptionInteger("palette-index-offset", "pio", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
 		OptionInteger("tile-index-offset", "tio", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
 		OptionFlag("8800-addressing", "8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),

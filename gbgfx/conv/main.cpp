@@ -1,4 +1,5 @@
 #include <cassert>
+#include <filesystem>
 #include <string>
 #include <vector>
 
@@ -41,9 +42,18 @@ static bool importData(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static std::string getOutputFilename(const char* input_filename, const char* output_extension)
+static const std::string getOutputFilename(
+	const char* input_filename, const char* output_extension,
+	const Options& options)
 {
-	return std::string(input_filename).append(output_extension);
+	std::filesystem::path input_filepath(input_filename);
+	if(options.output.directory != nullptr)
+	{
+		std::filesystem::path output_directory = std::filesystem::path(options.output.directory);
+		output_directory /= input_filepath.stem();
+		input_filepath = output_directory;
+	}
+	return input_filepath.replace_extension(output_extension).u8string();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -54,7 +64,7 @@ static bool exportData(
 {
 	if(!options.output.skip_export_palette)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal");
+		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal", options);
 		GBGFX_LOG_INFO("Exporting palette set to [" << filename << "]");
 		if(!gbgfx::exportPaletteSet(
 			palette_set, options.output.add_binary_headers, filename.c_str()))
@@ -66,7 +76,7 @@ static bool exportData(
 
 	if(!options.output.skip_export_tileset)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr");
+		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr", options);
 		GBGFX_LOG_INFO("Exporting tileset to [" << filename << "]");
 		if(!gbgfx::exportTileset(
 			tileset, options.output.add_binary_headers, filename.c_str()))
@@ -82,8 +92,8 @@ static bool exportData(
 		for(size_t i = 0; i < tilemaps.size(); ++i)
 		{
 			const char* image_filename = options.tilemap.image_filenames[i];
-			const std::string idx_filename = getOutputFilename(image_filename, ".idx");
-			const std::string prm_filename = getOutputFilename(image_filename, ".prm");
+			const std::string idx_filename = getOutputFilename(image_filename, ".idx", options);
+			const std::string prm_filename = getOutputFilename(image_filename, ".prm", options);
 			GBGFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
 			if(!gbgfx::exportTilemap(
 				tilemaps[i],
@@ -108,7 +118,7 @@ static bool outputDebugData(
 {
 	if(options.debug.generate_palette_png)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal.png");
+		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal.png", options);
 		GBGFX_LOG_INFO("Generating palette set PNG to [" << filename << "]");
 		if(!gbgfx::writePaletteSetToPNG(palette_set, filename.c_str()))
 		{
@@ -121,7 +131,7 @@ static bool outputDebugData(
 	{
 		constexpr uint32_t kTileColumnCount = 16;
 		constexpr bool kClearDoubles = false;
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr.png");
+		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr.png", options);
 		GBGFX_LOG_INFO("Generating tileset PNG to [" << filename << "]");
 		if(!gbgfx::writeTilesetToPNG(
 			tileset, gbgfx::kTileFlipType_None, palette_set,
