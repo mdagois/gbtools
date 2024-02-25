@@ -18,6 +18,7 @@ namespace gbgfx {
 
 bool initialize(Hardware hardware)
 {
+	assert(!areFeaturesInitialized());
 	return initializeFeatures(hardware);
 }
 
@@ -126,6 +127,7 @@ bool extractTileset(
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename)
 {
+	assert(areFeaturesInitialized());
 	Image image;
 	if(!image.read(image_filename))
 	{
@@ -231,6 +233,7 @@ bool extractTilemap(
 	const std::vector<Division>& divisions,
 	const char* image_filename)
 {
+	assert(areFeaturesInitialized());
 	Image image;
 	if(!image.read(image_filename))
 	{
@@ -363,6 +366,7 @@ bool exportPaletteSet(
 	const PaletteSet& palette_set, bool use_header,
 	const char* output_filename)
 {
+	assert(areFeaturesInitialized());
 	PaletteSetData data;
 	assert(palette_set.size() < 256);
 	const uint8_t palette_count = palette_set.size();
@@ -380,6 +384,7 @@ bool exportTileset(
 	const Tileset& tileset, bool use_header,
 	const char* output_filename)
 {
+	assert(areFeaturesInitialized());
 	TilesetData data;
 	assert(tileset.size() < 65536);
 	const uint16_t tile_count = static_cast<uint16_t>(tileset.size());
@@ -399,6 +404,8 @@ bool exportTilemap(
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	const char* indices_filename, const char* parameters_filename)
 {
+	assert(areFeaturesInitialized());
+
 	if(!FEATURES.tilemap.enabled)
 	{
 		GBGFX_LOG_ERROR("Exporting tilemaps is not supported in this configuration");
@@ -480,10 +487,17 @@ static bool findTileFlipInTileset(
 	return false;
 }
 
+uint32_t getBasicTileWidth()
+{
+	assert(areFeaturesInitialized());
+	return FEATURES.tileset.basic_tile_width;
+}
+
 bool writeTilesetToPNG(
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
 	uint32_t tile_column_count, bool clear_doubles, const char* filename)
 {
+	assert(areFeaturesInitialized());
 	assert(flip_type < kTileFlipType_Count);
 
 	if(tileset.size() == 0)
@@ -553,6 +567,8 @@ bool writeTilesetToPNG(
 
 bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 {
+	assert(areFeaturesInitialized());
+
 	const uint32_t palette_count = palette_set.size();
 	if(palette_count == 0)
 	{

@@ -1,6 +1,5 @@
 #pragma once
 
-//TODO Control column count of debug generated PNG
 //TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
 
@@ -65,6 +64,7 @@ bool exportTilemap(
 // Debug
 ////////////////////////////////////////////////////////////////////////////////
 
+uint32_t getBasicTileWidth();
 bool writeTilesetToPNG(
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
 	uint32_t tile_column_count, bool clear_doubles, const char* filename);
