@@ -1,5 +1,6 @@
 #pragma once
 
+//TODO Support printer packets (compressed or not)
 //TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
 
