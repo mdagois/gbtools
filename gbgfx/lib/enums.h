@@ -14,6 +14,7 @@ enum Hardware : uint32_t
 	kHardware_Cgb_Sprite,
 	kHardware_Sgb_Background,
 	kHardware_Sgb_Border,
+	kHardware_Printer,
 	kHardwareCount,
 };
 

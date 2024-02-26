@@ -45,6 +45,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		{ "cgb-sp", "CGB sprites", gbgfx::kHardware_Cgb_Sprite },
 		{ "sgb-bg", "SGB background", gbgfx::kHardware_Sgb_Background },
 		{ "sgb-border", "SGB border", gbgfx::kHardware_Sgb_Border },
+		{ "printer", "Printer", gbgfx::kHardware_Printer },
 	};
 
 	const Mapping tile_removal_mapping[] =

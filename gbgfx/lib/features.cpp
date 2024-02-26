@@ -34,6 +34,7 @@ bool initializeFeatures(Hardware hardware)
 			s_features.tileset.tile_max_count = 256;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 1;
+			s_features.tileset.supports_tile_removal = true;
 
 			s_features.tilemap.enabled = true;
 			s_features.tilemap.tile_index_format = kFormat_IDX8;
@@ -54,8 +55,9 @@ bool initializeFeatures(Hardware hardware)
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
 			s_features.tileset.tile_max_count = 0xFFFFFFFFU;
-			s_features.tileset.tiles_per_bank = 256;
+			s_features.tileset.tiles_per_bank = 0xFFFFFFFFU;
 			s_features.tileset.bank_max_count = 1;
+			s_features.tileset.supports_tile_removal = true;
 
 			s_features.tilemap.enabled = false;
 			s_features.tilemap.tile_index_format = kFormat_None;
@@ -78,6 +80,7 @@ bool initializeFeatures(Hardware hardware)
 			s_features.tileset.tile_max_count = 512;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 2;
+			s_features.tileset.supports_tile_removal = true;
 
 			s_features.tilemap.enabled = true;
 			s_features.tilemap.tile_index_format = kFormat_IDX8;
@@ -98,8 +101,9 @@ bool initializeFeatures(Hardware hardware)
 			s_features.tileset.basic_tile_width = 8;
 			s_features.tileset.basic_tile_height = 8;
 			s_features.tileset.tile_max_count = 0xFFFFFFFFU;
-			s_features.tileset.tiles_per_bank = 256;
+			s_features.tileset.tiles_per_bank = 0xFFFFFFFFU;
 			s_features.tileset.bank_max_count = 2;
+			s_features.tileset.supports_tile_removal = true;
 
 			s_features.tilemap.enabled = false;
 			s_features.tilemap.tile_index_format = kFormat_None;
@@ -122,6 +126,7 @@ bool initializeFeatures(Hardware hardware)
 			s_features.tileset.tile_max_count = 256;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 1;
+			s_features.tileset.supports_tile_removal = true;
 
 			s_features.tilemap.enabled = true;
 			s_features.tilemap.tile_index_format = kFormat_IDX8;
@@ -144,11 +149,35 @@ bool initializeFeatures(Hardware hardware)
 			s_features.tileset.tile_max_count = 256;
 			s_features.tileset.tiles_per_bank = 256;
 			s_features.tileset.bank_max_count = 1;
+			s_features.tileset.supports_tile_removal = true;
 
 			s_features.tilemap.enabled = true;
 			s_features.tilemap.tile_index_format = kFormat_None;
 			s_features.tilemap.tile_parameter_format = kFormat_IDX8_X2_PAL3_X1_FLP2;
 			s_features.tilemap.supports_tile_flips = true;
+
+			s_features.sprite.enabled = false;
+			s_features.sprite.supports_tile_flips = false;
+			break;
+		case kHardware_Printer:
+			s_features.palette.base_index = 0;
+			s_features.palette.max_count = 1;
+			s_features.palette.color_max_count = 4;
+			s_features.palette.insert_transparent_color = false;
+			s_features.palette.share_first_color = false;
+
+			s_features.tileset.color_index_format = kFormat_COL2222;
+			s_features.tileset.basic_tile_width = 8;
+			s_features.tileset.basic_tile_height = 8;
+			s_features.tileset.tile_max_count = 0xFFFFFFFFU;
+			s_features.tileset.tiles_per_bank = 0xFFFFFFFFU;
+			s_features.tileset.bank_max_count = 1;
+			s_features.tileset.supports_tile_removal = false;
+
+			s_features.tilemap.enabled = false;
+			s_features.tilemap.tile_index_format = kFormat_None;
+			s_features.tilemap.tile_parameter_format = kFormat_None;
+			s_features.tilemap.supports_tile_flips = false;
 
 			s_features.sprite.enabled = false;
 			s_features.sprite.supports_tile_flips = false;

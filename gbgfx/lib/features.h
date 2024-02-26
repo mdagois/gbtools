@@ -63,6 +63,8 @@ struct Features
 		uint32_t tiles_per_bank;
 		// Maximum number of tile banks
 		uint32_t bank_max_count;
+		// Tiles can be optimized out of the tileset
+		bool supports_tile_removal;
 	} tileset;
 
 	struct

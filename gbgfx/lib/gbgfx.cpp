@@ -196,18 +196,27 @@ bool extractTileset(
 
 	if(tile_removal != kTileRemovalNone)
 	{
-		const bool has_flips =
-			(FEATURES.tilemap.enabled && FEATURES.tilemap.supports_tile_flips) ||
-			(FEATURES.sprite.enabled && FEATURES.sprite.supports_tile_flips);
-		if(!has_flips && tile_removal == kTileRemovalFlips)
+		if(FEATURES.tileset.supports_tile_removal)
+		{
+			const bool has_flips =
+				(FEATURES.tilemap.enabled && FEATURES.tilemap.supports_tile_flips) ||
+				(FEATURES.sprite.enabled && FEATURES.sprite.supports_tile_flips);
+			if(!has_flips && tile_removal == kTileRemovalFlips)
+			{
+				GBGFX_LOG_WARN(
+					"Downgraded tile removal from " << tile_removal
+					<< " to " << kTileRemovalDoubles
+					<< " as the hardware does not support flips");
+				tile_removal = kTileRemovalDoubles;
+			}
+			out_tileset.removeDoubles(tile_removal == kTileRemovalFlips);
+		}
+		else
 		{
 			GBGFX_LOG_WARN(
-				"Downgraded tile removal from " << tile_removal
-				<< " to " << kTileRemovalDoubles
-				<< " as the hardware does not support flips");
-			tile_removal = kTileRemovalDoubles;
+				"Ignored tile removal mode " << tile_removal
+				<< " as the hardware does not support tile removal");
 		}
-		out_tileset.removeDoubles(tile_removal == kTileRemovalFlips);
 	}
 
 	GBGFX_LOG_INFO(
