@@ -7,8 +7,6 @@
 #include "export/export.h"
 #include "features.h"
 #include "gbgfx.h"
-#include "import/image.h"
-#include "utils/log.h"
 
 namespace gbgfx {
 
