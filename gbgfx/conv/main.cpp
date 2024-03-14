@@ -11,6 +11,7 @@
 static bool importData(
 	gbgfx::Tileset& out_tileset, uint32_t& out_tileset_column_count,
 	gbgfx::PaletteSet& out_palette_set, std::vector<gbgfx::Tilemap>& out_tilemaps,
+	gbgfx::ImageInfo& out_tileset_image_info, gbgfx::ImageInfo& out_tilemap_image_info,
 	const Options& options)
 {
 	GBGFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.image_filename << "]");
@@ -20,8 +21,8 @@ static bool importData(
 		return false;
 	}
 	if(!gbgfx::extractTileset(
-		out_tileset, out_palette_set, options.tileset.divisions,
-		options.tileset.tile_removal, tileset_image))
+		out_tileset, out_palette_set,  out_tileset_image_info,
+		options.tileset.divisions, options.tileset.tile_removal, tileset_image))
 	{
 		GBGFX_LOG_ERROR("Could not extract tileset from [" << tileset_image.getFilename() << "]");
 		return false;
@@ -35,7 +36,8 @@ static bool importData(
 		const size_t size = out_tilemaps.size();
 		out_tilemaps.resize(size + 1);
 		if(!gbgfx::extractTilemap(
-			out_tilemaps[size], out_tileset, out_palette_set,
+			out_tilemaps[size], out_tilemap_image_info,
+			out_tileset, out_palette_set,
 			options.tilemap.divisions, image_filename))
 		{
 			GBGFX_LOG_ERROR("Could not extract tilemap from [" << image_filename << "]");
@@ -172,8 +174,13 @@ int main(int argc, const char** argv)
 	uint32_t tileset_column_count = 0;
 	gbgfx::PaletteSet palette_set;
 	std::vector<gbgfx::Tilemap> tilemaps;
+	gbgfx::ImageInfo tileset_image_info;
+	gbgfx::ImageInfo tilemap_image_info;
 
-	if(!importData(tileset, tileset_column_count, palette_set, tilemaps, options))
+	if(!importData(
+		tileset, tileset_column_count, palette_set, tilemaps,
+		tileset_image_info, tilemap_image_info,
+		options))
 	{
 		return 1;
 	}

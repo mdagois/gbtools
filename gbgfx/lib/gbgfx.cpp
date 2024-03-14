@@ -123,7 +123,7 @@ static bool addBasicTileSize(std::vector<Division>& divisions)
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set,
+	Tileset& out_tileset, PaletteSet& out_palette_set, ImageInfo& out_image_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename)
 {
@@ -134,12 +134,12 @@ bool extractTileset(
 		return false;
 	}
 	return extractTileset(
-		out_tileset, out_palette_set,
+		out_tileset, out_palette_set, out_image_info,
 		divisions, tile_removal, image);
 }
 
 bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set,
+	Tileset& out_tileset, PaletteSet& out_palette_set, ImageInfo& out_image_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image)
 {
@@ -152,6 +152,7 @@ bool extractTileset(
 	}
 
 	if(!image.iterateTiles(
+		nullptr,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
@@ -176,6 +177,7 @@ bool extractTileset(
 	}
 
 	if(!image.iterateTiles(
+		&out_image_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tileset, &out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
@@ -237,7 +239,7 @@ bool extractTileset(
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTilemap(
-	Tilemap& out_tilemap,
+	Tilemap& out_tilemap, ImageInfo& out_image_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const char* image_filename)
@@ -248,11 +250,11 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, tileset, palette_set, divisions, image);
+	return extractTilemap(out_tilemap, out_image_info, tileset, palette_set, divisions, image);
 }
 
 bool extractTilemap(
-	Tilemap& out_tilemap,
+	Tilemap& out_tilemap, ImageInfo& out_image_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const Image& image)
@@ -266,6 +268,7 @@ bool extractTilemap(
 	}
 
 	if(!image.iterateTiles(
+		&out_image_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{

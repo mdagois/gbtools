@@ -1,7 +1,6 @@
 #pragma once
 
 //TODO Support printer packets (compressed or not)
-//TODO Support OAM export
 //TODO Support forcing the palette set instead of extracting it
 
 #include <vector>
@@ -26,21 +25,21 @@ bool initialize(Hardware hardware);
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set,
+	Tileset& out_tileset, PaletteSet& out_palette_set, ImageInfo& out_image_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename);
 bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set,
+	Tileset& out_tileset, PaletteSet& out_palette_set, ImageInfo& out_image_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image);
 
 bool extractTilemap(
-	Tilemap& out_tilemap,
+	Tilemap& out_tilemap, ImageInfo& out_image_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const char* image_filename);
 bool extractTilemap(
-	Tilemap& out_tilemap,
+	Tilemap& out_tilemap, ImageInfo& out_image_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const Image& image);

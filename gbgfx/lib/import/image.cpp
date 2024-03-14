@@ -293,6 +293,7 @@ const ColorRGBA* Image::getPixels() const
 }
 
 bool Image::iterateTiles(
+	ImageInfo* out_image_info,
 	const Division* divisions, uint32_t division_count,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
