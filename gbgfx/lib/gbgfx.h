@@ -5,12 +5,10 @@
 
 #include <vector>
 
-#include "data/palette.h"
-#include "data/tilemap.h"
-#include "data/tileset.h"
+#include "data/data.h"
 #include "enums.h"
-#include "import/image.h"
-#include "utils/log.h"
+#include "import/import.h"
+#include "utils/utils.h"
 
 namespace gbgfx {
 

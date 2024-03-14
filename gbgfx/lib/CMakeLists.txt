@@ -1,16 +1,21 @@
 cmake_minimum_required(VERSION 3.20.0)
 
 set(EXPORT_SRC
-	export.h export.cpp
+	export.h
+	palette.h palette.cpp
+	tilemap.h tilemap.cpp
+	tileset.h tileset.cpp
 )
 list(TRANSFORM EXPORT_SRC PREPEND export/)
 
 set(IMPORT_SRC
+	import.h
 	image.h image.cpp
 )
 list(TRANSFORM IMPORT_SRC PREPEND import/)
 
 set(DATA_SRC 
+	data.h
 	color.h color.cpp
 	palette.h palette.cpp
 	tilemap.h tilemap.cpp
@@ -18,7 +23,10 @@ set(DATA_SRC
 )
 list(TRANSFORM DATA_SRC PREPEND data/)
 
-set(UTILS_SRC log.h log.cpp)
+set(UTILS_SRC
+	utils.h
+	log.h log.cpp
+)
 list(TRANSFORM UTILS_SRC PREPEND utils/)
 
 add_library(

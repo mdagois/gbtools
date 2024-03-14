@@ -86,7 +86,7 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 				division->width, division->height, m_pitch);
 			if(division->skip_transparent && sub_area.isTransparent())
 			{
-				GBGFX_LOG_INFO(
+				GBGFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
 				continue;
