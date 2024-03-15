@@ -23,21 +23,21 @@ bool initialize(Hardware hardware);
 ////////////////////////////////////////////////////////////////////////////////
 
 bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set, ImageInfo& out_image_info,
+	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename);
 bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set, ImageInfo& out_image_info,
+	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image);
 
 bool extractTilemap(
-	Tilemap& out_tilemap, ImageInfo& out_image_info,
+	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const char* image_filename);
 bool extractTilemap(
-	Tilemap& out_tilemap, ImageInfo& out_image_info,
+	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const Image& image);
@@ -57,6 +57,12 @@ bool exportTilemap(
 	bool use_header, bool use_8800_addressing_mode,
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	const char* indices_filename, const char* parameter_filename);
+
+////////////////////////////////////////////////////////////////////////////////
+// Info
+////////////////////////////////////////////////////////////////////////////////
+
+bool writeDivisionInfo(const DivisionInfo& tileset_division_info, const char* output_filename);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug

@@ -11,7 +11,7 @@
 static bool importData(
 	gbgfx::Tileset& out_tileset, uint32_t& out_tileset_column_count,
 	gbgfx::PaletteSet& out_palette_set, std::vector<gbgfx::Tilemap>& out_tilemaps,
-	gbgfx::ImageInfo& out_tileset_image_info, gbgfx::ImageInfo& out_tilemap_image_info,
+	gbgfx::DivisionInfo& out_tileset_division_info, std::vector<gbgfx::DivisionInfo>& out_tilemap_division_infos,
 	const Options& options)
 {
 	GBGFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.image_filename << "]");
@@ -21,7 +21,7 @@ static bool importData(
 		return false;
 	}
 	if(!gbgfx::extractTileset(
-		out_tileset, out_palette_set,  out_tileset_image_info,
+		out_tileset, out_palette_set,  out_tileset_division_info,
 		options.tileset.divisions, options.tileset.tile_removal, tileset_image))
 	{
 		GBGFX_LOG_ERROR("Could not extract tileset from [" << tileset_image.getFilename() << "]");
@@ -30,13 +30,15 @@ static bool importData(
 	out_tileset_column_count = tileset_image.getWidth() / gbgfx::getBasicTileWidth();
 
 	out_tilemaps.clear();
+	out_tilemap_division_infos.clear();
 	for(auto image_filename : options.tilemap.image_filenames)
 	{
 		GBGFX_LOG_INFO("Extracting tilemap from [" << image_filename << "]");
 		const size_t size = out_tilemaps.size();
 		out_tilemaps.resize(size + 1);
+		out_tilemap_division_infos.resize(size + 1);
 		if(!gbgfx::extractTilemap(
-			out_tilemaps[size], out_tilemap_image_info,
+			out_tilemaps[size], out_tilemap_division_infos[size],
 			out_tileset, out_palette_set,
 			options.tilemap.divisions, image_filename))
 		{
@@ -121,6 +123,20 @@ static bool exportData(
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static bool exportInfo(const gbgfx::DivisionInfo tileset_division_info, const Options& options)
+{
+	const std::string filename = getOutputFilename(options.tileset.image_filename, ".info", options);
+	GBGFX_LOG_INFO("Writing tileset info to [" << filename << "]");
+	if(!gbgfx::writeDivisionInfo(tileset_division_info, filename.c_str()))
+	{
+		GBGFX_LOG_ERROR("Could not write the tileset division info [" << filename << "]");
+		return false;
+	}
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 static bool outputDebugData(
 	const gbgfx::Tileset& tileset, const gbgfx::PaletteSet& palette_set,
 	uint32_t tileset_column_count, const Options& options)
@@ -174,18 +190,23 @@ int main(int argc, const char** argv)
 	uint32_t tileset_column_count = 0;
 	gbgfx::PaletteSet palette_set;
 	std::vector<gbgfx::Tilemap> tilemaps;
-	gbgfx::ImageInfo tileset_image_info;
-	gbgfx::ImageInfo tilemap_image_info;
+	gbgfx::DivisionInfo tileset_division_info;
+	std::vector<gbgfx::DivisionInfo> tilemap_division_infos;
 
 	if(!importData(
 		tileset, tileset_column_count, palette_set, tilemaps,
-		tileset_image_info, tilemap_image_info,
+		tileset_division_info, tilemap_division_infos,
 		options))
 	{
 		return 1;
 	}
 
 	if(!exportData(tileset, palette_set, tilemaps, options))
+	{
+		return 1;
+	}
+
+	if(!exportInfo(tileset_division_info, options))
 	{
 		return 1;
 	}

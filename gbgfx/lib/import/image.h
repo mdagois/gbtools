@@ -11,20 +11,6 @@
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
-// Info
-////////////////////////////////////////////////////////////////////////////////
-
-enum DivisionStatus : uint8_t
-{
-	kDivisionFlag_Valid,
-	kDivisionFlag_Transparent,
-	kDivisionFlag_Skipped,
-};
-
-typedef std::vector<DivisionStatus> DivisionStatusList;
-typedef std::vector<DivisionStatusList> ImageInfo;
-
-////////////////////////////////////////////////////////////////////////////////
 // Image tile
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -56,6 +42,24 @@ struct Division
 	bool skip_transparent;
 };
 
+enum DivisionStatus : uint8_t
+{
+	kDivisionFlag_Valid,
+	kDivisionFlag_Transparent,
+	kDivisionFlag_Skipped,
+};
+
+struct DivisionStatusList : public std::vector<DivisionStatus>
+{
+	Division division;
+};
+
+struct DivisionInfo : std::vector<DivisionStatusList>
+{
+	uint32_t image_width;
+	uint32_t image_height;
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 // Image
 ////////////////////////////////////////////////////////////////////////////////
@@ -74,7 +78,7 @@ public:
 	const ColorRGBA* getPixels() const;
 
 	bool iterateTiles(
-		ImageInfo& out_image_info,
+		DivisionInfo& out_division_info,
 		const Division* divisions, uint32_t division_count,
 		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 

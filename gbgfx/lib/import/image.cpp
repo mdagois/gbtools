@@ -12,7 +12,7 @@ namespace gbgfx {
 // Image area
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef std::function<bool(DivisionStatusList* out_division_info, const ImageArea&, const Division* division, uint32_t level)> AreaCallback;
+typedef std::function<bool(DivisionStatusList* out_division_status_list, const ImageArea&, uint32_t level)> AreaCallback;
 
 class ImageArea
 {
@@ -23,7 +23,7 @@ public:
 		uint32_t pitch);
 	~ImageArea();
 
-	bool iterateArea(DivisionStatusList* out_division_info, const Division* division, uint32_t level, AreaCallback area_callback) const;
+	bool iterateArea(DivisionStatusList* out_division_status_list, uint32_t level, AreaCallback area_callback) const;
 
 	const ColorRGBA operator[](int32_t index) const;
 	uint32_t getOffsetX() const;
@@ -61,65 +61,66 @@ ImageArea::~ImageArea()
 }
 
 static void fillDivisionStatusList(
-	DivisionStatusList* out_division_info, const Division* division, uint32_t level,
+	DivisionStatusList* out_division_status_list, uint32_t level,
 	uint32_t width, uint32_t height)
 {
 	while(true)
 	{
-		assert(width % division->width == 0);
-		assert(height % division->height == 0);
-		const uint32_t row = height / division->height;
-		const uint32_t column = width / division->width;
+		const Division division = out_division_status_list->division;
+		assert(width % division.width == 0);
+		assert(height % division.height == 0);
+		const uint32_t row = height / division.height;
+		const uint32_t column = width / division.width;
 		const uint32_t skipped_count = row * column;
 		for(uint32_t i = 0; i < skipped_count; ++i)
 		{
-			out_division_info->push_back(kDivisionFlag_Skipped);
+			out_division_status_list->push_back(kDivisionFlag_Skipped);
 		}
 		if(level == 0)
 		{
 			break;
 		}
-		++out_division_info;
-		++division;
+		++out_division_status_list;
 		--level;
 	}
 }
 
-bool ImageArea::iterateArea(DivisionStatusList* out_division_info, const Division* division, uint32_t level, AreaCallback area_callback) const
+bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32_t level, AreaCallback area_callback) const
 {
-	assert(m_width % division->width == 0);
-	assert(m_height % division->height == 0);
+	const Division division = out_division_status_list->division;
+	assert(m_width % division.width == 0);
+	assert(m_height % division.height == 0);
 
 	GBGFX_LOG_DEBUG(
 		"Processing area (x=" << m_offset_x << ", y=" << m_offset_y
 		<< ", w=" << m_width << ", h=" << m_height << ") with division ("
-		<< division->width << "," << division->height << ","
-		<< (division->skip_transparent ? "s" : "-") << "," << (isTransparent() ? "t" : "-") << ")");
+		<< division.width << "," << division.height << ","
+		<< (division.skip_transparent ? "s" : "-") << "," << (isTransparent() ? "t" : "-") << ")");
 
-	const uint32_t row_count = m_height / division->height;
-	const uint32_t column_count = m_width / division->width;
+	const uint32_t row_count = m_height / division.height;
+	const uint32_t column_count = m_width / division.width;
 	for(uint32_t j = 0; j < row_count; ++j)
 	{
 		for(uint32_t i = 0; i < column_count; ++i)
 		{
-			const uint32_t relative_offset_x = i * division->width;
-			const uint32_t relative_offset_y = j * division->height;
+			const uint32_t relative_offset_x = i * division.width;
+			const uint32_t relative_offset_y = j * division.height;
 			const ColorRGBA* area_pixels = m_pixels + (relative_offset_y * m_pitch) + relative_offset_x;
 			const ImageArea sub_area(
 				area_pixels,
 				m_offset_x + relative_offset_x, m_offset_y + relative_offset_y,
-				division->width, division->height, m_pitch);
-			if(division->skip_transparent && sub_area.isTransparent())
+				division.width, division.height, m_pitch);
+			if(division.skip_transparent && sub_area.isTransparent())
 			{
 				GBGFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
-				out_division_info->push_back(kDivisionFlag_Transparent);
-				fillDivisionStatusList(out_division_info + 1, division + 1, level - 1, division->width, division->height);
+				out_division_status_list->push_back(kDivisionFlag_Transparent);
+				fillDivisionStatusList(out_division_status_list + 1, level - 1, division.width, division.height);
 				continue;
 			}
-			out_division_info->push_back(kDivisionFlag_Valid);
-			if(!area_callback(out_division_info, sub_area, division, level))
+			out_division_status_list->push_back(kDivisionFlag_Valid);
+			if(!area_callback(out_division_status_list, sub_area, level))
 			{
 				GBGFX_LOG_ERROR(
 					"Error in callback for area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
@@ -261,9 +262,9 @@ static bool validateDivisions(
 	return true;
 }
 
-static bool validateInfo(
+static bool validateDivisionInfo(
 	uint32_t top_width, uint32_t top_height,
-	const ImageInfo& image_info,
+	const DivisionInfo& division_info,
 	const Division* divisions, uint32_t division_count)
 {
 	for(uint32_t i = 0; i < division_count; ++i)
@@ -272,7 +273,7 @@ static bool validateInfo(
 		assert(top_height % divisions[i].height == 0);
 		const uint32_t row = top_height / divisions[i].height;
 		const uint32_t column = top_width / divisions[i].width;
-		if(image_info[i].size() != row * column)
+		if(division_info[i].size() != row * column)
 		{
 			assert(false);
 			return false;
@@ -341,7 +342,7 @@ const ColorRGBA* Image::getPixels() const
 }
 
 bool Image::iterateTiles(
-	ImageInfo& out_image_info,
+	DivisionInfo& out_division_info,
 	const Division* divisions, uint32_t division_count,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
@@ -350,7 +351,7 @@ bool Image::iterateTiles(
 		return false;
 	}
 
-	AreaCallback area_callback = [&area_callback, &tile_callback](DivisionStatusList* out_division_info_list, const ImageArea& area, const Division* division, uint32_t level)
+	AreaCallback area_callback = [&area_callback, &tile_callback](DivisionStatusList* out_division_status_list, const ImageArea& area, uint32_t level)
 	{
 		if(level == 0)
 		{
@@ -359,20 +360,23 @@ bool Image::iterateTiles(
 			GBGFX_LOG_DEBUG(
 				"New tile (x=" << area.getOffsetX() << ", y=" << area.getOffsetY()
 				<< ", w=" << area.getWidth() << ", h=" << area.getHeight() << ","
-				<< (division->skip_transparent ? "s" : "-") << "," << (area.isTransparent() ? "t" : "-") << ")");
+				<< (out_division_status_list->division.skip_transparent ? "s" : "-") << "," << (area.isTransparent() ? "t" : "-") << ")");
 			return tile_callback(image_tile, area.getOffsetX(), area.getOffsetY());
 		}
 		else
 		{
-			return area.iterateArea(out_division_info_list + 1, division + 1, level - 1, area_callback);
+			return area.iterateArea(out_division_status_list + 1, level - 1, area_callback);
 		}
 	};
 
-	out_image_info.clear();
-	out_image_info.resize(division_count);
+	out_division_info.image_width = m_width;
+	out_division_info.image_height = m_height;
+	out_division_info.clear();
+	out_division_info.resize(division_count);
 	for(uint32_t i = 0; i < division_count; ++i)
 	{
-		out_image_info[i].clear();
+		out_division_info[i].division = divisions[i];
+		out_division_info[i].clear();
 	}
 
 	ImageArea full_image(
@@ -380,8 +384,8 @@ bool Image::iterateTiles(
 		0, 0, m_width, m_height,
 		m_width);
 	return
-		full_image.iterateArea(out_image_info.data(), divisions, division_count - 1, area_callback) &&
-		validateInfo(m_width, m_height, out_image_info, divisions, division_count);
+		full_image.iterateArea(out_division_info.data(), division_count - 1, area_callback) &&
+		validateDivisionInfo(m_width, m_height, out_division_info, divisions, division_count);
 }
 
 void Image::unload()
