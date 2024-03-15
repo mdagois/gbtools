@@ -21,16 +21,8 @@ enum DivisionStatus : uint8_t
 	kDivisionFlag_Skipped,
 };
 
-struct DivisionInfo
-{
-	uint32_t division_width;
-	uint32_t division_height;
-	uint32_t division_row;
-	uint32_t division_column;
-	std::vector<DivisionStatus> status;
-};
-
-typedef std::vector<DivisionInfo> ImageInfo;
+typedef std::vector<DivisionStatus> DivisionStatusList;
+typedef std::vector<DivisionStatusList> ImageInfo;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Image tile
@@ -82,7 +74,7 @@ public:
 	const ColorRGBA* getPixels() const;
 
 	bool iterateTiles(
-		ImageInfo* out_image_info,
+		ImageInfo& out_image_info,
 		const Division* divisions, uint32_t division_count,
 		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 

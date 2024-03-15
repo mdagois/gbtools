@@ -150,7 +150,7 @@ bool extractTileset(
 	}
 
 	if(!image.iterateTiles(
-		nullptr,
+		out_image_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
@@ -175,7 +175,7 @@ bool extractTileset(
 	}
 
 	if(!image.iterateTiles(
-		&out_image_info,
+		out_image_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tileset, &out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
@@ -266,7 +266,7 @@ bool extractTilemap(
 	}
 
 	if(!image.iterateTiles(
-		&out_image_info,
+		out_image_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{

@@ -12,7 +12,7 @@ namespace gbgfx {
 // Image area
 ////////////////////////////////////////////////////////////////////////////////
 
-typedef std::function<bool(const ImageArea&, const Division* division, uint32_t level)> AreaCallback;
+typedef std::function<bool(DivisionStatusList* out_division_info, const ImageArea&, const Division* division, uint32_t level)> AreaCallback;
 
 class ImageArea
 {
@@ -23,7 +23,7 @@ public:
 		uint32_t pitch);
 	~ImageArea();
 
-	bool iterateArea(const Division* division, uint32_t level, AreaCallback area_callback) const;
+	bool iterateArea(DivisionStatusList* out_division_info, const Division* division, uint32_t level, AreaCallback area_callback) const;
 
 	const ColorRGBA operator[](int32_t index) const;
 	uint32_t getOffsetX() const;
@@ -60,7 +60,32 @@ ImageArea::~ImageArea()
 {
 }
 
-bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallback area_callback) const
+static void fillDivisionStatusList(
+	DivisionStatusList* out_division_info, const Division* division, uint32_t level,
+	uint32_t width, uint32_t height)
+{
+	while(true)
+	{
+		assert(width % division->width == 0);
+		assert(height % division->height == 0);
+		const uint32_t row = height / division->height;
+		const uint32_t column = width / division->width;
+		const uint32_t skipped_count = row * column;
+		for(uint32_t i = 0; i < skipped_count; ++i)
+		{
+			out_division_info->push_back(kDivisionFlag_Skipped);
+		}
+		if(level == 0)
+		{
+			break;
+		}
+		++out_division_info;
+		++division;
+		--level;
+	}
+}
+
+bool ImageArea::iterateArea(DivisionStatusList* out_division_info, const Division* division, uint32_t level, AreaCallback area_callback) const
 {
 	assert(m_width % division->width == 0);
 	assert(m_height % division->height == 0);
@@ -89,9 +114,12 @@ bool ImageArea::iterateArea(const Division* division, uint32_t level, AreaCallba
 				GBGFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
+				out_division_info->push_back(kDivisionFlag_Transparent);
+				fillDivisionStatusList(out_division_info + 1, division + 1, level - 1, division->width, division->height);
 				continue;
 			}
-			if(!area_callback(sub_area, division, level))
+			out_division_info->push_back(kDivisionFlag_Valid);
+			if(!area_callback(out_division_info, sub_area, division, level))
 			{
 				GBGFX_LOG_ERROR(
 					"Error in callback for area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
@@ -233,6 +261,26 @@ static bool validateDivisions(
 	return true;
 }
 
+static bool validateInfo(
+	uint32_t top_width, uint32_t top_height,
+	const ImageInfo& image_info,
+	const Division* divisions, uint32_t division_count)
+{
+	for(uint32_t i = 0; i < division_count; ++i)
+	{
+		assert(top_width % divisions[i].width == 0);
+		assert(top_height % divisions[i].height == 0);
+		const uint32_t row = top_height / divisions[i].height;
+		const uint32_t column = top_width / divisions[i].width;
+		if(image_info[i].size() != row * column)
+		{
+			assert(false);
+			return false;
+		}
+	}
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Image
 ////////////////////////////////////////////////////////////////////////////////
@@ -293,7 +341,7 @@ const ColorRGBA* Image::getPixels() const
 }
 
 bool Image::iterateTiles(
-	ImageInfo* out_image_info,
+	ImageInfo& out_image_info,
 	const Division* divisions, uint32_t division_count,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
@@ -302,7 +350,7 @@ bool Image::iterateTiles(
 		return false;
 	}
 
-	AreaCallback area_callback = [&area_callback, &tile_callback](const ImageArea& area, const Division* division, uint32_t level)
+	AreaCallback area_callback = [&area_callback, &tile_callback](DivisionStatusList* out_division_info_list, const ImageArea& area, const Division* division, uint32_t level)
 	{
 		if(level == 0)
 		{
@@ -316,15 +364,24 @@ bool Image::iterateTiles(
 		}
 		else
 		{
-			return area.iterateArea(division + 1, level - 1, area_callback);
+			return area.iterateArea(out_division_info_list + 1, division + 1, level - 1, area_callback);
 		}
 	};
+
+	out_image_info.clear();
+	out_image_info.resize(division_count);
+	for(uint32_t i = 0; i < division_count; ++i)
+	{
+		out_image_info[i].clear();
+	}
 
 	ImageArea full_image(
 		m_pixels,
 		0, 0, m_width, m_height,
 		m_width);
-	return full_image.iterateArea(divisions, division_count - 1, area_callback);
+	return
+		full_image.iterateArea(out_image_info.data(), divisions, division_count - 1, area_callback) &&
+		validateInfo(m_width, m_height, out_image_info, divisions, division_count);
 }
 
 void Image::unload()
