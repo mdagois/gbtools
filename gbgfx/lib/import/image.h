@@ -44,9 +44,10 @@ struct Division
 
 enum DivisionStatus : uint8_t
 {
-	kDivisionFlag_Valid,
-	kDivisionFlag_Transparent,
-	kDivisionFlag_Skipped,
+	kDivisionStatus_Valid,
+	kDivisionStatus_Transparent,
+	kDivisionStatus_Skipped,
+	kDivisionStatus_Count,
 };
 
 struct DivisionStatusList : public std::vector<DivisionStatus>

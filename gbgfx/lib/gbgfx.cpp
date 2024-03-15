@@ -1,4 +1,5 @@
 #include <cassert>
+#include <fstream>
 #include <set>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -466,6 +467,34 @@ bool exportTilemap(
 
 bool writeDivisionInfo(const DivisionInfo& tileset_division_info, const char* output_filename)
 {
+	std::ofstream file;
+	file.open(output_filename);
+	if(!file.is_open())
+	{
+		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
+		return false;
+	}
+	const char status_letter[] = { 'X', '@', '0' };
+	static_assert(sizeof(status_letter) / sizeof(status_letter[0]) == kDivisionStatus_Count);
+	file << tileset_division_info.image_width << "x" << tileset_division_info.image_height << std::endl;
+	for(const DivisionStatusList& list :  tileset_division_info)
+	{
+		const uint32_t row = tileset_division_info.image_height / list.division.height;
+		const uint32_t column = tileset_division_info.image_width / list.division.width;
+		file << list.division.width << "x" << list.division.height << std::endl;
+		assert(list.size() == row * column);
+		uint32_t index = 0;
+		for(uint32_t j = 0; j < row; ++j)
+		{
+			for(uint32_t i = 0; i < column; ++i)
+			{
+				file << status_letter[list[index]];
+				++index;
+			}
+			file << std::endl;
+		}
+	}
+	file.close();
 	return true;
 }
 

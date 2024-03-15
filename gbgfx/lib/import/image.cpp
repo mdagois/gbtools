@@ -74,7 +74,7 @@ static void fillDivisionStatusList(
 		const uint32_t skipped_count = row * column;
 		for(uint32_t i = 0; i < skipped_count; ++i)
 		{
-			out_division_status_list->push_back(kDivisionFlag_Skipped);
+			out_division_status_list->push_back(kDivisionStatus_Skipped);
 		}
 		if(level == 0)
 		{
@@ -115,11 +115,11 @@ bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32
 				GBGFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
-				out_division_status_list->push_back(kDivisionFlag_Transparent);
+				out_division_status_list->push_back(kDivisionStatus_Transparent);
 				fillDivisionStatusList(out_division_status_list + 1, level - 1, division.width, division.height);
 				continue;
 			}
-			out_division_status_list->push_back(kDivisionFlag_Valid);
+			out_division_status_list->push_back(kDivisionStatus_Valid);
 			if(!area_callback(out_division_status_list, sub_area, level))
 			{
 				GBGFX_LOG_ERROR(
