@@ -123,14 +123,35 @@ static bool exportData(
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool exportInfo(const gbgfx::DivisionInfo tileset_division_info, const Options& options)
+static bool exportInfo(
+	const gbgfx::DivisionInfo tileset_division_info,
+	const std::vector<gbgfx::DivisionInfo>& tilemap_division_infos,
+	const Options& options)
 {
-	const std::string filename = getOutputFilename(options.tileset.image_filename, ".info", options);
-	GBGFX_LOG_INFO("Writing tileset info to [" << filename << "]");
-	if(!gbgfx::writeDivisionInfo(tileset_division_info, filename.c_str()))
+	if(!options.output.skip_export_tileset_info)
 	{
-		GBGFX_LOG_ERROR("Could not write the tileset division info [" << filename << "]");
-		return false;
+		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr.info", options);
+		GBGFX_LOG_INFO("Writing tileset info to [" << filename << "]");
+		if(!gbgfx::writeDivisionInfo(tileset_division_info, filename.c_str()))
+		{
+			GBGFX_LOG_ERROR("Could not write the tileset division info [" << filename << "]");
+			return false;
+		}
+	}
+
+	if(!options.output.skip_export_tilemap_info)
+	{
+		assert(tilemap_division_infos.size() == options.tilemap.image_filenames.size());
+		for(size_t i = 0; i < tilemap_division_infos.size(); ++i)
+		{
+			const std::string filename = getOutputFilename(options.tilemap.image_filenames[i], ".tlm.info", options);
+			GBGFX_LOG_INFO("Writing tilemap info to [" << filename << "]");
+			if(!gbgfx::writeDivisionInfo(tilemap_division_infos[i], filename.c_str()))
+			{
+				GBGFX_LOG_ERROR("Could not write the tilemap division info [" << filename << "]");
+				return false;
+			}
+		}
 	}
 	return true;
 }
@@ -206,7 +227,7 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	if(!exportInfo(tileset_division_info, options))
+	if(!exportInfo(tileset_division_info, tilemap_division_infos, options))
 	{
 		return 1;
 	}
@@ -215,14 +236,6 @@ int main(int argc, const char** argv)
 	{
 		return 1;
 	}
-
-#if 0
-	{
-		gbgfx::DivisionInfo info;
-		assert(loadDivisionInfo(info, "output/unnamed_ff_spritesheet.info"));
-		printDivisionInfo(info);
-	}
-#endif
 
 	return 0;
 }

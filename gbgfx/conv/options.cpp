@@ -82,6 +82,8 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("skip-export-tileset", "stls", "Skip export of the tileset", 'STLS', &out_options.output.skip_export_tileset),
 		OptionFlag("skip-export-indices", "sidx", "Skip export of the tilemaps", 'STLM', &out_options.output.skip_export_indices),
 		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemaps", 'SPRM', &out_options.output.skip_export_parameters),
+		OptionFlag("skip-export-tileset-info", "sti", "Skip export of the tileset info", 'STLI', &out_options.output.skip_export_tileset_info),
+		OptionFlag("skip-export-tilemap-info", "smi", "Skip export of the tilemap info", 'SMAI', &out_options.output.skip_export_tilemap_info),
 		// debug
 		OptionFlag("generate-png-palette", "gpal", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),
 		OptionFlag("generate-png-tileset", "gtls", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.generate_tileset_png),
