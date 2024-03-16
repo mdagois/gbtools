@@ -62,7 +62,9 @@ bool exportTilemap(
 // Info
 ////////////////////////////////////////////////////////////////////////////////
 
-bool writeDivisionInfo(const DivisionInfo& tileset_division_info, const char* output_filename);
+bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filename);
+bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_filename);
+bool printDivisionInfo(const DivisionInfo& division_info);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Debug

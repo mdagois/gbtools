@@ -1,5 +1,6 @@
 #include <cassert>
 #include <fstream>
+#include <iostream>
 #include <set>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -465,7 +466,45 @@ bool exportTilemap(
 // Info
 ////////////////////////////////////////////////////////////////////////////////
 
-bool writeDivisionInfo(const DivisionInfo& tileset_division_info, const char* output_filename)
+bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filename)
+{
+	std::ifstream file(input_filename);
+	if(!file.is_open())
+	{
+		GBGFX_LOG_ERROR("Could not open file [" << input_filename << "]");
+		return false;
+	}
+
+	char c;
+	DivisionInfo& info = out_division_info;
+	info.clear();
+
+	file >> info.image_width >> c >> info.image_height;
+	while(true)
+	{
+		DivisionStatusList list;
+		file >> list.division.width >> c >> list.division.height >> c;
+		list.division.skip_transparent = c == 's';
+		if(file.eof())
+		{
+			break; 
+		}
+		const uint32_t status_count =
+			(info.image_width / list.division.width) *
+			(info.image_height / list.division.height);
+		for(uint32_t i = 0; i < status_count; ++i)
+		{
+			file >> c;
+			list.push_back(static_cast<DivisionStatus>(c));
+		}
+		info.push_back(list);
+	}
+
+	file.close();
+	return true;
+}
+
+bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_filename)
 {
 	std::ofstream file;
 	file.open(output_filename);
@@ -474,13 +513,11 @@ bool writeDivisionInfo(const DivisionInfo& tileset_division_info, const char* ou
 		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
 		return false;
 	}
-	const char status_letter[] = { 'X', '|', '.', '@' };
-	static_assert(sizeof(status_letter) / sizeof(status_letter[0]) == kDivisionStatus_Count);
-	file << tileset_division_info.image_width << "x" << tileset_division_info.image_height << std::endl;
-	for(const DivisionStatusList& list :  tileset_division_info)
+	file << division_info.image_width << "x" << division_info.image_height << std::endl;
+	for(const DivisionStatusList& list :  division_info)
 	{
-		const uint32_t row = tileset_division_info.image_height / list.division.height;
-		const uint32_t column = tileset_division_info.image_width / list.division.width;
+		const uint32_t row = division_info.image_height / list.division.height;
+		const uint32_t column = division_info.image_width / list.division.width;
 		file << list.division.width << "x" << list.division.height << (list.division.skip_transparent ? "s" : "k") << std::endl;
 		assert(list.size() == row * column);
 		uint32_t index = 0;
@@ -488,13 +525,36 @@ bool writeDivisionInfo(const DivisionInfo& tileset_division_info, const char* ou
 		{
 			for(uint32_t i = 0; i < column; ++i)
 			{
-				file << status_letter[list[index]];
+				file << getLetterFromStatus(list[index]);
 				++index;
 			}
 			file << std::endl;
 		}
 	}
 	file.close();
+	return true;
+}
+
+bool printDivisionInfo(const DivisionInfo& info)
+{
+	std::cout << info.image_width << "x" << info.image_height << std::endl;
+	for(size_t i = 0; i < info.size(); ++i)
+	{
+		auto& list = info[i];
+		std::cout
+			<< list.division.width << "x" << list.division.height
+			<< (list.division.skip_transparent ? 's' : 'k') << std::endl;
+		const uint32_t row_count = info.image_height / list.division.height;
+		const uint32_t col_count = info.image_width / list.division.width;
+		for(uint32_t row = 0; row < row_count; ++row)
+		{
+			for(uint32_t col = 0; col < col_count; ++col)
+			{
+				std::cout << list[row * col_count + col];
+			}
+			std::cout << std::endl;
+		}
+	}
 	return true;
 }
 

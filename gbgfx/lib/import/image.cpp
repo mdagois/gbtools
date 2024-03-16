@@ -82,7 +82,7 @@ static void fillDivisionStatusList(
 			{
 				const uint32_t x = left + i;
 				const uint32_t y = top + j;
-				assert((*out_division_status_list)[y * division_pitch + x] == kDivisionStatus_Placeholder);
+				assert((*out_division_status_list)[y * division_pitch + x] == kDivisionStatus_Invalid);
 				(*out_division_status_list)[y * division_pitch + x] = kDivisionStatus_Skipped;
 			}
 		}
@@ -396,7 +396,7 @@ bool Image::iterateTiles(
 		auto& list = out_division_info[i];
 		list.division = divisions[i];
 		list.resize((m_width / divisions[i].width) * (m_height / divisions[i].height));
-		std::fill(list.begin(), list.end(), kDivisionStatus_Placeholder);
+		std::fill(list.begin(), list.end(), kDivisionStatus_Invalid);
 	}
 
 	ImageArea full_image(

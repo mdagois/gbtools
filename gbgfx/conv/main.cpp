@@ -216,6 +216,14 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
+#if 0
+	{
+		gbgfx::DivisionInfo info;
+		assert(loadDivisionInfo(info, "output/unnamed_ff_spritesheet.info"));
+		printDivisionInfo(info);
+	}
+#endif
+
 	return 0;
 }
 

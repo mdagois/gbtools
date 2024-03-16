@@ -10,6 +10,7 @@ list(TRANSFORM EXPORT_SRC PREPEND export/)
 
 set(IMPORT_SRC
 	import.h
+	division.h division.cpp
 	image.h image.cpp
 )
 list(TRANSFORM IMPORT_SRC PREPEND import/)
