@@ -47,6 +47,7 @@ enum DivisionStatus : uint8_t
 	kDivisionStatus_Valid,
 	kDivisionStatus_Transparent,
 	kDivisionStatus_Skipped,
+	kDivisionStatus_Placeholder,
 	kDivisionStatus_Count,
 };
 

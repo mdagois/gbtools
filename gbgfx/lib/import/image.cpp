@@ -62,19 +62,29 @@ ImageArea::~ImageArea()
 
 static void fillDivisionStatusList(
 	DivisionStatusList* out_division_status_list, uint32_t level,
-	uint32_t width, uint32_t height)
+	uint32_t image_x, uint32_t image_y,
+	uint32_t top_division_width, uint32_t top_division_height,
+	uint32_t image_pitch)
 {
 	while(true)
 	{
 		const Division division = out_division_status_list->division;
-		assert(width % division.width == 0);
-		assert(height % division.height == 0);
-		const uint32_t row = height / division.height;
-		const uint32_t column = width / division.width;
-		const uint32_t skipped_count = row * column;
-		for(uint32_t i = 0; i < skipped_count; ++i)
+		assert(top_division_width % division.width == 0);
+		assert(top_division_height % division.height == 0);
+		const uint32_t division_pitch = image_pitch / division.width;
+		const uint32_t row = top_division_height / division.height;
+		const uint32_t column = top_division_width / division.width;
+		const uint32_t top = image_y / division.height;
+		const uint32_t left = image_x / division.width;
+		for(uint32_t j = 0; j < row; ++j)
 		{
-			out_division_status_list->push_back(kDivisionStatus_Skipped);
+			for(uint32_t i = 0; i < column; ++i)
+			{
+				const uint32_t x = left + i;
+				const uint32_t y = top + j;
+				assert((*out_division_status_list)[y * division_pitch + x] == kDivisionStatus_Placeholder);
+				(*out_division_status_list)[y * division_pitch + x] = kDivisionStatus_Skipped;
+			}
 		}
 		if(level == 0)
 		{
@@ -99,27 +109,35 @@ bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32
 
 	const uint32_t row_count = m_height / division.height;
 	const uint32_t column_count = m_width / division.width;
+	const uint32_t division_pitch = m_pitch / division.width;
 	for(uint32_t j = 0; j < row_count; ++j)
 	{
 		for(uint32_t i = 0; i < column_count; ++i)
 		{
 			const uint32_t relative_offset_x = i * division.width;
 			const uint32_t relative_offset_y = j * division.height;
+			const uint32_t absolute_offset_x = m_offset_x + relative_offset_x;
+			const uint32_t absolute_offset_y = m_offset_y + relative_offset_y;
 			const ColorRGBA* area_pixels = m_pixels + (relative_offset_y * m_pitch) + relative_offset_x;
 			const ImageArea sub_area(
-				area_pixels,
-				m_offset_x + relative_offset_x, m_offset_y + relative_offset_y,
+				area_pixels, absolute_offset_x, absolute_offset_y,
 				division.width, division.height, m_pitch);
+
+			const uint32_t division_number = (m_offset_y / division.height + j) * division_pitch + (m_offset_x / division.width + i);
+			(*out_division_status_list)[division_number] = kDivisionStatus_Transparent;
 			if(division.skip_transparent && sub_area.isTransparent())
 			{
 				GBGFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
-				out_division_status_list->push_back(kDivisionStatus_Transparent);
-				fillDivisionStatusList(out_division_status_list + 1, level - 1, division.width, division.height);
+				fillDivisionStatusList(
+					out_division_status_list + 1, level - 1,
+					absolute_offset_x, absolute_offset_y,
+					division.width, division.height,
+					m_pitch);
 				continue;
 			}
-			out_division_status_list->push_back(kDivisionStatus_Valid);
+			(*out_division_status_list)[division_number] = kDivisionStatus_Valid;
 			if(!area_callback(out_division_status_list, sub_area, level))
 			{
 				GBGFX_LOG_ERROR(
@@ -375,8 +393,10 @@ bool Image::iterateTiles(
 	out_division_info.resize(division_count);
 	for(uint32_t i = 0; i < division_count; ++i)
 	{
-		out_division_info[i].division = divisions[i];
-		out_division_info[i].clear();
+		auto& list = out_division_info[i];
+		list.division = divisions[i];
+		list.resize((m_width / divisions[i].width) * (m_height / divisions[i].height));
+		std::fill(list.begin(), list.end(), kDivisionStatus_Placeholder);
 	}
 
 	ImageArea full_image(
