@@ -12,6 +12,8 @@
 
 namespace gbgfx {
 
+#define USE_BINARY_DIVISION_INFO
+
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization
 ////////////////////////////////////////////////////////////////////////////////
@@ -466,8 +468,89 @@ bool exportTilemap(
 // Info
 ////////////////////////////////////////////////////////////////////////////////
 
+static bool loadFile(uint8_t*& out_data, uint32_t& out_data_size, const char* filename)
+{
+	assert(filename != nullptr);
+
+	FILE* file = fopen(filename, "rb");
+	if(file == nullptr)
+	{
+		GBGFX_LOG_ERROR("Could not open file [" << filename << "] for read");
+		return false;
+	}
+
+	fseek(file, 0, SEEK_END);
+	const long int length = ftell(file);
+	if(length <= 0)
+	{
+		GBGFX_LOG_ERROR("File size if zero [" << filename << "]");
+		fclose(file);
+		return false;
+	}
+	fseek(file, 0, SEEK_SET);
+
+	uint8_t* data = new uint8_t[length];
+	if(data == nullptr)
+	{
+		GBGFX_LOG_ERROR("Could not allocate enough memory [" << length << "] for [" << filename << "]");
+		fclose(file);
+		return false;
+	}
+
+	size_t n = fread(data, length, 1, file);
+	fclose(file);
+	if(n != 1)
+	{
+		GBGFX_LOG_ERROR("Could not read the data for file [" << filename << "]");
+		delete [] data;
+		return false;
+	}
+
+	out_data = data;
+	out_data_size = length;
+	return true;
+}
+
 bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filename)
 {
+#if defined(USE_BINARY_DIVISION_INFO)
+	assert(input_filename != nullptr);
+
+	uint8_t* data = nullptr;
+	uint32_t data_size = 0;
+	if(!loadFile(data, data_size, input_filename))
+	{
+		return false;
+	}
+
+	const uint32_t* data32 = reinterpret_cast<const uint32_t*>(data);
+	out_division_info.clear();
+	out_division_info.image_width = *data32;
+	++data32;
+	out_division_info.image_height = *data32;
+	++data32;
+	const uint32_t list_count = *data32;
+	++data32;
+	out_division_info.resize(list_count);
+	for(uint32_t i = 0; i < list_count; ++i)
+	{
+		DivisionStatusList& list = out_division_info[i];
+		list.division.width = *data32;
+		++data32;
+		list.division.height = *data32;
+		++data32;
+		list.division.skip_transparent = *data32 != 0;
+		++data32;
+		const uint32_t list_size = *data32;
+		++data32;
+		list.resize(list_size);
+		const DivisionStatus* list_data = reinterpret_cast<const DivisionStatus*>(data32);
+		memcpy(list.data(), list_data, sizeof(DivisionStatus) * list_size);
+		data32 = reinterpret_cast<const uint32_t*>(list_data + (sizeof(DivisionStatus) * list_size));
+	}
+
+	return true;
+#else
 	std::ifstream file(input_filename);
 	if(!file.is_open())
 	{
@@ -495,17 +578,68 @@ bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filenam
 		for(uint32_t i = 0; i < status_count; ++i)
 		{
 			file >> c;
-			list.push_back(static_cast<DivisionStatus>(c));
+			list.push_back(static_cast<DivisionStatus>(getStatusFromLetter(c)));
 		}
 		info.push_back(list);
 	}
 
 	file.close();
 	return true;
+#endif
 }
 
 bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_filename)
 {
+#if defined(USE_BINARY_DIVISION_INFO)
+	assert(output_filename != nullptr);
+
+	FILE* output_file = fopen(output_filename, "wb");
+	if(output_file == nullptr)
+	{
+		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
+		return false;
+	}
+	assert(output_file != nullptr);
+
+	const uint32_t info_header[] =
+	{
+		division_info.image_width,
+		division_info.image_height,
+		static_cast<uint32_t>(division_info.size()),
+	};
+	if(!fwrite(info_header, sizeof(info_header), 1, output_file) == 1)
+	{
+		GBGFX_LOG_ERROR("Could not write header for file [" << output_filename << "]");
+		return false;
+	}
+
+	for(const DivisionStatusList& list :  division_info)
+	{
+		const uint32_t row = division_info.image_height / list.division.height;
+		const uint32_t column = division_info.image_width / list.division.width;
+		assert(list.size() == row * column);
+		const uint32_t header[] =
+		{
+			list.division.width,
+			list.division.height,
+			list.division.skip_transparent ? 1U : 0U,
+			static_cast<uint32_t>(list.size()),
+		};
+		if(!fwrite(header, sizeof(header), 1, output_file) == 1)
+		{
+			GBGFX_LOG_ERROR("Could not write division header for file [" << output_filename << "]");
+			return false;
+		}
+		if(!fwrite(list.data(), sizeof(DivisionStatus) * list.size(), 1, output_file) == 1)
+		{
+			GBGFX_LOG_ERROR("Could not write division data for file [" << output_filename << "]");
+			return false;
+		}
+	}
+
+	fclose(output_file);
+	return true;
+#else
 	std::ofstream file;
 	file.open(output_filename);
 	if(!file.is_open())
@@ -533,6 +667,7 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 	}
 	file.close();
 	return true;
+#endif
 }
 
 bool printDivisionInfo(const DivisionInfo& info)
@@ -550,7 +685,7 @@ bool printDivisionInfo(const DivisionInfo& info)
 		{
 			for(uint32_t col = 0; col < col_count; ++col)
 			{
-				std::cout << list[row * col_count + col];
+				std::cout << getLetterFromStatus(list[row * col_count + col]);
 			}
 			std::cout << std::endl;
 		}
