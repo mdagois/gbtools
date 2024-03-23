@@ -546,7 +546,7 @@ bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filenam
 		data32 = reinterpret_cast<const uint32_t*>(list_data + (sizeof(DivisionStatus) * list_size));
 	}
 
-	return true;
+	return computeDivisionInfoOffsets(out_division_info);
 }
 
 bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_filename)

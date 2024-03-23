@@ -27,6 +27,35 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
+#if 0
+	struct
+	{
+		uint32_t x;
+		uint32_t y;
+	}
+	coords[] =
+	{
+		{  0,  0 },
+		{ 14,  3 },
+		{  0,  8 },
+		{  1,  8 },
+		{  2,  8 },
+		{  3,  8 },
+	};
+	for(uint32_t i = 0; i < sizeof(coords) / sizeof(coords[0]); ++i)
+	{
+		uint32_t offset;
+		if(getDivisionOffset(offset, division_info, coords[i].x, coords[i].y, 16, 16))
+		{
+			std::cout << "offset[" << i << "]=" << offset << std::endl;
+		}
+		else
+		{
+			std::cout << "Cannot get offset " << i << std::endl;
+			return 1;
+		}
+	}
+#endif
 	return 0;
 }
 

@@ -42,6 +42,12 @@ struct DivisionInfo : std::vector<DivisionStatusList>
 
 char getLetterFromStatus(DivisionStatus status);
 DivisionStatus getStatusFromLetter(char letter);
+bool getDivisionOffset(
+	uint32_t& out_offset,
+	const DivisionInfo& division_info,
+	uint32_t division_x, uint32_t division_y,
+	uint32_t division_width, uint32_t division_height);
+bool computeDivisionInfoOffsets(DivisionInfo& inout_division_info);
 
 ////////////////////////////////////////////////////////////////////////////////
 
