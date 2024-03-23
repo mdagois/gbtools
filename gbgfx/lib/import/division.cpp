@@ -63,14 +63,14 @@ bool getDivisionOffset(
 	const uint32_t x = division_x * (division_width / last_list.division.width);
 	const uint32_t y = division_y * (division_height / last_list.division.height);
 	const uint32_t index = y * last_list.division.width + x;
-	out_offset = division_info.offsets[index];
+	out_offset = division_info.last_list_offsets[index];
 	return true;
 }
 
 bool computeDivisionInfoOffsets(DivisionInfo& inout_division_info)
 {
 	const DivisionStatusList& last_list = inout_division_info.back();
-	OffsetList& offsets = inout_division_info.offsets;
+	OffsetList& offsets = inout_division_info.last_list_offsets;
 	offsets.clear();
 	uint32_t offset = 0;
 	for(DivisionStatus status : last_list)

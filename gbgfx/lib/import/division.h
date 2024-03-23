@@ -37,7 +37,7 @@ struct DivisionInfo : std::vector<DivisionStatusList>
 	uint32_t image_width;
 	uint32_t image_height;
 
-	OffsetList offsets;
+	OffsetList last_list_offsets;
 };
 
 char getLetterFromStatus(DivisionStatus status);
