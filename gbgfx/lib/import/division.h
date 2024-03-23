@@ -30,10 +30,14 @@ struct DivisionStatusList : public std::vector<DivisionStatus>
 	Division division;
 };
 
+typedef std::vector<uint32_t> OffsetList;
+
 struct DivisionInfo : std::vector<DivisionStatusList>
 {
 	uint32_t image_width;
 	uint32_t image_height;
+
+	OffsetList offsets;
 };
 
 char getLetterFromStatus(DivisionStatus status);

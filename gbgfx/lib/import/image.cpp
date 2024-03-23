@@ -300,6 +300,23 @@ static bool validateDivisionInfo(
 	return true;
 }
 
+static bool computeDivisionInfoOffsets(DivisionInfo& inout_division_info)
+{
+	const DivisionStatusList& last_list = inout_division_info.back();
+	OffsetList& offsets = inout_division_info.offsets;
+	offsets.clear();
+	uint32_t offset = 0;
+	for(DivisionStatus status : last_list)
+	{
+		offsets.push_back(offset);
+		if(status == kDivisionStatus_Valid)
+		{
+			++offset;
+		}
+	}
+	return true;
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Image
 ////////////////////////////////////////////////////////////////////////////////
@@ -405,7 +422,8 @@ bool Image::iterateTiles(
 		m_width);
 	return
 		full_image.iterateArea(out_division_info.data(), division_count - 1, area_callback) &&
-		validateDivisionInfo(m_width, m_height, out_division_info, divisions, division_count);
+		validateDivisionInfo(m_width, m_height, out_division_info, divisions, division_count) &&
+		computeDivisionInfoOffsets(out_division_info);
 }
 
 void Image::unload()
