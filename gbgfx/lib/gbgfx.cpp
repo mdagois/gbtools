@@ -12,8 +12,6 @@
 
 namespace gbgfx {
 
-#define USE_BINARY_DIVISION_INFO
-
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization
 ////////////////////////////////////////////////////////////////////////////////
@@ -513,7 +511,6 @@ static bool loadFile(uint8_t*& out_data, uint32_t& out_data_size, const char* fi
 
 bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filename)
 {
-#if defined(USE_BINARY_DIVISION_INFO)
 	assert(input_filename != nullptr);
 
 	uint8_t* data = nullptr;
@@ -550,47 +547,10 @@ bool loadDivisionInfo(DivisionInfo& out_division_info, const char* input_filenam
 	}
 
 	return true;
-#else
-	std::ifstream file(input_filename);
-	if(!file.is_open())
-	{
-		GBGFX_LOG_ERROR("Could not open file [" << input_filename << "]");
-		return false;
-	}
-
-	char c;
-	DivisionInfo& info = out_division_info;
-	info.clear();
-
-	file >> info.image_width >> c >> info.image_height;
-	while(true)
-	{
-		DivisionStatusList list;
-		file >> list.division.width >> c >> list.division.height >> c;
-		list.division.skip_transparent = c == 's';
-		if(file.eof())
-		{
-			break; 
-		}
-		const uint32_t status_count =
-			(info.image_width / list.division.width) *
-			(info.image_height / list.division.height);
-		for(uint32_t i = 0; i < status_count; ++i)
-		{
-			file >> c;
-			list.push_back(static_cast<DivisionStatus>(getStatusFromLetter(c)));
-		}
-		info.push_back(list);
-	}
-
-	file.close();
-	return true;
-#endif
 }
 
 bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_filename)
 {
-#if defined(USE_BINARY_DIVISION_INFO)
 	assert(output_filename != nullptr);
 
 	FILE* output_file = fopen(output_filename, "wb");
@@ -639,35 +599,6 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 
 	fclose(output_file);
 	return true;
-#else
-	std::ofstream file;
-	file.open(output_filename);
-	if(!file.is_open())
-	{
-		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
-		return false;
-	}
-	file << division_info.image_width << "x" << division_info.image_height << std::endl;
-	for(const DivisionStatusList& list :  division_info)
-	{
-		const uint32_t row = division_info.image_height / list.division.height;
-		const uint32_t column = division_info.image_width / list.division.width;
-		file << list.division.width << "x" << list.division.height << (list.division.skip_transparent ? "s" : "k") << std::endl;
-		assert(list.size() == row * column);
-		uint32_t index = 0;
-		for(uint32_t j = 0; j < row; ++j)
-		{
-			for(uint32_t i = 0; i < column; ++i)
-			{
-				file << getLetterFromStatus(list[index]);
-				++index;
-			}
-			file << std::endl;
-		}
-	}
-	file.close();
-	return true;
-#endif
 }
 
 bool printDivisionInfo(const DivisionInfo& info)
