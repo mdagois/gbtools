@@ -37,7 +37,7 @@ add_library(
 	${IMPORT_SRC}
 	${DATA_SRC}
 	${UTILS_SRC}
-	features.h features.cpp
+	capabilities.h capabilities.cpp
 	gbgfx.h gbgfx.cpp
 	enums.h
 )

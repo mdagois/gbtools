@@ -58,38 +58,62 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	const char* tileset_divisions = nullptr;
 	const char* tilemap_divisions = nullptr;
 
+	enum : uint32_t
+	{
+		kOptionHard,
+		kOptionTileset,
+		kOptionTilesetDivisions,
+		kOptionTileRemoval,
+		kOptionTilemapDivisions,
+		kOptionOutputDirectory,
+		kOptionPaletteIndexOffset,
+		kOptionTileIndexOffset,
+		kOption8800Addressing,
+		kOptionAddHeaders,
+		kOptionSkipExportPalette,
+		kOptionSkipExportTileset,
+		kOptionSkipExportIndices,
+		kOptionSkipExportParameter,
+		kOptionSkipExportTilesetInfo,
+		kOptionSkipExportTilemapInfo,
+		kOptionGeneratePalette,
+		kOptionGenerateTileset,
+		kOptionVerbose,
+		kOptionHelp,
+	};
+
 	Option cli_options[] =
 	{
 		// hardware
 		OptionStringToInteger(
-			"hardware", "hw", "Specify the target hardware", true, 'HARD', reinterpret_cast<int32_t*>(&out_options.hardware),
+			"hardware", "hw", "Specify the target hardware", true, kOptionHard, reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
 		// tileset
-		OptionString("tileset", "ts", "The tileset image", true, 'TLS ', &out_options.tileset.image_filename),
-		OptionString("tileset-divisions", "tsd", "The tileset division", false, 'TLSD', &tileset_divisions),
+		OptionString("tileset", "ts", "The tileset image", true, kOptionTileset, &out_options.tileset.image_filename),
+		OptionString("tileset-divisions", "tsd", "The tileset division", false, kOptionTilesetDivisions, &tileset_divisions),
 		OptionStringToInteger(
-			"tile-removal", "trm", "Tile removal mode", false, 'TREM', reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
+			"tile-removal", "trm", "Tile removal mode", false, kOptionTileRemoval, reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
 		// tilemap
-		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, 'TLMD', &tilemap_divisions),
+		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, kOptionTilemapDivisions, &tilemap_divisions),
 		// output
-		OptionString("output-directory", "o", "The output directory", false, 'OUTD', &out_options.output.directory),
-		OptionInteger("palette-index-offset", "pio", "Palette index offset", false, 'PALO', &out_options.output.palette_index_offset),
-		OptionInteger("tile-index-offset", "tio", "Tile index offset", false, 'TILO', &out_options.output.tile_index_offset),
-		OptionFlag("8800-addressing", "8800", "Use $8800 tile addressing mode", 'ADRM', &out_options.output.use_8800_addressing_mode),
-		OptionFlag("use-headers", "hd", "Add headers to output files", 'HEAD', &out_options.output.add_binary_headers),
-		OptionFlag("skip-export-palette", "spal", "Skip export of the palette set", 'SPAL', &out_options.output.skip_export_palette),
-		OptionFlag("skip-export-tileset", "stls", "Skip export of the tileset", 'STLS', &out_options.output.skip_export_tileset),
-		OptionFlag("skip-export-indices", "sidx", "Skip export of the tilemaps", 'STLM', &out_options.output.skip_export_indices),
-		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemaps", 'SPRM', &out_options.output.skip_export_parameters),
-		OptionFlag("skip-export-tileset-info", "sti", "Skip export of the tileset info", 'STLI', &out_options.output.skip_export_tileset_info),
-		OptionFlag("skip-export-tilemap-info", "smi", "Skip export of the tilemap info", 'SMAI', &out_options.output.skip_export_tilemap_info),
+		OptionString("output-directory", "o", "The output directory", false, kOptionOutputDirectory, &out_options.output.directory),
+		OptionInteger("palette-index-offset", "pio", "Palette index offset", false, kOptionPaletteIndexOffset, &out_options.output.palette_index_offset),
+		OptionInteger("tile-index-offset", "tio", "Tile index offset", false, kOptionTileIndexOffset, &out_options.output.tile_index_offset),
+		OptionFlag("8800-addressing", "8800", "Use $8800 tile addressing mode", kOption8800Addressing, &out_options.output.use_8800_addressing_mode),
+		OptionFlag("use-headers", "hd", "Add headers to output files", kOptionAddHeaders, &out_options.output.add_binary_headers),
+		OptionFlag("skip-export-palette", "spal", "Skip export of the palette set", kOptionSkipExportPalette, &out_options.output.skip_export_palette),
+		OptionFlag("skip-export-tileset", "stls", "Skip export of the tileset", kOptionSkipExportTileset, &out_options.output.skip_export_tileset),
+		OptionFlag("skip-export-indices", "sidx", "Skip export of the tilemap indices", kOptionSkipExportIndices, &out_options.output.skip_export_indices),
+		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemap parameters", kOptionSkipExportParameter, &out_options.output.skip_export_parameters),
+		OptionFlag("skip-export-tileset-info", "sti", "Skip export of the tileset info", kOptionSkipExportTilesetInfo, &out_options.output.skip_export_tileset_info),
+		OptionFlag("skip-export-tilemap-info", "smi", "Skip export of the tilemap info", kOptionSkipExportTilemapInfo, &out_options.output.skip_export_tilemap_info),
 		// debug
-		OptionFlag("generate-png-palette", "gpal", "Generate a PNG file of the palette", 'GENP', &out_options.debug.generate_palette_png),
-		OptionFlag("generate-png-tileset", "gtls", "Generate a PNG file of the tileset", 'GENT', &out_options.debug.generate_tileset_png),
+		OptionFlag("generate-png-palette", "gpal", "Generate a PNG file of the palette", kOptionGeneratePalette, &out_options.debug.generate_palette_png),
+		OptionFlag("generate-png-tileset", "gtls", "Generate a PNG file of the tileset", kOptionGenerateTileset, &out_options.debug.generate_tileset_png),
 		// misc
-		OptionFlag("verbose", "v", "Enable verbose mode", 'VERB', &out_options.verbose),
-		OptionFlag("help", "h", "Show help", 'HELP', &out_options.help),
+		OptionFlag("verbose", "v", "Enable verbose mode", kOptionVerbose, &out_options.verbose),
+		OptionFlag("help", "h", "Show help", kOptionHelp, &out_options.help),
 	};
 
 	Parser cli_parser(

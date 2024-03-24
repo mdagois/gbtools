@@ -6,8 +6,8 @@
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "third_party/stb_image_write.h"
 
+#include "capabilities.h"
 #include "export/export.h"
-#include "features.h"
 #include "gbgfx.h"
 
 namespace gbgfx {
@@ -567,7 +567,7 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 		division_info.image_height,
 		static_cast<uint32_t>(division_info.size()),
 	};
-	if(!fwrite(info_header, sizeof(info_header), 1, output_file) == 1)
+	if(fwrite(info_header, sizeof(info_header), 1, output_file) != 1)
 	{
 		GBGFX_LOG_ERROR("Could not write header for file [" << output_filename << "]");
 		return false;
@@ -585,12 +585,12 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 			list.division.skip_transparent ? 1U : 0U,
 			static_cast<uint32_t>(list.size()),
 		};
-		if(!fwrite(header, sizeof(header), 1, output_file) == 1)
+		if(fwrite(header, sizeof(header), 1, output_file) != 1)
 		{
 			GBGFX_LOG_ERROR("Could not write division header for file [" << output_filename << "]");
 			return false;
 		}
-		if(!fwrite(list.data(), sizeof(DivisionStatus) * list.size(), 1, output_file) == 1)
+		if(fwrite(list.data(), sizeof(DivisionStatus) * list.size(), 1, output_file) != 1)
 		{
 			GBGFX_LOG_ERROR("Could not write division data for file [" << output_filename << "]");
 			return false;

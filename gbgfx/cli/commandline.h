@@ -6,8 +6,8 @@ namespace cli {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static const uint32_t kRemainingCode = '????';
-static const uint32_t kIgnoreCode = '@@@@';
+static const uint32_t kRemainingCode = 0xFFFFFFFFU;
+static const uint32_t kIgnoreCode = 0xFFFFFFFEU;
 
 enum class ParameterType : uint16_t
 {

@@ -1,6 +1,6 @@
 #include <cassert>
 
-#include "features.h"
+#include "capabilities.h"
 #include "palette.h"
 
 namespace gbgfx {

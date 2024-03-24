@@ -278,7 +278,7 @@ const char* Parser::getLastErrorMessage()
 	if(m_last_error == Error::kRequiredOptionNotSpecified)
 	{
 #define ERROR_MANAGEMENT_ERROR "Error handling issue"
-		int32_t message_len = sprintf_s(m_error_message, sizeof(m_error_message), "%s:", message[static_cast<size_t>(m_last_error)]);
+		int32_t message_len = sprintf(m_error_message, "%s:", message[static_cast<size_t>(m_last_error)]);
 		if(message_len <= 0)
 		{
 			return ERROR_MANAGEMENT_ERROR;
@@ -287,7 +287,7 @@ const char* Parser::getLastErrorMessage()
 		{
 			if((m_option_required_mask & (1 << i)) != 0)
 			{
-				const int32_t len = sprintf_s(m_error_message + message_len, sizeof(m_error_message) - message_len, " %s", m_options[i].name);
+				const int32_t len = sprintf(m_error_message + message_len, " %s", m_options[i].name);
 				if(len <= 0)
 				{
 					return ERROR_MANAGEMENT_ERROR;
@@ -302,11 +302,11 @@ const char* Parser::getLastErrorMessage()
 		const char* faulty_argument = getRemainingArgumentCount() == 0 ? nullptr : getRemainingArguments()[0];
 		if(faulty_argument == nullptr)
 		{
-			sprintf_s(m_error_message, sizeof(m_error_message), "%s", message[static_cast<size_t>(m_last_error)]);
+			sprintf(m_error_message, "%s", message[static_cast<size_t>(m_last_error)]);
 		}
 		else
 		{
-			sprintf_s(m_error_message, sizeof(m_error_message), "%s (%s)", message[static_cast<size_t>(m_last_error)], faulty_argument);
+			sprintf(m_error_message, "%s (%s)", message[static_cast<size_t>(m_last_error)], faulty_argument);
 		}
 	}
 	return m_error_message;
