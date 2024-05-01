@@ -17,6 +17,7 @@ public:
 	virtual ~Palette();
 
 	void add(ColorRGBA color);
+	void fill(ColorRGBA color, uint32_t max_color_count);
 	void clear();
 
 	uint32_t size() const;

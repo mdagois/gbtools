@@ -82,8 +82,21 @@ Palette::~Palette()
 
 void Palette::add(ColorRGBA color)
 {
+	uint8_t color_index = 0;
+	if(findColorIndex(color_index, color))
+	{
+		return;
+	}
 	m_colors.push_back(color);
 	sort();
+}
+
+void Palette::fill(ColorRGBA color, uint32_t max_color_count)
+{
+	while(m_colors.size() < max_color_count)
+	{
+		m_colors.push_back(color);
+	}
 }
 
 void Palette::clear()
@@ -319,10 +332,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 			{
 				continue;
 			}
-			while(palette.size() < palette_color_max_count)
-			{
-				palette.add(kRGBA_White);
-			}
+			palette.fill(kRGBA_White, palette_color_max_count);
 		}
 	}
 
