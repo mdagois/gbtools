@@ -1,12 +1,13 @@
 #pragma once
 
+#include <cstdint>
 #include <sstream>
 
 namespace gbgfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GBGFX_LOG(level, message) gbgfx::log(level, static_cast<std::stringstream&>((std::stringstream() << message)).str().c_str())
+#define GBGFX_LOG(level, message) gbgfx::log(level, static_cast<std::stringstream&&>((std::stringstream() << message)).str().c_str())
 #define GBGFX_LOG_ERROR(message) GBGFX_LOG(gbgfx::kLogLevel_Error, message)
 #define GBGFX_LOG_WARN(message) GBGFX_LOG(gbgfx::kLogLevel_Warn, message)
 #define GBGFX_LOG_INFO(message) GBGFX_LOG(gbgfx::kLogLevel_Info, message)
