@@ -1,20 +1,26 @@
 cmake_minimum_required(VERSION 3.20.0)
 
+set(CONV_BIN_NAME gbconv)
+
 add_executable(
-	conv
+	${CONV_BIN_NAME}
 	conv.cpp
 	options.h options.cpp)
 
-target_compile_definitions(conv PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_compile_features(conv PRIVATE cxx_std_17)
-target_link_libraries(conv gbgfx)
-target_link_libraries(conv cli)
+target_compile_definitions(${CONV_BIN_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_features(${CONV_BIN_NAME} PRIVATE cxx_std_17)
+target_link_libraries(${CONV_BIN_NAME} ${GB_LIB_NAME})
+target_link_libraries(${CONV_BIN_NAME} ${CLI_LIB_NAME})
+
+############################################################
+
+set(READINFO_BIN_NAME readinfo)
 
 add_executable(
-	readinfo
+	${READINFO_BIN_NAME}
 	readinfo.cpp)
 
-target_compile_definitions(readinfo PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_compile_features(readinfo PRIVATE cxx_std_17)
-target_link_libraries(readinfo gbgfx)
+target_compile_definitions(${READINFO_BIN_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_features(${READINFO_BIN_NAME} PRIVATE cxx_std_17)
+target_link_libraries(${READINFO_BIN_NAME} ${GB_LIB_NAME})
 

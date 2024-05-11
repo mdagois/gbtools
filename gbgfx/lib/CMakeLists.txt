@@ -31,7 +31,7 @@ set(UTILS_SRC
 list(TRANSFORM UTILS_SRC PREPEND utils/)
 
 add_library(
-	gbgfx
+	${GB_LIB_NAME}
 	STATIC
 	${EXPORT_SRC}
 	${IMPORT_SRC}
@@ -42,6 +42,6 @@ add_library(
 	enums.h
 )
 
-target_compile_definitions(gbgfx PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_compile_features(gbgfx PRIVATE cxx_std_17)
+target_compile_definitions(${GB_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_features(${GB_LIB_NAME} PRIVATE cxx_std_17)
 
