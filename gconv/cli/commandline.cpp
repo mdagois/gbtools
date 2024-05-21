@@ -149,13 +149,27 @@ bool Parser::getNextOption(uint32_t& out_code, const char*& out_parameter, Error
 	const char* argument = m_arguments[m_next_argument_index];
 	if(argument[0] == '-')
 	{
+		uint32_t option_index = 0;
+		const Option* option = nullptr;
+
 		if(strlen(argument) == 1)
 		{
 			RETURN_ERROR(kSingleHiphenDetected)
 		}
 
-		uint32_t option_index = 0;
-		const Option* option = findOption(argument + 1, option_index);
+        if(argument[1] == '-')
+        {
+            if(strlen(argument) == 2)
+            {
+                RETURN_ERROR(kSingleHiphenDetected)
+            }
+            option = findLongOption(argument + 2, option_index);
+        }
+        else
+        {
+            option = findShortOption(argument + 1, option_index);
+        }
+
 		if(option == nullptr)
 		{
 			RETURN_ERROR(kUnknownOption)
@@ -323,13 +337,28 @@ int32_t Parser::getRemainingArgumentCount() const
 	return m_argument_count - m_next_argument_index;
 }
 
-const Option* Parser::findOption(const char* name, uint32_t& out_index) const
+const Option* Parser::findShortOption(const char* name, uint32_t& out_index) const
 {
 	assert(name != nullptr);
 	for(uint32_t i = 0; i < m_option_count; ++i)
 	{
 		const Option* option = m_options + i;
-		if(strcmp(option->name, name) == 0 || strcmp(option->short_name, name) == 0)
+		if(strcmp(option->short_name, name) == 0)
+		{
+			out_index = i;
+			return option;
+		}
+	}
+	return nullptr;
+}
+
+const Option* Parser::findLongOption(const char* name, uint32_t& out_index) const
+{
+	assert(name != nullptr);
+	for(uint32_t i = 0; i < m_option_count; ++i)
+	{
+		const Option* option = m_options + i;
+		if(strcmp(option->name, name) == 0)
 		{
 			out_index = i;
 			return option;
@@ -416,10 +445,10 @@ void Parser::printHelp() const
 		}
 
 		const uint32_t kShortOptionSpace = m_option_short_name_max_len + 2;
-		const uint32_t kOptionSpace = m_option_name_max_len + 2;
+		const uint32_t kOptionSpace = m_option_name_max_len + 3;
 		const uint32_t kArgSpace = 10;
 		const uint32_t kTotalSpace = kShortOptionSpace + kOptionSpace + kArgSpace + kArgSpace;
-		printf("  -%-*s -%-*s %-*s %-*s%s\n", kShortOptionSpace, option.short_name, kOptionSpace, option.name, kArgSpace, arg, kArgSpace, required, desc);
+		printf("  -%-*s --%-*s %-*s %-*s%s\n", kShortOptionSpace, option.short_name, kOptionSpace, option.name, kArgSpace, arg, kArgSpace, required, desc);
 		if(option.option_type == OptionType::kStringToInteger)
 		{
 			for(uint32_t j = 0; j < option.string_to_integer.mapping_count; ++j)
@@ -427,11 +456,11 @@ void Parser::printHelp() const
 				const Mapping& mapping = option.string_to_integer.mappings[j];
 				if(mapping.desc == nullptr)
 				{
-					printf("       %-*s* %s\n", kTotalSpace, "", mapping.key);
+					printf("        %-*s* %s\n", kTotalSpace, "", mapping.key);
 				}
 				else
 				{
-					printf("       %-*s* %s: %s\n", kTotalSpace, "", mapping.key, mapping.desc);
+					printf("        %-*s* %s: %s\n", kTotalSpace, "", mapping.key, mapping.desc);
 				}
 			}
 		}

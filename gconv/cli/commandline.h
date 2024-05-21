@@ -104,7 +104,8 @@ public:
 	void printHelp() const;
 
 private:
-	const Option* findOption(const char* name, uint32_t& out_index) const;
+	const Option* findShortOption(const char* name, uint32_t& out_index) const;
+	const Option* findLongOption(const char* name, uint32_t& out_index) const;
 	static bool isDigit(const char* name);
 
 private:
