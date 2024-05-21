@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.20.0)
 
-set(CONV_BIN_NAME gbconv)
+set(CONV_BIN_NAME gconv)
 
 add_executable(
 	${CONV_BIN_NAME}
