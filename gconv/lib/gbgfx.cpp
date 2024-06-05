@@ -18,8 +18,8 @@ namespace gbgfx {
 
 bool initialize(Hardware hardware)
 {
-	assert(!areFeaturesInitialized());
-	return initializeFeatures(hardware);
+	assert(!areCapabilitiesInitialized());
+	return initializeCapabilities(hardware);
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ static bool extractTilePalette(Palette& out_tile_palette, const ImageTile& image
 	{
 		colors.insert(image_tile[i]);
 	}
-	if(colors.size() > FEATURES.palette.color_max_count)
+	if(colors.size() > CAPS.palette.color_max_count)
 	{
 		GBGFX_LOG_ERROR("Too many colors in image tile");
 		return false;
@@ -53,7 +53,7 @@ static bool generateTileFlip(
 	const ImageTile& image_tile, const PaletteSet& palette_set)
 {
 	{
-		Palette tile_palette(FEATURES.palette.insert_transparent_color);
+		Palette tile_palette(CAPS.palette.insert_transparent_color);
 		if(!extractTilePalette(tile_palette, image_tile))
 		{
 			GBGFX_LOG_ERROR("Could not extract palette");
@@ -102,19 +102,19 @@ static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Pale
 static bool addBasicTileSize(std::vector<Division>& divisions)
 {
 	const Division& last = divisions.back();
-	if(last.width == FEATURES.tileset.basic_tile_width && last.height == FEATURES.tileset.basic_tile_height)
+	if(last.width == CAPS.tileset.basic_tile_width && last.height == CAPS.tileset.basic_tile_height)
 	{
 		return true;
 	}
-	if(last.width < FEATURES.tileset.basic_tile_width || last.height < FEATURES.tileset.basic_tile_height)
+	if(last.width < CAPS.tileset.basic_tile_width || last.height < CAPS.tileset.basic_tile_height)
 	{
 		GBGFX_LOG_ERROR(
 			"The last division " << last.width << "x" << last.height
 			<< " is smaller than the basic tile "
-			<< FEATURES.tileset.basic_tile_width << "x" << FEATURES.tileset.basic_tile_height);
+			<< CAPS.tileset.basic_tile_width << "x" << CAPS.tileset.basic_tile_height);
 		return false;
 	}
-	divisions.push_back({ FEATURES.tileset.basic_tile_width, FEATURES.tileset.basic_tile_height, false });
+	divisions.push_back({ CAPS.tileset.basic_tile_width, CAPS.tileset.basic_tile_height, false });
 	return true;
 }
 
@@ -127,7 +127,7 @@ bool extractTileset(
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const char* image_filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 	Image image;
 	if(!image.read(image_filename))
 	{
@@ -143,7 +143,7 @@ bool extractTileset(
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 
 	std::vector<Division> final_divisions = divisions;
 	if(!addBasicTileSize(final_divisions))
@@ -156,7 +156,7 @@ bool extractTileset(
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
-			Palette palette(FEATURES.palette.insert_transparent_color);
+			Palette palette(CAPS.palette.insert_transparent_color);
 			if(!extractTilePalette(palette, image_tile))
 			{
 				GBGFX_LOG_ERROR(
@@ -171,7 +171,7 @@ bool extractTileset(
 		return false;
 	}
 
-	if(!out_palette_set.optimize(FEATURES.palette.color_max_count, FEATURES.palette.share_first_color, true))
+	if(!out_palette_set.optimize(CAPS.palette.color_max_count, CAPS.palette.share_first_color, true))
 	{
 		return false;
 	}
@@ -198,11 +198,11 @@ bool extractTileset(
 
 	if(tile_removal != kTileRemovalNone)
 	{
-		if(FEATURES.tileset.supports_tile_removal)
+		if(CAPS.tileset.supports_tile_removal)
 		{
 			const bool has_flips =
-				(FEATURES.tilemap.enabled && FEATURES.tilemap.supports_tile_flips) ||
-				(FEATURES.sprite.enabled && FEATURES.sprite.supports_tile_flips);
+				(CAPS.tilemap.enabled && CAPS.tilemap.supports_tile_flips) ||
+				(CAPS.sprite.enabled && CAPS.sprite.supports_tile_flips);
 			if(!has_flips && tile_removal == kTileRemovalFlips)
 			{
 				GBGFX_LOG_WARN(
@@ -225,11 +225,11 @@ bool extractTileset(
 		"Tile count is " << out_tileset.size()
 		<< " and palette count is " << out_palette_set.size()
 		<< " in [" << image.getFilename() << "]"); 
-	if(out_tileset.size() > FEATURES.tileset.tile_max_count)
+	if(out_tileset.size() > CAPS.tileset.tile_max_count)
 	{
 		GBGFX_LOG_INFO(
 			"The tile count " << out_tileset.size()
-			<< " is over the maximum of " << FEATURES.tileset.tile_max_count);
+			<< " is over the maximum of " << CAPS.tileset.tile_max_count);
 		return false;
 	}
 
@@ -244,7 +244,7 @@ bool extractTilemap(
 	const std::vector<Division>& divisions,
 	const char* image_filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 	Image image;
 	if(!image.read(image_filename))
 	{
@@ -259,7 +259,7 @@ bool extractTilemap(
 	const std::vector<Division>& divisions,
 	const Image& image)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 
 	std::vector<Division> final_divisions = divisions;
 	if(!addBasicTileSize(final_divisions))
@@ -286,7 +286,7 @@ bool extractTilemap(
 			TileFlipType flip_type;
 			if(!tileset.findTileIndex(
 				tile_index, palette_index, flip_type, tile,
-				FEATURES.tilemap.supports_tile_flips))
+				CAPS.tilemap.supports_tile_flips))
 			{
 				GBGFX_LOG_ERROR(
 					"Could not find tile ("
@@ -294,33 +294,33 @@ bool extractTilemap(
 				return false;
 			}
 
-			if(tile_index >= FEATURES.tileset.tile_max_count)
+			if(tile_index >= CAPS.tileset.tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index [" << tile_index
-					<< "] is over the tile max count [" << FEATURES.tileset.tile_max_count << "]");
+					<< "] is over the tile max count [" << CAPS.tileset.tile_max_count << "]");
 				return false;
 			}
-			if(palette_index >= FEATURES.palette.max_count)
+			if(palette_index >= CAPS.palette.max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The palette index [" << palette_index
-					<< "] is over the palette max count [" << FEATURES.palette.max_count << "]");
+					<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
 				return false;
 			}
 
-			const uint32_t bank = tile_index / FEATURES.tileset.tiles_per_bank;
-			if(bank >= FEATURES.tileset.bank_max_count)
+			const uint32_t bank = tile_index / CAPS.tileset.tiles_per_bank;
+			if(bank >= CAPS.tileset.bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank index [" << bank
-					<< "] is over the bank max count [" << FEATURES.tileset.bank_max_count << "]");
+					<< "] is over the bank max count [" << CAPS.tileset.bank_max_count << "]");
 				return false;
 			}
 
 			constexpr uint32_t priority = 0;
 			out_tilemap.add(
-				tile_index % FEATURES.tileset.tiles_per_bank, palette_index, bank,
+				tile_index % CAPS.tileset.tiles_per_bank, palette_index, bank,
 				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
 				flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
 				priority);
@@ -378,7 +378,7 @@ bool exportPaletteSet(
 	const PaletteSet& palette_set, bool use_header,
 	const char* output_filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 	PaletteSetData data;
 	assert(palette_set.size() < 256);
 	const uint8_t palette_count = palette_set.size();
@@ -396,7 +396,7 @@ bool exportTileset(
 	const Tileset& tileset, bool use_header,
 	const char* output_filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 	TilesetData data;
 	assert(tileset.size() < 65536);
 	const uint16_t tile_count = static_cast<uint16_t>(tileset.size());
@@ -416,9 +416,9 @@ bool exportTilemap(
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	const char* indices_filename, const char* parameters_filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 
-	if(!FEATURES.tilemap.enabled)
+	if(!CAPS.tilemap.enabled)
 	{
 		GBGFX_LOG_ERROR("Exporting tilemaps is not supported in this configuration");
 		return false;
@@ -635,7 +635,7 @@ static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip
 	{
 		for(uint32_t i = 0; i < flip.width; ++i)
 		{
-			assert(indices[i] < FEATURES.palette.color_max_count);
+			assert(indices[i] < CAPS.palette.color_max_count);
 			out_pixels[i] = palette[indices[i]];
 		}
 
@@ -663,15 +663,15 @@ static bool findTileFlipInTileset(
 
 uint32_t getBasicTileWidth()
 {
-	assert(areFeaturesInitialized());
-	return FEATURES.tileset.basic_tile_width;
+	assert(areCapabilitiesInitialized());
+	return CAPS.tileset.basic_tile_width;
 }
 
 bool writeTilesetToPNG(
 	const Tileset& tileset, TileFlipType flip_type, const PaletteSet& palette_set,
 	uint32_t tile_column_count, bool clear_doubles, const char* filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 	assert(flip_type < kTileFlipType_Count);
 
 	if(tileset.size() == 0)
@@ -741,7 +741,7 @@ bool writeTilesetToPNG(
 
 bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 {
-	assert(areFeaturesInitialized());
+	assert(areCapabilitiesInitialized());
 
 	const uint32_t palette_count = palette_set.size();
 	if(palette_count == 0)
@@ -749,7 +749,7 @@ bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 		return true;
 	}
 
-	const uint32_t color_max_count = FEATURES.palette.color_max_count;
+	const uint32_t color_max_count = CAPS.palette.color_max_count;
 	const uint32_t total_color_count = color_max_count * palette_count;
 	ColorRGBA* pixels = new ColorRGBA[total_color_count];
 	for(uint32_t p = 0; p < palette_count; ++p)

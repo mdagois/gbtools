@@ -23,18 +23,18 @@ bool TilemapData::initialize(
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
 	bool use_8800_addressing_mode)
 {
-	if(palette_index_offset >= FEATURES.palette.max_count)
+	if(palette_index_offset >= CAPS.palette.max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The palette offset [" << palette_index_offset
-			<< "] is over the palette max count [" << FEATURES.palette.max_count << "]");
+			<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
 		return false;
 	}
-	if(tile_index_offset >= FEATURES.tileset.tile_max_count)
+	if(tile_index_offset >= CAPS.tileset.tile_max_count)
 	{
 		GBGFX_LOG_ERROR(
 			"The tile offset [" << tile_index_offset
-			<< "] is over the tile max count [" << FEATURES.tileset.tile_max_count << "]");
+			<< "] is over the tile max count [" << CAPS.tileset.tile_max_count << "]");
 		return false;
 	}
 
@@ -44,32 +44,32 @@ bool TilemapData::initialize(
 	{
 		TilemapEntry entry = tilemap[i];
 
-		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= FEATURES.palette.max_count)
+		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= CAPS.palette.max_count)
 		{
 			GBGFX_LOG_ERROR(
 				"The palette index with offset [" << entry.palette_index + palette_index_offset
-				<< "] is over the palette max count [" << FEATURES.palette.max_count << "]");
+				<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
 			return false;
 		}
 
 		if(tile_index_offset > 0)
 		{
-			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * FEATURES.tileset.tiles_per_bank);
+			uint32_t global_tile_index = static_cast<uint32_t>(entry.tile_index) + (entry.bank * CAPS.tileset.tiles_per_bank);
 			global_tile_index += tile_index_offset;
-			if(global_tile_index >= FEATURES.tileset.tile_max_count)
+			if(global_tile_index >= CAPS.tileset.tile_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The tile index with offset [" << entry.tile_index + tile_index_offset
-					<< "] is over the tile max count [" << FEATURES.tileset.tile_max_count << "]");
+					<< "] is over the tile max count [" << CAPS.tileset.tile_max_count << "]");
 				return false;
 			}
-			entry.tile_index = global_tile_index % FEATURES.tileset.tiles_per_bank;
-			entry.bank = global_tile_index / FEATURES.tileset.tiles_per_bank;
-			if(entry.bank >= FEATURES.tileset.bank_max_count)
+			entry.tile_index = global_tile_index % CAPS.tileset.tiles_per_bank;
+			entry.bank = global_tile_index / CAPS.tileset.tiles_per_bank;
+			if(entry.bank >= CAPS.tileset.bank_max_count)
 			{
 				GBGFX_LOG_ERROR(
 					"The bank (after applying the tile offset) [" << entry.bank
-					<< "] is over the bank max count [" << FEATURES.tileset.bank_max_count << "]");
+					<< "] is over the bank max count [" << CAPS.tileset.bank_max_count << "]");
 				return false;
 			}
 		}
@@ -79,14 +79,14 @@ bool TilemapData::initialize(
 			entry.tile_index += 128;
 		}
 
-		const uint8_t palette_index = entry.palette_index + palette_index_offset + FEATURES.palette.base_index;
+		const uint8_t palette_index = entry.palette_index + palette_index_offset + CAPS.palette.base_index;
 
-		if(FEATURES.tilemap.tile_index_format == kFormat_IDX8)
+		if(CAPS.tilemap.tile_index_format == kFormat_IDX8)
 		{
 			m_indices.push_back(entry.tile_index + tile_index_offset);
 		}
 
-		switch(FEATURES.tilemap.tile_parameter_format)
+		switch(CAPS.tilemap.tile_parameter_format)
 		{
 			case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
 				m_parameters_8.push_back(
@@ -120,7 +120,7 @@ bool TilemapData::initialize(
 				break;
 		}
 	}
-	if(	FEATURES.tilemap.tile_parameter_format == kFormat_PAL2222 &&
+	if(	CAPS.tilemap.tile_parameter_format == kFormat_PAL2222 &&
 		attribute_shift != 0)
 	{
 		m_parameters_8.push_back(attribute);
@@ -136,7 +136,7 @@ const uint8_t* TilemapData::getIndexData() const
 
 const uint8_t* TilemapData::getParameterData() const
 {
-	switch(FEATURES.tilemap.tile_parameter_format)
+	switch(CAPS.tilemap.tile_parameter_format)
 	{
 		case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
 		case kFormat_PAL2222:
@@ -156,7 +156,7 @@ uint32_t TilemapData::getIndexDataSize() const
 
 uint32_t TilemapData::getParameterDataSize() const
 {
-	switch(FEATURES.tilemap.tile_parameter_format)
+	switch(CAPS.tilemap.tile_parameter_format)
 	{
 		case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
 		case kFormat_PAL2222:

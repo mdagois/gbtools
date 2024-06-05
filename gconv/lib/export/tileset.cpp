@@ -21,8 +21,8 @@ TilesetData::~TilesetData()
 
 bool TilesetData::initialize(const Tileset& tileset)
 {
-	if( FEATURES.tileset.color_index_format != kFormat_COL2222 &&
-		FEATURES.tileset.color_index_format != kFormat_COL2222_COL2222_INTERLEAVED)
+	if( CAPS.tileset.color_index_format != kFormat_COL2222 &&
+		CAPS.tileset.color_index_format != kFormat_COL2222_COL2222_INTERLEAVED)
 	{
 		GBGFX_LOG_ERROR("Unsupported tile format");
 		return false;
@@ -36,7 +36,7 @@ bool TilesetData::initialize(const Tileset& tileset)
 			GBGFX_LOG_ERROR("Unsupported flip size");
 			return false;
 		}
-		if(FEATURES.tileset.color_index_format == kFormat_COL2222)
+		if(CAPS.tileset.color_index_format == kFormat_COL2222)
 		{
 			for(uint32_t d = 0; d < flip.height; ++d)
 			{
@@ -49,7 +49,7 @@ bool TilesetData::initialize(const Tileset& tileset)
 					((indices[4] << 2) & 0x08) | ((indices[5] << 1) & 0x04) | ((indices[6] << 0) & 0x02) | ((indices[7] >> 1) & 0x01));
 			}
 		}
-		if(FEATURES.tileset.color_index_format == kFormat_COL2222_COL2222_INTERLEAVED)
+		if(CAPS.tileset.color_index_format == kFormat_COL2222_COL2222_INTERLEAVED)
 		{
 			for(uint32_t d = 0; d < flip.height; ++d)
 			{

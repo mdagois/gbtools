@@ -46,7 +46,7 @@ bool PaletteSetData::initialize(const PaletteSet& palette_set)
 		{
 			m_data.push_back(convertColor(palette[c]));
 		}
-		for(; c < FEATURES.palette.color_max_count; ++c)
+		for(; c < CAPS.palette.color_max_count; ++c)
 		{
 			m_data.push_back(kBGR555_Invalid);
 		}
