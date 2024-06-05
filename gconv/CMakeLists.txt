@@ -6,7 +6,6 @@ project(gbgfx)
 ############################################################
 
 set(GB_LIB_NAME gbgfx)
-set(CLI_LIB_NAME cli)
 
 include_directories(cli lib)
 add_subdirectory(lib)
