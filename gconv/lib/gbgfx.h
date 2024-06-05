@@ -6,8 +6,8 @@
 #include <vector>
 
 #include "data/data.h"
-#include "enums.h"
 #include "import/import.h"
+#include "export/export.h"
 #include "utils/utils.h"
 
 namespace gbgfx {

@@ -3,6 +3,7 @@ cmake_minimum_required(VERSION 3.20.0)
 set(EXPORT_SRC
 	export.h
 	capabilities.h capabilities.cpp
+	enums.h
 	palette.h palette.cpp
 	tilemap.h tilemap.cpp
 	tileset.h tileset.cpp
@@ -39,7 +40,6 @@ add_library(
 	${DATA_SRC}
 	${UTILS_SRC}
 	gbgfx.h gbgfx.cpp
-	enums.h
 )
 
 target_compile_definitions(${GB_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
