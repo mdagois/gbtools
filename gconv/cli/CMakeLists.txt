@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.20.0)
 
 set(LIB_NAME cli)
 set(CLI_LIB_NAME ${LIB_NAME} PARENT_SCOPE)
+set(CLI_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 
 add_library(
 	${LIB_NAME}
