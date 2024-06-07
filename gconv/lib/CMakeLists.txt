@@ -7,6 +7,7 @@ cmake_minimum_required(VERSION 3.20.0)
 set(EXPORT_SRC
 	export.h
 	capabilities.h capabilities.cpp
+	color.h color.cpp
 	enums.h
 	palette.h palette.cpp
 	tilemap.h tilemap.cpp
