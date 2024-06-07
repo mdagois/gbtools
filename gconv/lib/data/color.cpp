@@ -11,17 +11,17 @@ namespace gbgfx {
 
 bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs)
 {
-    return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
+	return lhs.r == rhs.r && lhs.g == rhs.g && lhs.b == rhs.b;
 }
 
 bool operator!=(const ColorRGBA& lhs, const ColorRGBA& rhs)
 {
-    return !(lhs == rhs);
+	return !(lhs == rhs);
 }
 
 bool operator<(const ColorRGBA& lhs, const ColorRGBA& rhs)
 {
-    return getLuminance(lhs) < getLuminance(rhs);
+	return getLuminance(lhs) < getLuminance(rhs);
 }
 
 double getLuminance(const ColorRGBA color)

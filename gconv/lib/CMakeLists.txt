@@ -36,6 +36,13 @@ set(UTILS_SRC
 )
 list(TRANSFORM UTILS_SRC PREPEND utils/)
 
+set(THIRD_PARTY_SRC
+	third_party.h
+	stb_image.h stb_image.cpp
+	stb_image_write.h stb_image_write.cpp
+)
+list(TRANSFORM THIRD_PARTY_SRC PREPEND third_party/)
+
 ############################################################
 # import library
 ############################################################
@@ -44,11 +51,12 @@ set(IMPORT_LIB_NAME import)
 set(GFX_IMPORT_LIB_NAME ${IMPORT_LIB_NAME} PARENT_SCOPE)
 
 add_library(
-    ${IMPORT_LIB_NAME}
+	${IMPORT_LIB_NAME}
 	STATIC
 	${IMPORT_SRC}
 	${DATA_SRC}
 	${UTILS_SRC}
+	${THIRD_PARTY_SRC}
 )
 
 target_compile_definitions(${IMPORT_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
@@ -62,11 +70,12 @@ set(EXPORT_LIB_NAME export)
 set(GFX_EXPORT_LIB_NAME ${EXPORT_LIB_NAME} PARENT_SCOPE)
 
 add_library(
-    ${EXPORT_LIB_NAME}
+	${EXPORT_LIB_NAME}
 	STATIC
 	${EXPORT_SRC}
 	${DATA_SRC}
 	${UTILS_SRC}
+	${THIRD_PARTY_SRC}
 )
 
 target_compile_definitions(${EXPORT_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
@@ -80,12 +89,13 @@ set(FULL_LIB_NAME gfx)
 set(GFX_FULL_LIB_NAME ${FULL_LIB_NAME} PARENT_SCOPE)
 
 add_library(
-    ${FULL_LIB_NAME}
+	${FULL_LIB_NAME}
 	STATIC
 	${EXPORT_SRC}
 	${IMPORT_SRC}
 	${DATA_SRC}
 	${UTILS_SRC}
+	${THIRD_PARTY_SRC}
 	gbgfx.h gbgfx.cpp
 )
 
