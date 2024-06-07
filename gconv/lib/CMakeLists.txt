@@ -22,7 +22,7 @@ set(IMPORT_SRC
 )
 list(TRANSFORM IMPORT_SRC PREPEND import/)
 
-set(DATA_SRC 
+set(DATA_SRC
 	data.h
 	color.h color.cpp
 	palette.h palette.cpp
