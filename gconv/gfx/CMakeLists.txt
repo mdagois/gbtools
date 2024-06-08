@@ -45,52 +45,14 @@ set(THIRD_PARTY_SRC
 list(TRANSFORM THIRD_PARTY_SRC PREPEND third_party/)
 
 ############################################################
-# import library
+# library
 ############################################################
 
-set(IMPORT_LIB_NAME import)
-set(GFX_IMPORT_LIB_NAME ${IMPORT_LIB_NAME} PARENT_SCOPE)
+set(LIB_NAME gfx)
+set(GFX_LIB_NAME ${LIB_NAME} PARENT_SCOPE)
 
 add_library(
-	${IMPORT_LIB_NAME}
-	STATIC
-	${IMPORT_SRC}
-	${DATA_SRC}
-	${UTILS_SRC}
-	${THIRD_PARTY_SRC}
-)
-
-target_compile_definitions(${IMPORT_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_compile_features(${IMPORT_LIB_NAME} PRIVATE cxx_std_17)
-
-############################################################
-# export library
-############################################################
-
-set(EXPORT_LIB_NAME export)
-set(GFX_EXPORT_LIB_NAME ${EXPORT_LIB_NAME} PARENT_SCOPE)
-
-add_library(
-	${EXPORT_LIB_NAME}
-	STATIC
-	${EXPORT_SRC}
-	${DATA_SRC}
-	${UTILS_SRC}
-	${THIRD_PARTY_SRC}
-)
-
-target_compile_definitions(${EXPORT_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_compile_features(${EXPORT_LIB_NAME} PRIVATE cxx_std_17)
-
-############################################################
-# full library
-############################################################
-
-set(FULL_LIB_NAME gfx)
-set(GFX_FULL_LIB_NAME ${FULL_LIB_NAME} PARENT_SCOPE)
-
-add_library(
-	${FULL_LIB_NAME}
+	${LIB_NAME}
 	STATIC
 	${EXPORT_SRC}
 	${IMPORT_SRC}
@@ -100,8 +62,8 @@ add_library(
 	gbgfx.h gbgfx.cpp
 )
 
-target_compile_definitions(${FULL_LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
-target_compile_features(${FULL_LIB_NAME} PRIVATE cxx_std_17)
+target_compile_definitions(${LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
+target_compile_features(${LIB_NAME} PRIVATE cxx_std_17)
 
 ############################################################
 # include directory
