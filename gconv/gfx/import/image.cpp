@@ -129,11 +129,14 @@ bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32
 				GFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
-				fillDivisionStatusList(
-					out_division_status_list + 1, level - 1,
-					absolute_offset_x, absolute_offset_y,
-					division.width, division.height,
-					m_pitch);
+				if (level > 0)
+				{
+					fillDivisionStatusList(
+						out_division_status_list + 1, level - 1,
+						absolute_offset_x, absolute_offset_y,
+						division.width, division.height,
+						m_pitch);
+				}
 				continue;
 			}
 			(*out_division_status_list)[division_number] = kDivisionStatus_Valid;
