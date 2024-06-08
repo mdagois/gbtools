@@ -24,6 +24,7 @@ public:
 	const ColorRGBA operator[](int32_t index) const;
 
 	bool contains(const Palette& sub_palette) const;
+	bool hasColor(ColorRGBA color) const;
 	bool findColorIndex(uint8_t& out_color_index, ColorRGBA color) const;
 	void makeFirstColor(ColorRGBA color);
 	bool getAverageLuminance() const;

@@ -6,8 +6,9 @@
 #include <vector>
 
 #include "data/data.h"
-#include "import/import.h"
 #include "export/export.h"
+#include "import/import.h"
+#include "third_party/third_party.h"
 #include "utils/utils.h"
 
 namespace gfx {

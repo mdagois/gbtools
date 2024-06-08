@@ -9,18 +9,6 @@ namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool hasColor(const Palette& palette, ColorRGBA color)
-{
-	for(uint32_t i = 0; i < palette.size(); ++i)
-	{
-		if(color == palette[i])
-		{
-			return true;
-		}
-	}
-	return false;
-}
-
 static bool operator==(const Palette& lhs, const Palette& rhs)
 {
     if(lhs.size() != rhs.size())
@@ -119,12 +107,24 @@ bool Palette::contains(const Palette& sub_palette) const
 {
 	for(uint32_t i = 0; i < sub_palette.size(); ++i)
 	{
-		if(!hasColor(*this, sub_palette[i]))
+		if(!this->hasColor(sub_palette[i]))
 		{
 			return false;
 		}
 	}
 	return true;
+}
+
+bool Palette::hasColor(ColorRGBA color) const
+{
+	for(uint32_t i = 0; i < m_colors.size(); ++i)
+	{
+		if(color == m_colors[i])
+		{
+			return true;
+		}
+	}
+	return false;
 }
 
 bool Palette::findColorIndex(uint8_t& out_color_index, ColorRGBA color) const
