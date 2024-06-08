@@ -45,7 +45,7 @@ public:
 	PaletteSet();
 	virtual ~PaletteSet();
 
-	void add(const Palette& palette);
+	uint32_t add(const Palette& palette);
 	const Palette& operator[](int32_t index) const;
 	uint32_t size() const;
 	bool optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_palettes);

@@ -181,21 +181,22 @@ PaletteSet::~PaletteSet()
 {
 }
 
-void PaletteSet::add(const Palette& palette)
+uint32_t PaletteSet::add(const Palette& palette)
 {
 	for(uint32_t i = 0; i < m_palettes.size(); ++i)
 	{
 		if(m_palettes[i].contains(palette))
 		{
-			return;
+			return i;
 		}
 		if(palette.contains(m_palettes[i]))
 		{
 			m_palettes[i] = palette;
-			return;
+			return i;
 		}
 	}
 	m_palettes.push_back(palette);
+	return size() - 1;
 }
 
 const Palette& PaletteSet::operator[](int32_t index) const
