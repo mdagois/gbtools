@@ -5,9 +5,9 @@
 
 #include "third_party/stb_image_write.h"
 
-#include "gbgfx.h"
+#include "gfx.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization
@@ -33,7 +33,7 @@ static bool extractTilePalette(Palette& out_tile_palette, const ImageTile& image
 	}
 	if(colors.size() > CAPS.palette.color_max_count)
 	{
-		GBGFX_LOG_ERROR("Too many colors in image tile");
+		GFX_LOG_ERROR("Too many colors in image tile");
 		return false;
 	}
 	for(ColorRGBA color : colors)
@@ -53,14 +53,14 @@ static bool generateTileFlip(
 		Palette tile_palette(CAPS.palette.insert_transparent_color);
 		if(!extractTilePalette(tile_palette, image_tile))
 		{
-			GBGFX_LOG_ERROR("Could not extract palette");
+			GFX_LOG_ERROR("Could not extract palette");
 			return false;
 		}
 
 		uint32_t palette_index = 0;
 		if(!palette_set.findCompatiblePaletteIndex(palette_index, tile_palette))
 		{
-			GBGFX_LOG_ERROR("Could not find a compatible palette");
+			GFX_LOG_ERROR("Could not find a compatible palette");
 			return false;
 		}
 		out_palette_index = palette_index;
@@ -75,7 +75,7 @@ static bool generateTileFlip(
 		uint8_t color_index = 0;
 		if(!palette.findColorIndex(color_index, image_tile[i]))
 		{
-			GBGFX_LOG_ERROR("Could not find color in palette");
+			GFX_LOG_ERROR("Could not find color in palette");
 			return false;
 		}
 		out_tile_flip.color_indices[i] = color_index;
@@ -89,7 +89,7 @@ static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Pale
 	uint32_t palette_index;
 	if(!generateTileFlip(tile_flip, palette_index, image_tile, palette_set))
 	{
-		GBGFX_LOG_ERROR("Could not generate tile flip");
+		GFX_LOG_ERROR("Could not generate tile flip");
 		return false;
 	}
 	out_tile.initialize(tile_flip, palette_index);
@@ -105,7 +105,7 @@ static bool addBasicTileSize(std::vector<Division>& divisions)
 	}
 	if(last.width < CAPS.tileset.basic_tile_width || last.height < CAPS.tileset.basic_tile_height)
 	{
-		GBGFX_LOG_ERROR(
+		GFX_LOG_ERROR(
 			"The last division " << last.width << "x" << last.height
 			<< " is smaller than the basic tile "
 			<< CAPS.tileset.basic_tile_width << "x" << CAPS.tileset.basic_tile_height);
@@ -156,7 +156,7 @@ bool extractTileset(
 			Palette palette(CAPS.palette.insert_transparent_color);
 			if(!extractTilePalette(palette, image_tile))
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"Could not extract palette from tile ("
 					<< x << "," << y << ") in [" << image.getFilename() << "]");
 				return false;
@@ -181,7 +181,7 @@ bool extractTileset(
 			Tile tile;
 			if(!generateTile(tile, image_tile, out_palette_set))
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"Could not generate tile ("
 					<< x << "," << y << ") in [" << image.getFilename() << "]");
 				return false;
@@ -202,7 +202,7 @@ bool extractTileset(
 				(CAPS.sprite.enabled && CAPS.sprite.supports_tile_flips);
 			if(!has_flips && tile_removal == kTileRemovalFlips)
 			{
-				GBGFX_LOG_WARN(
+				GFX_LOG_WARN(
 					"Downgraded tile removal from " << tile_removal
 					<< " to " << kTileRemovalDoubles
 					<< " as the hardware does not support flips");
@@ -212,19 +212,19 @@ bool extractTileset(
 		}
 		else
 		{
-			GBGFX_LOG_WARN(
+			GFX_LOG_WARN(
 				"Ignored tile removal mode " << tile_removal
 				<< " as the hardware does not support tile removal");
 		}
 	}
 
-	GBGFX_LOG_INFO(
+	GFX_LOG_INFO(
 		"Tile count is " << out_tileset.size()
 		<< " and palette count is " << out_palette_set.size()
 		<< " in [" << image.getFilename() << "]"); 
 	if(out_tileset.size() > CAPS.tileset.tile_max_count)
 	{
-		GBGFX_LOG_INFO(
+		GFX_LOG_INFO(
 			"The tile count " << out_tileset.size()
 			<< " is over the maximum of " << CAPS.tileset.tile_max_count);
 		return false;
@@ -272,7 +272,7 @@ bool extractTilemap(
 			Tile tile;
 			if(!generateTile(tile, image_tile, palette_set))
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"Could not generate tile ("
 					<< x << "," << y << ") in [" << image.getFilename() << "]");
 				return false;
@@ -285,7 +285,7 @@ bool extractTilemap(
 				tile_index, palette_index, flip_type, tile,
 				CAPS.tilemap.supports_tile_flips))
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"Could not find tile ("
 					<< x << "," << y << ") in tileset from [" << image.getFilename() << "]");
 				return false;
@@ -293,14 +293,14 @@ bool extractTilemap(
 
 			if(tile_index >= CAPS.tileset.tile_max_count)
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"The tile index [" << tile_index
 					<< "] is over the tile max count [" << CAPS.tileset.tile_max_count << "]");
 				return false;
 			}
 			if(palette_index >= CAPS.palette.max_count)
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"The palette index [" << palette_index
 					<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
 				return false;
@@ -309,7 +309,7 @@ bool extractTilemap(
 			const uint32_t bank = tile_index / CAPS.tileset.tiles_per_bank;
 			if(bank >= CAPS.tileset.bank_max_count)
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"The bank index [" << bank
 					<< "] is over the bank max count [" << CAPS.tileset.bank_max_count << "]");
 				return false;
@@ -327,7 +327,7 @@ bool extractTilemap(
 		return false;
 	}
 
-	GBGFX_LOG_INFO(
+	GFX_LOG_INFO(
 		"Tilemap size is " << out_tilemap.size()
 		<< " in [" << image.getFilename() << "]"); 
 	return true;
@@ -347,7 +347,7 @@ static bool writeToFile(
 	FILE* output_file = fopen(output_filename, "wb");
 	if(output_file == nullptr)
 	{
-		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
+		GFX_LOG_ERROR("Could not open file [" << output_filename << "]");
 		return false;
 	}
 	assert(output_file != nullptr);
@@ -363,7 +363,7 @@ static bool writeToFile(
 	fclose(output_file);
 	if(!written)
 	{
-		GBGFX_LOG_ERROR("Could not write file [" << output_filename << "]");
+		GFX_LOG_ERROR("Could not write file [" << output_filename << "]");
 		return false;
 	}
 	return true;
@@ -417,7 +417,7 @@ bool exportTilemap(
 
 	if(!CAPS.tilemap.enabled)
 	{
-		GBGFX_LOG_ERROR("Exporting tilemaps is not supported in this configuration");
+		GFX_LOG_ERROR("Exporting tilemaps is not supported in this configuration");
 		return false;
 	}
 
@@ -470,7 +470,7 @@ static bool loadFile(uint8_t*& out_data, uint32_t& out_data_size, const char* fi
 	FILE* file = fopen(filename, "rb");
 	if(file == nullptr)
 	{
-		GBGFX_LOG_ERROR("Could not open file [" << filename << "] for read");
+		GFX_LOG_ERROR("Could not open file [" << filename << "] for read");
 		return false;
 	}
 
@@ -478,7 +478,7 @@ static bool loadFile(uint8_t*& out_data, uint32_t& out_data_size, const char* fi
 	const long int length = ftell(file);
 	if(length <= 0)
 	{
-		GBGFX_LOG_ERROR("File size if zero [" << filename << "]");
+		GFX_LOG_ERROR("File size if zero [" << filename << "]");
 		fclose(file);
 		return false;
 	}
@@ -487,7 +487,7 @@ static bool loadFile(uint8_t*& out_data, uint32_t& out_data_size, const char* fi
 	uint8_t* data = new uint8_t[length];
 	if(data == nullptr)
 	{
-		GBGFX_LOG_ERROR("Could not allocate enough memory [" << length << "] for [" << filename << "]");
+		GFX_LOG_ERROR("Could not allocate enough memory [" << length << "] for [" << filename << "]");
 		fclose(file);
 		return false;
 	}
@@ -496,7 +496,7 @@ static bool loadFile(uint8_t*& out_data, uint32_t& out_data_size, const char* fi
 	fclose(file);
 	if(n != 1)
 	{
-		GBGFX_LOG_ERROR("Could not read the data for file [" << filename << "]");
+		GFX_LOG_ERROR("Could not read the data for file [" << filename << "]");
 		delete [] data;
 		return false;
 	}
@@ -553,7 +553,7 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 	FILE* output_file = fopen(output_filename, "wb");
 	if(output_file == nullptr)
 	{
-		GBGFX_LOG_ERROR("Could not open file [" << output_filename << "]");
+		GFX_LOG_ERROR("Could not open file [" << output_filename << "]");
 		return false;
 	}
 	assert(output_file != nullptr);
@@ -566,7 +566,7 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 	};
 	if(fwrite(info_header, sizeof(info_header), 1, output_file) != 1)
 	{
-		GBGFX_LOG_ERROR("Could not write header for file [" << output_filename << "]");
+		GFX_LOG_ERROR("Could not write header for file [" << output_filename << "]");
 		return false;
 	}
 
@@ -584,12 +584,12 @@ bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_fil
 		};
 		if(fwrite(header, sizeof(header), 1, output_file) != 1)
 		{
-			GBGFX_LOG_ERROR("Could not write division header for file [" << output_filename << "]");
+			GFX_LOG_ERROR("Could not write division header for file [" << output_filename << "]");
 			return false;
 		}
 		if(fwrite(list.data(), sizeof(DivisionStatus) * list.size(), 1, output_file) != 1)
 		{
-			GBGFX_LOG_ERROR("Could not write division data for file [" << output_filename << "]");
+			GFX_LOG_ERROR("Could not write division data for file [" << output_filename << "]");
 			return false;
 		}
 	}
@@ -673,7 +673,7 @@ bool writeTilesetToPNG(
 
 	if(tileset.size() == 0)
 	{
-		GBGFX_LOG_WARN("Skipping output of [" << filename << "] because the tileset is empty");
+		GFX_LOG_WARN("Skipping output of [" << filename << "] because the tileset is empty");
 		return true;
 	}
 
@@ -730,7 +730,7 @@ bool writeTilesetToPNG(
 	delete [] pixels;
 	if(result == 0)
 	{
-		GBGFX_LOG_ERROR("Could not write file [" << filename << "]");
+		GFX_LOG_ERROR("Could not write file [" << filename << "]");
 		return false;
 	}
 	return true;
@@ -754,7 +754,7 @@ bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 		const Palette& palette = palette_set[p];
 		if(palette.size() > color_max_count)
 		{
-			GBGFX_LOG_ERROR(
+			GFX_LOG_ERROR(
 				"Palette " << p << " has " << palette.size()
 				<< " colors, but the limit for the hardware is "
 				<< color_max_count << " colors per palette");
@@ -779,7 +779,7 @@ bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 	delete [] pixels;
 	if(result == 0)
 	{
-		GBGFX_LOG_ERROR("Could not write file [" << filename << "]");
+		GFX_LOG_ERROR("Could not write file [" << filename << "]");
 		return false;
 	}
 	return true;

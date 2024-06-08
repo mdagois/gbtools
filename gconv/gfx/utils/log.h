@@ -3,15 +3,15 @@
 #include <cstdint>
 #include <sstream>
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-#define GBGFX_LOG(level, message) gbgfx::log(level, static_cast<std::stringstream&&>((std::stringstream() << message)).str().c_str())
-#define GBGFX_LOG_ERROR(message) GBGFX_LOG(gbgfx::kLogLevel_Error, message)
-#define GBGFX_LOG_WARN(message) GBGFX_LOG(gbgfx::kLogLevel_Warn, message)
-#define GBGFX_LOG_INFO(message) GBGFX_LOG(gbgfx::kLogLevel_Info, message)
-#define GBGFX_LOG_DEBUG(message) GBGFX_LOG(gbgfx::kLogLevel_Debug, message)
+#define GFX_LOG(level, message) gfx::log(level, static_cast<std::stringstream&&>((std::stringstream() << message)).str().c_str())
+#define GFX_LOG_ERROR(message) GFX_LOG(gfx::kLogLevel_Error, message)
+#define GFX_LOG_WARN(message) GFX_LOG(gfx::kLogLevel_Warn, message)
+#define GFX_LOG_INFO(message) GFX_LOG(gfx::kLogLevel_Info, message)
+#define GFX_LOG_DEBUG(message) GFX_LOG(gfx::kLogLevel_Debug, message)
 
 enum LogLevel : uint32_t
 {

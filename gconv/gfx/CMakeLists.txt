@@ -59,7 +59,7 @@ add_library(
 	${DATA_SRC}
 	${UTILS_SRC}
 	${THIRD_PARTY_SRC}
-	gbgfx.h gbgfx.cpp
+	gfx.h gfx.cpp
 )
 
 target_compile_definitions(${LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)

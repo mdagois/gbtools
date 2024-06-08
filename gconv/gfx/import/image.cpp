@@ -5,7 +5,7 @@
 #include "image.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Image area
@@ -100,7 +100,7 @@ bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32
 	assert(m_width % division.width == 0);
 	assert(m_height % division.height == 0);
 
-	GBGFX_LOG_DEBUG(
+	GFX_LOG_DEBUG(
 		"Processing area (x=" << m_offset_x << ", y=" << m_offset_y
 		<< ", w=" << m_width << ", h=" << m_height << ") with division ("
 		<< division.width << "," << division.height << ","
@@ -126,7 +126,7 @@ bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32
 			(*out_division_status_list)[division_number] = kDivisionStatus_Transparent;
 			if(division.skip_transparent && sub_area.isTransparent())
 			{
-				GBGFX_LOG_DEBUG(
+				GFX_LOG_DEBUG(
 					"Skipping transparent area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
 				fillDivisionStatusList(
@@ -139,7 +139,7 @@ bool ImageArea::iterateArea(DivisionStatusList* out_division_status_list, uint32
 			(*out_division_status_list)[division_number] = kDivisionStatus_Valid;
 			if(!area_callback(out_division_status_list, sub_area, level))
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"Error in callback for area (x=" << sub_area.m_offset_x << ", y=" << sub_area.m_offset_y
 					<< ", w=" << sub_area.m_width << ", h=" << sub_area.m_height << ")");
 				return false;
@@ -237,7 +237,7 @@ static bool validateDivisions(
 {
 	if(division_count == 0)
 	{
-		GBGFX_LOG_ERROR("The division list cannot be empty");
+		GFX_LOG_ERROR("The division list cannot be empty");
 		return false;
 	}
 	uint32_t previous_width = top_width;
@@ -247,28 +247,28 @@ static bool validateDivisions(
 		const Division& current = divisions[i];
 		if(current.width == 0 || current.height == 0)
 		{
-			GBGFX_LOG_ERROR(
+			GFX_LOG_ERROR(
 				"Division " << i << " (" << current.width << "x" << current.height << ") "
 				<< "must not have any dimension at zero");
 			return false;
 		}
 		if(current.width > previous_width || current.height > previous_height)
 		{
-			GBGFX_LOG_ERROR(
+			GFX_LOG_ERROR(
 				"Division " << i << " (" << current.width << "x" << current.height << ") "
 				<< "must not be larger than " << previous_width << "x" << previous_height);
 			return false;
 		}
 		if(current.width == previous_width && current.height == previous_height)
 		{
-			GBGFX_LOG_ERROR(
+			GFX_LOG_ERROR(
 				"Division " << i << " (" << current.width << "x" << current.height << ") "
 				<< "must be stricly smaller than " << previous_width << "x" << previous_height);
 			return false;
 		}
 		if((previous_width % current.width != 0) || (previous_height % current.height != 0))
 		{
-			GBGFX_LOG_ERROR(
+			GFX_LOG_ERROR(
 				"Division " << i << " (" << current.width << "x" << current.height << ") "
 				<< "dimension must divide exactly " << previous_width << "x" << previous_height);
 			return false;
@@ -327,14 +327,14 @@ bool Image::read(const char* filename)
 	m_pixels = reinterpret_cast<ColorRGBA*>(stbi_load(filename, &width, &height, &num_channels, kChannelCount));
 	if(m_pixels == nullptr)
 	{
-		GBGFX_LOG_ERROR("Could not read the image file [" << filename << "]");
+		GFX_LOG_ERROR("Could not read the image file [" << filename << "]");
 		return false;
 	}
 
 	m_width = static_cast<uint32_t>(width);
 	m_height = static_cast<uint32_t>(height);
 	m_filename = filename;
-	GBGFX_LOG_INFO("Read image [" << filename << "] " << getWidth() << "x" << getHeight());
+	GFX_LOG_INFO("Read image [" << filename << "] " << getWidth() << "x" << getHeight());
 	return true;
 }
 
@@ -374,7 +374,7 @@ bool Image::iterateTiles(
 		{
 			ImageTile image_tile;
 			image_tile.setImageArea(&area);
-			GBGFX_LOG_DEBUG(
+			GFX_LOG_DEBUG(
 				"New tile (x=" << area.getOffsetX() << ", y=" << area.getOffsetY()
 				<< ", w=" << area.getWidth() << ", h=" << area.getHeight() << ","
 				<< (out_division_status_list->division.skip_transparent ? "s" : "-") << "," << (area.isTransparent() ? "t" : "-") << ")");

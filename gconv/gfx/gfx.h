@@ -10,7 +10,7 @@
 #include "export/export.h"
 #include "utils/utils.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Initialization

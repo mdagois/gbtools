@@ -4,7 +4,7 @@
 
 #include "enums.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Hardware capabilities
@@ -94,7 +94,7 @@ bool initializeCapabilities(Hardware hardware);
 bool areCapabilitiesInitialized();
 const Capabilities& getCapabilities();
 
-#define CAPS gbgfx::getCapabilities()
+#define CAPS gfx::getCapabilities()
 
 ////////////////////////////////////////////////////////////////////////////////
 

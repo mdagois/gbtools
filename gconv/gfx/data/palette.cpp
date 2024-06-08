@@ -5,7 +5,7 @@
 #include "palette.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -219,7 +219,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 		{
 			if(palette.size() > palette_color_max_count)
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"A palette has more than " << palette_color_max_count
 					<< " colors (count=" << palette.size() << ")");
 				return false;
@@ -271,7 +271,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 
 			if(!first_color_found)
 			{
-				GBGFX_LOG_ERROR("Cannot find a shared first color");
+				GFX_LOG_ERROR("Cannot find a shared first color");
 				return false;
 			}
 
@@ -354,7 +354,7 @@ bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_col
 			});
 	}
 
-	GBGFX_LOG_INFO("Palette optimization from " << original_palette_count << " to " << m_palettes.size());
+	GFX_LOG_INFO("Palette optimization from " << original_palette_count << " to " << m_palettes.size());
 	return true;
 }
 

@@ -5,7 +5,7 @@
 #include "tileset.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tile flip
@@ -220,7 +220,7 @@ void Tileset::removeDoubles(bool compare_flips)
 		++tileIt;
 	}
 
-	GBGFX_LOG_INFO(
+	GFX_LOG_INFO(
 		"Tileset shrinked from " << original_tile_count
 		<< " tiles to " << m_tiles.size() << " tiles");
 }

@@ -4,7 +4,7 @@
 #include "tileset.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tileset
@@ -24,7 +24,7 @@ bool TilesetData::initialize(const Tileset& tileset)
 	if( CAPS.tileset.color_index_format != kFormat_COL2222 &&
 		CAPS.tileset.color_index_format != kFormat_COL2222_COL2222_INTERLEAVED)
 	{
-		GBGFX_LOG_ERROR("Unsupported tile format");
+		GFX_LOG_ERROR("Unsupported tile format");
 		return false;
 	}
 	for(uint32_t t = 0; t < tileset.size(); ++t)
@@ -33,7 +33,7 @@ bool TilesetData::initialize(const Tileset& tileset)
 		const TileFlip& flip = tile.getTileFlip(kTileFlipType_None);
 		if(flip.width != 8 || flip.height != 8)
 		{
-			GBGFX_LOG_ERROR("Unsupported flip size");
+			GFX_LOG_ERROR("Unsupported flip size");
 			return false;
 		}
 		if(CAPS.tileset.color_index_format == kFormat_COL2222)

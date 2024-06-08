@@ -4,7 +4,7 @@
 #include "tilemap.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Tilemap
@@ -25,14 +25,14 @@ bool TilemapData::initialize(
 {
 	if(palette_index_offset >= CAPS.palette.max_count)
 	{
-		GBGFX_LOG_ERROR(
+		GFX_LOG_ERROR(
 			"The palette offset [" << palette_index_offset
 			<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
 		return false;
 	}
 	if(tile_index_offset >= CAPS.tileset.tile_max_count)
 	{
-		GBGFX_LOG_ERROR(
+		GFX_LOG_ERROR(
 			"The tile offset [" << tile_index_offset
 			<< "] is over the tile max count [" << CAPS.tileset.tile_max_count << "]");
 		return false;
@@ -46,7 +46,7 @@ bool TilemapData::initialize(
 
 		if(static_cast<uint32_t>(entry.palette_index) + palette_index_offset >= CAPS.palette.max_count)
 		{
-			GBGFX_LOG_ERROR(
+			GFX_LOG_ERROR(
 				"The palette index with offset [" << entry.palette_index + palette_index_offset
 				<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
 			return false;
@@ -58,7 +58,7 @@ bool TilemapData::initialize(
 			global_tile_index += tile_index_offset;
 			if(global_tile_index >= CAPS.tileset.tile_max_count)
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"The tile index with offset [" << entry.tile_index + tile_index_offset
 					<< "] is over the tile max count [" << CAPS.tileset.tile_max_count << "]");
 				return false;
@@ -67,7 +67,7 @@ bool TilemapData::initialize(
 			entry.bank = global_tile_index / CAPS.tileset.tiles_per_bank;
 			if(entry.bank >= CAPS.tileset.bank_max_count)
 			{
-				GBGFX_LOG_ERROR(
+				GFX_LOG_ERROR(
 					"The bank (after applying the tile offset) [" << entry.bank
 					<< "] is over the bank max count [" << CAPS.tileset.bank_max_count << "]");
 				return false;

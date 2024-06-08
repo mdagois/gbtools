@@ -6,7 +6,7 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool parseDivisions(std::vector<gbgfx::Division>& out_divisions, std::string sequence)
+static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::string sequence)
 {
 	std::regex pattern("(\\d+)x(\\d+)([ks])");
 	auto match_begin = std::sregex_iterator(sequence.begin(), sequence.end(), pattern);
@@ -16,11 +16,11 @@ static bool parseDivisions(std::vector<gbgfx::Division>& out_divisions, std::str
 		std::smatch match = *it;
 		if(match.size() != 4)
 		{
-			GBGFX_LOG_ERROR("Unspected error when matching the division sequence");
+			GFX_LOG_ERROR("Unspected error when matching the division sequence");
 			return false;
 		}
 
-		gbgfx::Division division;
+		gfx::Division division;
 		division.width = std::stoi(match[1]);
 		division.height = std::stoi(match[2]);
 		division.skip_transparent = (match[3].str())[0] == 's';
@@ -39,20 +39,20 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	const Mapping hardware_mapping[] =
 	{
-		{ "dmg-bg", "DMG background", gbgfx::kHardware_Dmg_Background },
-		{ "dmg-sp", "DMG sprites", gbgfx::kHardware_Dmg_Sprite },
-		{ "cgb-bg", "CGB background", gbgfx::kHardware_Cgb_Background },
-		{ "cgb-sp", "CGB sprites", gbgfx::kHardware_Cgb_Sprite },
-		{ "sgb-bg", "SGB background", gbgfx::kHardware_Sgb_Background },
-		{ "sgb-border", "SGB border", gbgfx::kHardware_Sgb_Border },
-		{ "printer", "Pocket Printer", gbgfx::kHardware_Printer },
+		{ "dmg-bg", "DMG background", gfx::kHardware_Dmg_Background },
+		{ "dmg-sp", "DMG sprites", gfx::kHardware_Dmg_Sprite },
+		{ "cgb-bg", "CGB background", gfx::kHardware_Cgb_Background },
+		{ "cgb-sp", "CGB sprites", gfx::kHardware_Cgb_Sprite },
+		{ "sgb-bg", "SGB background", gfx::kHardware_Sgb_Background },
+		{ "sgb-border", "SGB border", gfx::kHardware_Sgb_Border },
+		{ "printer", "Pocket Printer", gfx::kHardware_Printer },
 	};
 
 	const Mapping tile_removal_mapping[] =
 	{
-		{ "none", "no tiles are removed", gbgfx::kTileRemovalNone },
-		{ "doubles", "double tiles are removed", gbgfx::kTileRemovalDoubles },
-		{ "flips", "tile flips are removed", gbgfx::kTileRemovalFlips },
+		{ "none", "no tiles are removed", gfx::kTileRemovalNone },
+		{ "doubles", "double tiles are removed", gfx::kTileRemovalDoubles },
+		{ "flips", "tile flips are removed", gfx::kTileRemovalFlips },
 	};
 
 	const char* tileset_divisions = nullptr;
@@ -152,20 +152,20 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	if(error != Error::kNone)
 	{
-		GBGFX_LOG_ERROR(cli_parser.getLastErrorMessage());
+		GFX_LOG_ERROR(cli_parser.getLastErrorMessage());
 		return false;
 	}
 
 	if( tileset_divisions != nullptr &&
 		!parseDivisions(out_options.tileset.divisions, tileset_divisions))
 	{
-		GBGFX_LOG_ERROR("Cannot parse tileset divisions");
+		GFX_LOG_ERROR("Cannot parse tileset divisions");
 		return false;
 	}
 	if( tilemap_divisions != nullptr &&
 		!parseDivisions(out_options.tilemap.divisions, tilemap_divisions))
 	{
-		GBGFX_LOG_ERROR("Cannot parse tilemap divisions");
+		GFX_LOG_ERROR("Cannot parse tilemap divisions");
 		return false;
 	}
 

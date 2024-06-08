@@ -3,7 +3,7 @@
 #include "division.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 // Division
@@ -38,7 +38,7 @@ bool getDivisionOffset(
 {
 	if(division_x > division_info.image_width / division_width || division_y > division_info.image_height / division_height)
 	{
-		GBGFX_LOG_ERROR(
+		GFX_LOG_ERROR(
 			"(" << division_x << ", " << division_y << ") coordinates are out of ("
 			<< (division_info.image_width / division_width) << ", "
 			<< (division_info.image_height / division_height) << ")");
@@ -55,7 +55,7 @@ bool getDivisionOffset(
 	}
 	if(status_list == nullptr)
 	{
-		GBGFX_LOG_ERROR("Could not find division list of size " << division_width << "x" << division_height);
+		GFX_LOG_ERROR("Could not find division list of size " << division_width << "x" << division_height);
 		return false;
 	}
 

@@ -3,7 +3,7 @@
 #include "capabilities.h"
 #include "utils/log.h"
 
-namespace gbgfx {
+namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -203,7 +203,7 @@ const Capabilities& getCapabilities()
 {
 	if(!areCapabilitiesInitialized())
 	{
-		GBGFX_LOG_ERROR("Capabilities are not initialized");
+		GFX_LOG_ERROR("Capabilities are not initialized");
 	}
 	return s_capabilities;
 }

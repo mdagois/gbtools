@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "gbgfx.h"
+#include "gfx.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 // Options
@@ -10,20 +10,20 @@
 
 struct Options
 {
-	gbgfx::Hardware hardware = gbgfx::kHardwareCount;
+	gfx::Hardware hardware = gfx::kHardwareCount;
 
 	struct
 	{
 		const char* image_filename = nullptr;
-		gbgfx::TileRemoval tile_removal = gbgfx::kTileRemovalNone;
-		std::vector<gbgfx::Division> divisions;
+		gfx::TileRemoval tile_removal = gfx::kTileRemovalNone;
+		std::vector<gfx::Division> divisions;
 	}
 	tileset;
 
 	struct
 	{
 		std::vector<const char*> image_filenames;
-		std::vector<gbgfx::Division> divisions;
+		std::vector<gfx::Division> divisions;
 	}
 	tilemap;
 
