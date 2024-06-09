@@ -148,29 +148,46 @@ bool extractTileset(
 		return false;
 	}
 
-	if(!image.iterateTiles(
-		out_division_info,
-		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
-		[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
+	if(out_palette_set.isLocked())
+	{
+		for(uint32_t i = 0; i < out_palette_set.size(); ++i)
 		{
-			Palette palette(CAPS.palette.insert_transparent_color);
-			if(!extractTilePalette(palette, image_tile))
+			if(out_palette_set[i].size() > CAPS.palette.color_max_count)
 			{
 				GFX_LOG_ERROR(
-					"Could not extract palette from tile ("
-					<< x << "," << y << ") in [" << image.getFilename() << "]");
+					"Palette #" << i <<  " in provided palette set has too many colors ("
+					<< out_palette_set[i].size() << " > " << CAPS.palette.color_max_count
+					<< ") in [" << image.getFilename() << "]");
 				return false;
 			}
-			out_palette_set.add(palette);
-			return true;
-		}))
-	{
-		return false;
+		}
 	}
-
-	if(!out_palette_set.optimize(CAPS.palette.color_max_count, CAPS.palette.share_first_color, true))
+	else
 	{
-		return false;
+		if(!image.iterateTiles(
+			out_division_info,
+			final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+			[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
+			{
+				Palette palette(CAPS.palette.insert_transparent_color);
+				if(!extractTilePalette(palette, image_tile))
+				{
+					GFX_LOG_ERROR(
+						"Could not extract palette from tile ("
+						<< x << "," << y << ") in [" << image.getFilename() << "]");
+					return false;
+				}
+				out_palette_set.add(palette);
+				return true;
+			}))
+		{
+			return false;
+		}
+
+		if(!out_palette_set.optimize(CAPS.palette.color_max_count, CAPS.palette.share_first_color, true))
+		{
+			return false;
+		}
 	}
 
 	if(!image.iterateTiles(

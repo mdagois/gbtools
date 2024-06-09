@@ -27,7 +27,9 @@ public:
 	bool hasColor(ColorRGBA color) const;
 	bool findColorIndex(uint8_t& out_color_index, ColorRGBA color) const;
 	void makeFirstColor(ColorRGBA color);
-	bool getAverageLuminance() const;
+	double getAverageLuminance() const;
+
+	void loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count);
 
 private:
 	void sort();
@@ -52,8 +54,13 @@ public:
 	bool optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_palettes);
 	bool findCompatiblePaletteIndex(uint32_t& out_palette_index, const Palette& palette) const;
 
+	void loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count);
+	void Lock();
+	bool isLocked() const;
+
 private:
 	std::vector<Palette> m_palettes;
+	bool m_isLocked;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

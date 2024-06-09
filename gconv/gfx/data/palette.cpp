@@ -154,7 +154,7 @@ void Palette::makeFirstColor(ColorRGBA color)
 	assert(false);
 }
 
-bool Palette::getAverageLuminance() const
+double Palette::getAverageLuminance() const
 {
 	double luminance = 0.0;
 	for(const ColorRGBA& color : m_colors)
@@ -162,6 +162,14 @@ bool Palette::getAverageLuminance() const
 		luminance += getLuminance(color);
 	}
 	return luminance / m_colors.size();
+}
+
+void Palette::loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count)
+{
+	for(uint32_t i = 0; i < color_count; ++i)
+	{
+		m_colors.push_back(colors[i]);
+	}
 }
 
 void Palette::sort()
@@ -174,6 +182,7 @@ void Palette::sort()
 ////////////////////////////////////////////////////////////////////////////////
 
 PaletteSet::PaletteSet()
+: m_isLocked(false)
 {
 }
 
@@ -370,6 +379,23 @@ bool PaletteSet::findCompatiblePaletteIndex(uint32_t& out_palette_index, const P
 		}
 	}
 	return false;
+}
+
+void PaletteSet::loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count)
+{
+	m_palettes.emplace_back(false);
+	Palette& palette = m_palettes.back();
+	palette.loadRawPaletteData(colors, color_count);
+}
+
+void PaletteSet::Lock()
+{
+	m_isLocked = true;
+}
+
+bool PaletteSet::isLocked() const
+{
+	return m_isLocked;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
