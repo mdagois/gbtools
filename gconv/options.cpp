@@ -64,6 +64,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		kOptionTileset,
 		kOptionTilesetDivisions,
 		kOptionTileRemoval,
+		kOptionInputPaletteSet,
 		kOptionTilemapDivisions,
 		kOptionOutputDirectory,
 		kOptionPaletteIndexOffset,
@@ -86,7 +87,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	{
 		// hardware
 		OptionStringToInteger(
-			"hardware", "hw", "Specify the target hardware", true, kOptionHard, reinterpret_cast<int32_t*>(&out_options.hardware),
+			"hardware", "hw", "The target hardware", true, kOptionHard, reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
 		// tileset
 		OptionString("tileset", "ts", "The tileset image", true, kOptionTileset, &out_options.tileset.image_filename),
@@ -94,6 +95,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionStringToInteger(
 			"tile-removal", "trm", "Tile removal mode", false, kOptionTileRemoval, reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
+		OptionString("input-palette-set", "ips", "Provided palette set image", false, kOptionInputPaletteSet, &out_options.tileset.palette_set_filename),
 		// tilemap
 		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, kOptionTilemapDivisions, &tilemap_divisions),
 		// output
