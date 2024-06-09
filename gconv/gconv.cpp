@@ -8,6 +8,32 @@
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static bool importPaletteSet(gfx::PaletteSet& out_palette_set, const Options& options)
+{
+	if(options.tileset.palette_set_filename == nullptr)
+	{
+		return true;
+	}
+
+	gfx::Image image;
+	if(!image.read(options.tileset.palette_set_filename))
+	{
+		return false;
+	}
+
+	const gfx::ColorRGBA* pixels = image.getPixels();
+	for(uint32_t i = 0; i < image.getHeight(); ++i)
+	{
+		out_palette_set.loadRawPaletteData(pixels, image.getWidth());
+		pixels += image.getWidth();
+	}
+
+	out_palette_set.lock();
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
 static bool importData(
 	gfx::Tileset& out_tileset, uint32_t& out_tileset_column_count,
 	gfx::PaletteSet& out_palette_set, std::vector<gfx::Tilemap>& out_tilemaps,
@@ -213,6 +239,11 @@ int main(int argc, const char** argv)
 	std::vector<gfx::Tilemap> tilemaps;
 	gfx::DivisionInfo tileset_division_info;
 	std::vector<gfx::DivisionInfo> tilemap_division_infos;
+
+	if(!importPaletteSet(palette_set, options))
+	{
+		return 1;
+	}
 
 	if(!importData(
 		tileset, tileset_column_count, palette_set, tilemaps,

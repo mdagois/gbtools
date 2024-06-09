@@ -388,7 +388,7 @@ void PaletteSet::loadRawPaletteData(const ColorRGBA* colors, uint32_t color_coun
 	palette.loadRawPaletteData(colors, color_count);
 }
 
-void PaletteSet::Lock()
+void PaletteSet::lock()
 {
 	m_isLocked = true;
 }

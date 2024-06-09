@@ -55,7 +55,7 @@ public:
 	bool findCompatiblePaletteIndex(uint32_t& out_palette_index, const Palette& palette) const;
 
 	void loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count);
-	void Lock();
+	void lock();
 	bool isLocked() const;
 
 private:
