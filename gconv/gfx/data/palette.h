@@ -50,6 +50,7 @@ public:
 
 	uint32_t add(const Palette& palette);
 	const Palette& operator[](int32_t index) const;
+	Palette& operator[](int32_t index);
 	uint32_t size() const;
 	bool optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_palettes);
 	bool findCompatiblePaletteIndex(uint32_t& out_palette_index, const Palette& palette) const;

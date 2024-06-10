@@ -213,6 +213,11 @@ const Palette& PaletteSet::operator[](int32_t index) const
 	return m_palettes[index];
 }
 
+Palette& PaletteSet::operator[](int32_t index)
+{
+	return m_palettes[index];
+}
+
 uint32_t PaletteSet::size() const
 {
 	return static_cast<uint32_t>(m_palettes.size());
