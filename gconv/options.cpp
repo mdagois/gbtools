@@ -121,7 +121,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	Parser cli_parser(
 		argv, argc,
 		cli_options, sizeof(cli_options) / sizeof(cli_options[0]),
-		"-hardware <hardware> -tileset <tileset_png> [options] [tilemap_png...]");
+		"--hardware <hardware> --tileset <tileset_png> [options] [tilemap_png...]");
 
 	uint32_t code;
 	const char* parameter;
