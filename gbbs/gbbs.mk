@@ -119,7 +119,7 @@ build_echo_%:
 
 # compilation
 # $1 = project, $2 = configuration, $3 = output object file, $4 = input source file
-compile_command = $$(rgbasm_command) $$($1_$2_compile_options_list) -I$$(dir $4) -M $(3:=$(dependency_extension)) -MG -MP --output $3 $4
+compile_command = $$(rgbasm_command) $$($1_$2_compile_options_list) -I$$(dir $4) --verbose -M $(3:=$(dependency_extension)) -MG -MP --output $3 $4
 
 # linkage
 # $1 = project, $2 = configuration, $3 = output binary file, $4 = input object files list

@@ -183,7 +183,7 @@ The following options are automatically handled by GBBS.
 They must not be used as compilation, linkage or fix options.
 
 * rgbasm
-  * -M <dependency_file> -MG -MP
+  * --verbose -M <dependency_file> -MG -MP
 * rgblink
   * --map (-m)
   * --sym (-s)
