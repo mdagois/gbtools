@@ -205,6 +205,8 @@ define target_variable_definitions_template
 
 $1_$2_sources_list = $$($1_sources) $$($1_$2_sources)
 
+$1_$2_prerequisites_list = $$($1_prerequisites) $$($1_$2_prerequisites)
+
 $1_$2_compile_options_list = -I$(root_directory) $(compile_options) $$($1_compile_options) $$($2_compile_options) $$($1_$2_compile_options)
 $1_$2_link_options_list = $(link_options) $$($1_link_options) $$($2_link_options) $$($1_$2_link_options)
 $1_$2_fix_options_list = $(fix_options) $$($1_fix_options) $$($2_fix_options) $$($1_$2_fix_options)
@@ -264,7 +266,7 @@ $$($1_$2_binary): $$($1_$2_objects)
 	$(call signature_template,$1,$2,$$@,$$($1_$2_binary_signature),$$($1_$2_binary_force),$(call link_command,$1,$2,$$@,$$($1_$2_objects)) && $(call fix_command,$1,$2,$$@),$$(call link_command,$1,$2,$$@,$$($1_$2_objects)) && $$(call fix_command,$1,$2,$$@))
 	$(call link_command,$1,$2,$$@,$$($1_$2_objects)) && $(call fix_command,$1,$2,$$@)
 
-$$($1_$2_build_directory)/%$(object_extension): $$(root_directory)/% | $$$$(@D)/
+$$($1_$2_build_directory)/%$(object_extension): $$(root_directory)/% $$($1_$2_prerequisites_list) | $$$$(@D)/
 	$(call signature_template,$1,$2,$$@,$$($1_$2_build_directory)/$$*$(object_extension)$(signature_extension),$$($1_$2_build_directory)/$$*$(object_extension)$(force_extension),$(call compile_command,$1,$2,$$@,$$<),$$(call compile_command,$1,$2,$$@,$$<))
 	$(call compile_command,$1,$2,$$@,$$<)
 
