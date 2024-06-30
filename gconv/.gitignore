@@ -7,4 +7,5 @@ test/demo_tileset_*.png
 *.pal.png
 *.prm
 *.swp
+*.tiles.png
 

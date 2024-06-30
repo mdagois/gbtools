@@ -122,7 +122,7 @@ static void generateFlips(TileFlip* inout_tile_flips)
 ////////////////////////////////////////////////////////////////////////////////
 
 Tile::Tile()
-: m_palette_index(0)
+: m_palette_index(kInvalidIndex)
 {
 }
 
@@ -130,12 +130,17 @@ Tile::~Tile()
 {
 }
 
-void Tile::initialize(const TileFlip& tile_flip, uint32_t palette_index)
+void Tile::setPaletteIndex(uint32_t palette_index)
 {
-	assert(isTileFlipValid(tile_flip));
-	m_flips[kTileFlipType_None] = tile_flip;
-	generateFlips(m_flips);
+	assert(m_palette_index == kInvalidIndex);
 	m_palette_index = palette_index;
+}
+
+void Tile::initializeFlips(const TileFlip& none_tile_flip)
+{
+	assert(isTileFlipValid(none_tile_flip));
+	m_flips[kTileFlipType_None] = none_tile_flip;
+	generateFlips(m_flips);
 }
 
 const TileFlip& Tile::getTileFlip(TileFlipType type) const
@@ -146,6 +151,7 @@ const TileFlip& Tile::getTileFlip(TileFlipType type) const
 
 uint32_t Tile::getPaletteIndex() const
 {
+	assert(m_palette_index != kInvalidIndex);
 	return m_palette_index;
 }
 
@@ -226,7 +232,7 @@ void Tileset::removeDoubles(bool compare_flips)
 }
 
 bool Tileset::findTileIndex(
-	uint32_t& out_tile_index, uint32_t& out_palette_index, TileFlipType& out_flip_type,
+	uint32_t& out_tile_index, TileFlipType& out_flip_type,
 	const Tile& tile, bool compare_flips) const
 {
 	const uint32_t palette_index = tile.getPaletteIndex();
@@ -246,7 +252,6 @@ bool Tileset::findTileIndex(
 			if(flip == compare_tile.getTileFlip(static_cast<TileFlipType>(flip_type)))
 			{
 				out_tile_index = i;
-				out_palette_index = palette_index;
 				out_flip_type = static_cast<TileFlipType>(flip_type);
 				return true;
 			}

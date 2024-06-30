@@ -31,6 +31,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
 			s_capabilities.tileset.tile_max_count = 256;
 			s_capabilities.tileset.tiles_per_bank = 256;
 			s_capabilities.tileset.bank_max_count = 1;
@@ -54,6 +55,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
 			s_capabilities.tileset.tile_max_count = 0xFFFFFFFFU;
 			s_capabilities.tileset.tiles_per_bank = 0xFFFFFFFFU;
 			s_capabilities.tileset.bank_max_count = 1;
@@ -77,6 +79,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
 			s_capabilities.tileset.tile_max_count = 512;
 			s_capabilities.tileset.tiles_per_bank = 256;
 			s_capabilities.tileset.bank_max_count = 2;
@@ -90,7 +93,8 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.sprite.enabled = false;
 			s_capabilities.sprite.supports_tile_flips = false;
 			break;
-		case kHardware_Cgb_Sprite:
+		case kHardware_Cgb_Sprite_8x8:
+		case kHardware_Cgb_Sprite_8x16:
 			s_capabilities.palette.base_index = 0;
 			s_capabilities.palette.max_count = 8;
 			s_capabilities.palette.color_max_count = 4;
@@ -100,6 +104,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = hardware == kHardware_Cgb_Sprite_8x16 ? 2 : 1;
 			s_capabilities.tileset.tile_max_count = 0xFFFFFFFFU;
 			s_capabilities.tileset.tiles_per_bank = 0xFFFFFFFFU;
 			s_capabilities.tileset.bank_max_count = 2;
@@ -123,6 +128,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
 			s_capabilities.tileset.tile_max_count = 256;
 			s_capabilities.tileset.tiles_per_bank = 256;
 			s_capabilities.tileset.bank_max_count = 1;
@@ -146,6 +152,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222_COL2222_INTERLEAVED;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
 			s_capabilities.tileset.tile_max_count = 256;
 			s_capabilities.tileset.tiles_per_bank = 256;
 			s_capabilities.tileset.bank_max_count = 1;
@@ -169,6 +176,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
 			s_capabilities.tileset.tile_max_count = 0xFFFFFFFFU;
 			s_capabilities.tileset.tiles_per_bank = 0xFFFFFFFFU;
 			s_capabilities.tileset.bank_max_count = 1;

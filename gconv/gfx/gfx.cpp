@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <set>
+#include <vector>
 
 #include "third_party/stb_image_write.h"
 
@@ -46,29 +47,10 @@ static bool extractTilePalette(Palette& out_tile_palette, const ImageTile& image
 ////////////////////////////////////////////////////////////////////////////////
 
 static bool generateTileFlip(
-	TileFlip& out_tile_flip, uint32_t& out_palette_index,
-	const ImageTile& image_tile, const PaletteSet& palette_set)
+	TileFlip& out_tile_flip, const ImageTile& image_tile, const Palette& palette)
 {
-	{
-		Palette tile_palette(CAPS.palette.insert_transparent_color);
-		if(!extractTilePalette(tile_palette, image_tile))
-		{
-			GFX_LOG_ERROR("Could not extract palette");
-			return false;
-		}
-
-		uint32_t palette_index = 0;
-		if(!palette_set.findCompatiblePaletteIndex(palette_index, tile_palette))
-		{
-			GFX_LOG_ERROR("Could not find a compatible palette");
-			return false;
-		}
-		out_palette_index = palette_index;
-	}
-
 	initializeTileFlip(out_tile_flip, image_tile.getWidth(), image_tile.getHeight());
 
-	const Palette& palette = palette_set[out_palette_index];
 	const uint32_t pixel_count = image_tile.getWidth() * image_tile.getHeight();
 	for(uint32_t i = 0; i < pixel_count; ++i)
 	{
@@ -83,16 +65,15 @@ static bool generateTileFlip(
 	return true;
 }
 
-static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const PaletteSet& palette_set)
+static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Palette& palette)
 {
 	TileFlip tile_flip;
-	uint32_t palette_index;
-	if(!generateTileFlip(tile_flip, palette_index, image_tile, palette_set))
+	if(!generateTileFlip(tile_flip, image_tile, palette))
 	{
 		GFX_LOG_ERROR("Could not generate tile flip");
 		return false;
 	}
-	out_tile.initialize(tile_flip, palette_index);
+	out_tile.initializeFlips(tile_flip);
 	return true;
 }
 
@@ -142,11 +123,19 @@ bool extractTileset(
 {
 	assert(areCapabilitiesInitialized());
 
+	////////////////////////////////////////////////////////////
+	// Prepare divisions.
+	////////////////////////////////////////////////////////////
+
 	std::vector<Division> final_divisions = divisions;
 	if(!addBasicTileSize(final_divisions))
 	{
 		return false;
 	}
+
+	////////////////////////////////////////////////////////////
+	// Extract palettes and build palette set.
+	////////////////////////////////////////////////////////////
 
 	if(out_palette_set.isLocked())
 	{
@@ -190,13 +179,99 @@ bool extractTileset(
 		}
 	}
 
+	////////////////////////////////////////////////////////////
+	// Compute the palette index for each tile.
+	////////////////////////////////////////////////////////////
+
+	struct TileMetadata
+	{
+		std::set<uint32_t> compatible_palettes;
+	};
+	std::vector<TileMetadata> metadata_buffer;
 	if(!image.iterateTiles(
 		out_division_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
-		[&out_tileset, &out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		[&out_tileset, &out_palette_set, &image, &metadata_buffer](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
+			Palette tile_palette(CAPS.palette.insert_transparent_color);
+			if(!extractTilePalette(tile_palette, image_tile))
+			{
+				GFX_LOG_ERROR("Could not extract palette");
+				return false;
+			}
+			TileMetadata& metadata = metadata_buffer.emplace_back();
+			for(uint32_t p = 0; p < out_palette_set.size(); ++p)
+			{
+				const Palette& palette = out_palette_set[p];
+				if(palette.contains(tile_palette))
+				{
+					metadata.compatible_palettes.insert(p);
+				}
+			}
+
+			return true;
+		}))
+	{
+		return false;
+	}
+
+	if(metadata_buffer.size() % CAPS.tileset.tile_group_size != 0)
+	{
+		GFX_LOG_ERROR(
+			"The number of tiles (" << metadata_buffer.size()
+			<< ") is not multiple of the tile group size ("
+			<< CAPS.tileset.tile_group_size << ")");
+		return false;
+	}
+
+	auto computeIntersection = [](std::set<uint32_t>& lhs, std::set<uint32_t>& rhs)
+	{
+		std::set<uint32_t> result;
+		for(uint32_t palette_index : lhs)
+		{
+			if(rhs.find(palette_index) != rhs.end())
+			{
+				result.insert(palette_index);
+			}
+		}
+		return result;
+	};
+
+	std::vector<uint32_t> tile_palette_index;
+	for(uint32_t i = 0; i < metadata_buffer.size(); i += CAPS.tileset.tile_group_size)
+	{
+		std::set<uint32_t> palettes = metadata_buffer[i].compatible_palettes;
+		for(uint32_t j = 1; j < CAPS.tileset.tile_group_size; ++j)
+		{
+			palettes = computeIntersection(palettes, metadata_buffer[i + j].compatible_palettes);
+		}
+		if(palettes.size() == 0)
+		{
+			GFX_LOG_ERROR(
+				"Could not find a common palette for tile_group ("
+				<< (i / CAPS.tileset.tile_group_size) << ")");
+			return false;
+		}
+		for(uint32_t j = 0; j < CAPS.tileset.tile_group_size; ++j)
+		{
+			tile_palette_index.push_back(*palettes.cbegin());
+		}
+	}
+
+	////////////////////////////////////////////////////////////
+	// Generate all the tiles in the tileset.
+	////////////////////////////////////////////////////////////
+
+	uint32_t tile_index = 0;
+	if(!image.iterateTiles(
+		out_division_info,
+		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		[&out_tileset, &out_palette_set, &image, &tile_index, &tile_palette_index](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		{
+			const uint32_t palette_index = tile_palette_index[tile_index];
 			Tile tile;
-			if(!generateTile(tile, image_tile, out_palette_set))
+			tile.setPaletteIndex(palette_index);
+			if(!generateTile(tile, image_tile, out_palette_set[palette_index]))
 			{
 				GFX_LOG_ERROR(
 					"Could not generate tile ("
@@ -204,11 +279,16 @@ bool extractTileset(
 				return false;
 			}
 			out_tileset.add(tile);
+			++tile_index;
 			return true;
 		}))
 	{
 		return false;
 	}
+
+	////////////////////////////////////////////////////////////
+	// Tileset optimization.
+	////////////////////////////////////////////////////////////
 
 	if(tile_removal != kTileRemovalNone)
 	{
@@ -234,6 +314,10 @@ bool extractTileset(
 				<< " as the hardware does not support tile removal");
 		}
 	}
+
+	////////////////////////////////////////////////////////////
+	// Print information.
+	////////////////////////////////////////////////////////////
 
 	GFX_LOG_INFO(
 		"Tile count is " << out_tileset.size()
@@ -275,19 +359,46 @@ bool extractTilemap(
 {
 	assert(areCapabilitiesInitialized());
 
+	////////////////////////////////////////////////////////////
+	// Prepare divisions.
+	////////////////////////////////////////////////////////////
+
 	std::vector<Division> final_divisions = divisions;
 	if(!addBasicTileSize(final_divisions))
 	{
 		return false;
 	}
 
+	////////////////////////////////////////////////////////////
+	// Generate all the tiles in the tileset.
+	////////////////////////////////////////////////////////////
+
 	if(!image.iterateTiles(
 		out_division_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
+			Palette tile_palette(CAPS.palette.insert_transparent_color);
+			if(!extractTilePalette(tile_palette, image_tile))
+			{
+				GFX_LOG_ERROR(
+					"Could not extract palette for tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+
+			uint32_t palette_index = kInvalidIndex;
+			if(!palette_set.findCompatiblePaletteIndex(palette_index, tile_palette))
+			{
+				GFX_LOG_ERROR(
+					"Could not find a compatible palette for tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+
 			Tile tile;
-			if(!generateTile(tile, image_tile, palette_set))
+			tile.setPaletteIndex(palette_index);
+			if(!generateTile(tile, image_tile, palette_set[palette_index]))
 			{
 				GFX_LOG_ERROR(
 					"Could not generate tile ("
@@ -296,10 +407,9 @@ bool extractTilemap(
 			}
 
 			uint32_t tile_index;
-			uint32_t palette_index;
 			TileFlipType flip_type;
 			if(!tileset.findTileIndex(
-				tile_index, palette_index, flip_type, tile,
+				tile_index, flip_type, tile,
 				CAPS.tilemap.supports_tile_flips))
 			{
 				GFX_LOG_ERROR(
@@ -344,9 +454,14 @@ bool extractTilemap(
 		return false;
 	}
 
+	////////////////////////////////////////////////////////////
+	// Print information.
+	////////////////////////////////////////////////////////////
+
 	GFX_LOG_INFO(
 		"Tilemap size is " << out_tilemap.size()
-		<< " in [" << image.getFilename() << "]"); 
+		<< " in [" << image.getFilename() << "]");
+
 	return true;
 }
 

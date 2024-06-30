@@ -6,6 +6,15 @@
 namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
+// Constants
+////////////////////////////////////////////////////////////////////////////////
+
+enum : uint32_t
+{
+	kInvalidIndex = 0xFFFFFFFFU,
+};
+
+////////////////////////////////////////////////////////////////////////////////
 // Tile flip
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -41,7 +50,8 @@ public:
 	Tile();
 	virtual ~Tile();
 
-	void initialize(const TileFlip& tile_flip, uint32_t palette_index);
+	void setPaletteIndex(uint32_t palette_index);
+	void initializeFlips(const TileFlip& none_tile_flip);
 
 	const TileFlip& getTileFlip(TileFlipType type) const;
 	uint32_t getPaletteIndex() const;
@@ -68,7 +78,7 @@ public:
 
 	void removeDoubles(bool compare_flips);
 	bool findTileIndex(
-		uint32_t& out_tile_index, uint32_t& out_palette_index, TileFlipType& out_flip_type,
+		uint32_t& out_tile_index, TileFlipType& out_flip_type,
 		const Tile& tile, bool compare_flips) const;
 
 private:

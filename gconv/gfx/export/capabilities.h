@@ -57,6 +57,8 @@ struct Capabilities
 		// Basic tile dimension
 		uint32_t basic_tile_width;
 		uint32_t basic_tile_height;
+		// Size of a tile group (consecutive tiles that use the same palette)
+		uint32_t tile_group_size;
 		// Maximum number of tiles
 		uint32_t tile_max_count;
 		// Number of tiles per bank
