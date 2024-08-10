@@ -79,6 +79,11 @@ static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Pale
 
 static bool addBasicTileSize(std::vector<Division>& divisions)
 {
+	if(divisions.empty())
+	{
+		divisions.push_back({ CAPS.tileset.basic_tile_width, CAPS.tileset.basic_tile_height, false });
+		return true;
+	}
 	const Division& last = divisions.back();
 	if(last.width == CAPS.tileset.basic_tile_width && last.height == CAPS.tileset.basic_tile_height)
 	{
