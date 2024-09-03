@@ -1,0 +1,40 @@
+#pragma once
+
+#include <cstdint>
+
+namespace gfx {
+
+////////////////////////////////////////////////////////////////////////////////
+// RGBA
+////////////////////////////////////////////////////////////////////////////////
+
+struct ColorRGBA
+{
+	uint8_t r;
+	uint8_t g;
+	uint8_t b;
+	uint8_t a;
+};
+
+////////////////////////////////////////////////////////////////////////////////
+
+enum
+{
+	kHighPriorityColorAlpha = 0,
+};
+
+static ColorRGBA kRGBA_White = {0xFFU, 0xFFU, 0xFFU, 0xFFU};
+static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};
+
+////////////////////////////////////////////////////////////////////////////////
+
+bool operator==(const ColorRGBA& lhs, const ColorRGBA& rhs);
+bool operator!=(const ColorRGBA& lhs, const ColorRGBA& rhs);
+bool operator<(const ColorRGBA& lhs, const ColorRGBA& rhs);
+double getLuminance(const ColorRGBA color);
+void sortColorsRGBA(ColorRGBA* colors, uint32_t count);
+
+////////////////////////////////////////////////////////////////////////////////
+
+}
+

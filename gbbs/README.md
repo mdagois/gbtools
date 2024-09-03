@@ -135,6 +135,7 @@ Here is a list of the variables available for each project.
 |Variable							|Description
 |:---								|:---
 |\<project\>_sources				|A list of the source files added to the project. Source files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_<configuration>_sources` is specified.
+|\<project\>_prerequisites			|A list of the prerequisites files added to the project. Prerequisites files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_<configuration>_prerequisites` is specified.
 |\<project\>_description			|The description displayed by the `help` rule for the project.
 |\<project\>_compile_options		|A list of options passed to `rgbasm` during the compilation of any target in the project.
 |\<project\>_link_options			|A list of options passed to `rgblink` during compilation of any target in the project.
@@ -160,6 +161,7 @@ Here is a list of the variables available for each target.
 |Variable										|Description
 |:---											|:---
 |\<project\>_\<configuration\>_sources			|A list of the source files added to the target. Source files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_sources` is specified.
+|\<project\>_\<configuration\>_prerequisites	|A list of the prerequisites files added to the target. Prerequisites files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_prerequisites` is specified.
 |\<project\>_\<configuration\>_compile_options	|A list of options passed to `rgbasm` during the compilation of the target.
 |\<project\>_\<configuration\>_link_options		|A list of options passed to `rgblink` during compilation of the target.
 |\<project\>_\<configuration\>_fix_options		|A list of options passed to `rgbfix` during compilation of the target.
@@ -181,7 +183,7 @@ The following options are automatically handled by GBBS.
 They must not be used as compilation, linkage or fix options.
 
 * rgbasm
-  * -M <dependency_file> -MG -MP
+  * --verbose -M <dependency_file> -MG -MP
 * rgblink
   * --map (-m)
   * --sym (-s)
@@ -220,6 +222,8 @@ So, `make -j8 clean all` will be forcibly executed as `make clean all` (i.e. not
 It is recommended to execute both rules separately, i.e. `make clean` first, then `make -j8 all`.
 
 ### In case of trouble
+
+Add `-v` to your compile options to see `rgbasm` additional errors, especially around `include` which might be ignored when using the `-MG` option.
 
 If `make` commands keep failing on the same error, even after the error has been seemingly addressed, do `make disable_asserts=1 clean`.
 If the problem persists, manually delete the `build_directory` and re-run `make`.
