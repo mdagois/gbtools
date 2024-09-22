@@ -46,7 +46,10 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		{ "cgb-sp-16", "CGB sprites 8x16", gfx::kHardware_Cgb_Sprite_8x16 },
 		{ "sgb-bg", "SGB background", gfx::kHardware_Sgb_Background },
 		{ "sgb-border", "SGB border", gfx::kHardware_Sgb_Border },
-		{ "printer", "Pocket Printer", gfx::kHardware_Printer },
+		{ "printer", "DMG Pocket Printer", gfx::kHardware_Dmg_Printer },
+		{ "vdp-sprite-8", "VDP sprites 8x8", gfx::kHardware_Vdp_Sprite_8x8 },
+		{ "vdp-sprite-16", "VDP sprites 16x16", gfx::kHardware_Vdp_Sprite_16x16 },
+		{ "vdp-mode-1", "VDP mode 1", gfx::kHardware_Vdp_Mode_1 },
 	};
 
 	const Mapping tile_removal_mapping[] =

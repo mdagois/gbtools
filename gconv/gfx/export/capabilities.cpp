@@ -166,7 +166,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.sprite.enabled = false;
 			s_capabilities.sprite.supports_tile_flips = false;
 			break;
-		case kHardware_Printer:
+		case kHardware_Dmg_Printer:
 			s_capabilities.palette.base_index = 0;
 			s_capabilities.palette.max_count = 1;
 			s_capabilities.palette.color_max_count = 4;
@@ -189,6 +189,11 @@ bool initializeCapabilities(Hardware hardware)
 
 			s_capabilities.sprite.enabled = false;
 			s_capabilities.sprite.supports_tile_flips = false;
+			break;
+		case kHardware_Vdp_Sprite_8x8:
+		case kHardware_Vdp_Sprite_16x16:
+			break;
+		case kHardware_Vdp_Mode_1:
 			break;
 		default:
 			assert(false);
