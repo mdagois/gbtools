@@ -40,20 +40,28 @@ static bool importData(
 	gfx::DivisionInfo& out_tileset_division_info, std::vector<gfx::DivisionInfo>& out_tilemap_division_infos,
 	const Options& options)
 {
-	GFX_LOG_INFO("Extracting tileset and palette set from [" << options.tileset.image_filename << "]");
-	gfx::Image tileset_image;
-	if(!tileset_image.read(options.tileset.image_filename))
+	uint32_t largest_width = 0;
+	for(auto image_filename : options.tileset.image_filenames)
 	{
-		return false;
+		GFX_LOG_INFO("Extracting tileset and palette set from [" << image_filename << "]");
+		gfx::Image tileset_image;
+		if(!tileset_image.read(image_filename))
+		{
+			return false;
+		}
+		if(!gfx::extractTileset(
+			out_tileset, out_palette_set,  out_tileset_division_info,
+			options.tileset.divisions, options.tileset.tile_removal, tileset_image))
+		{
+			GFX_LOG_ERROR("Could not extract tileset from [" << tileset_image.getFilename() << "]");
+			return false;
+		}
+		if(largest_width < tileset_image.getWidth())
+		{
+			largest_width = tileset_image.getWidth();
+		}
 	}
-	if(!gfx::extractTileset(
-		out_tileset, out_palette_set,  out_tileset_division_info,
-		options.tileset.divisions, options.tileset.tile_removal, tileset_image))
-	{
-		GFX_LOG_ERROR("Could not extract tileset from [" << tileset_image.getFilename() << "]");
-		return false;
-	}
-	out_tileset_column_count = tileset_image.getWidth() / gfx::getBasicTileWidth();
+	out_tileset_column_count = largest_width / gfx::getBasicTileWidth();
 
 	out_tilemaps.clear();
 	out_tilemap_division_infos.clear();
@@ -100,7 +108,7 @@ static bool exportData(
 {
 	if(!options.output.skip_export_palette)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal", options);
+		const std::string filename = getOutputFilename(options.tileset.image_filenames[0], ".pal", options);
 		GFX_LOG_INFO("Exporting palette set to [" << filename << "]");
 		if(!gfx::exportPaletteSet(
 			palette_set, options.output.add_binary_headers, filename.c_str()))
@@ -112,7 +120,7 @@ static bool exportData(
 
 	if(!options.output.skip_export_tileset)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr", options);
+		const std::string filename = getOutputFilename(options.tileset.image_filenames[0], ".chr", options);
 		GFX_LOG_INFO("Exporting tileset to [" << filename << "]");
 		if(!gfx::exportTileset(
 			tileset, options.output.add_binary_headers, filename.c_str()))
@@ -156,7 +164,7 @@ static bool exportInfo(
 {
 	if(!options.output.skip_export_tileset_info)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr.info", options);
+		const std::string filename = getOutputFilename(options.tileset.image_filenames[0], ".chr.info", options);
 		GFX_LOG_INFO("Writing tileset info to [" << filename << "]");
 		if(!gfx::writeDivisionInfo(tileset_division_info, filename.c_str()))
 		{
@@ -190,7 +198,7 @@ static bool outputDebugData(
 {
 	if(options.debug.generate_palette_png)
 	{
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".pal.png", options);
+		const std::string filename = getOutputFilename(options.tileset.image_filenames[0], ".pal.png", options);
 		GFX_LOG_INFO("Generating palette set PNG to [" << filename << "]");
 		if(!gfx::writePaletteSetToPNG(palette_set, filename.c_str()))
 		{
@@ -202,7 +210,7 @@ static bool outputDebugData(
 	if(options.debug.generate_tileset_png)
 	{
 		constexpr bool kClearDoubles = false;
-		const std::string filename = getOutputFilename(options.tileset.image_filename, ".chr.png", options);
+		const std::string filename = getOutputFilename(options.tileset.image_filenames[0], ".chr.png", options);
 		GFX_LOG_INFO("Generating tileset PNG to [" << filename << "]");
 		if(!gfx::writeTilesetToPNG(
 			tileset, gfx::kTileFlipType_None, palette_set,

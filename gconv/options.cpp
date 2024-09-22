@@ -84,6 +84,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		kOptionHelp,
 	};
 
+	const char* tileset_filename = nullptr;
 	Option cli_options[] =
 	{
 		// hardware
@@ -91,7 +92,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 			"hardware", "hw", "The target hardware", true, kOptionHard, reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
 		// tileset
-		OptionString("tileset", "ts", "The tileset image", true, kOptionTileset, &out_options.tileset.image_filename),
+		OptionString("tileset", "ts", "The tileset image", true, kOptionTileset, &tileset_filename),
 		OptionString("tileset-divisions", "tsd", "The tileset division", false, kOptionTilesetDivisions, &tileset_divisions),
 		OptionStringToInteger(
 			"tile-removal", "trm", "Tile removal mode", false, kOptionTileRemoval, reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
@@ -131,6 +132,11 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	{
 		switch(code)
 		{
+			case kOptionTileset:
+			{
+				out_options.tileset.image_filenames.push_back(tileset_filename);
+				break;
+			}
 			case kRemainingCode:
 			{
 				const char** arguments = cli_parser.getRemainingArguments();
@@ -138,6 +144,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 				{
 					out_options.tilemap.image_filenames.push_back(arguments[i]);
 				}
+				break;
 			}
 			default:
 			{

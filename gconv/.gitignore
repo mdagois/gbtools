@@ -1,5 +1,7 @@
 build
-test/demo_tileset_*.png
+gen_tags.bat
+tags
+test/*
 *.chr
 *.chr.png
 *.idx

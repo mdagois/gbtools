@@ -14,7 +14,7 @@ struct Options
 
 	struct
 	{
-		const char* image_filename = nullptr;
+		std::vector<const char*> image_filenames;
 		gfx::TileRemoval tile_removal = gfx::kTileRemovalNone;
 		std::vector<gfx::Division> divisions;
 		const char* palette_set_filename = nullptr;
