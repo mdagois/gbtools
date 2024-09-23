@@ -98,7 +98,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.base_index = 0;
 			s_capabilities.palette.max_count = 8;
 			s_capabilities.palette.color_max_count = 4;
-			s_capabilities.palette.insert_transparent_color = false;
+			s_capabilities.palette.insert_transparent_color = true;
 			s_capabilities.palette.share_first_color = false;
 
 			s_capabilities.tileset.color_index_format = kFormat_COL2222;
@@ -192,8 +192,52 @@ bool initializeCapabilities(Hardware hardware)
 			break;
 		case kHardware_Vdp_Sprite_8x8:
 		case kHardware_Vdp_Sprite_16x16:
+			s_capabilities.palette.base_index = 0;
+			s_capabilities.palette.max_count = 16;
+			s_capabilities.palette.color_max_count = 2;
+			s_capabilities.palette.insert_transparent_color = true;
+			s_capabilities.palette.share_first_color = false;
+
+			s_capabilities.tileset.color_index_format = kFormat_COL1;
+			s_capabilities.tileset.basic_tile_width = 8;
+			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = hardware == kHardware_Vdp_Sprite_16x16 ? 4 : 1;
+			s_capabilities.tileset.tile_max_count = 0xFFFFFFFFU;
+			s_capabilities.tileset.tiles_per_bank = 0xFFFFFFFFU;
+			s_capabilities.tileset.bank_max_count = 1;
+			s_capabilities.tileset.supports_tile_removal = true;
+
+			s_capabilities.tilemap.enabled = false;
+			s_capabilities.tilemap.tile_index_format = kFormat_None;
+			s_capabilities.tilemap.tile_parameter_format = kFormat_None;
+			s_capabilities.tilemap.supports_tile_flips = false;
+
+			s_capabilities.sprite.enabled = true;
+			s_capabilities.sprite.supports_tile_flips = false;
 			break;
 		case kHardware_Vdp_Mode_1:
+			s_capabilities.palette.base_index = 0;
+			s_capabilities.palette.max_count = 32;
+			s_capabilities.palette.color_max_count = 2;
+			s_capabilities.palette.insert_transparent_color = false;
+			s_capabilities.palette.share_first_color = false;
+
+			s_capabilities.tileset.color_index_format = kFormat_COL1;
+			s_capabilities.tileset.basic_tile_width = 8;
+			s_capabilities.tileset.basic_tile_height = 8;
+			s_capabilities.tileset.tile_group_size = 1;
+			s_capabilities.tileset.tile_max_count = 256;
+			s_capabilities.tileset.tiles_per_bank = 1;
+			s_capabilities.tileset.bank_max_count = 1;
+			s_capabilities.tileset.supports_tile_removal = true;
+
+			s_capabilities.tilemap.enabled = true;
+			s_capabilities.tilemap.tile_index_format = kFormat_IDX8;
+			s_capabilities.tilemap.tile_parameter_format = kFormat_None;
+			s_capabilities.tilemap.supports_tile_flips = false;
+
+			s_capabilities.sprite.enabled = false;
+			s_capabilities.sprite.supports_tile_flips = false;
 			break;
 		default:
 			assert(false);

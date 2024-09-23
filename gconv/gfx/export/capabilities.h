@@ -14,9 +14,12 @@ enum Format : uint32_t
 {
 	kFormat_None,
 
+	// 1-bit color indices
+	kFormat_COL1,
+
 	// 2-bit color indices
 	kFormat_COL2222,
-	// 4-bit interleave color indices
+	// 4-bit interleaved color indices
 	kFormat_COL2222_COL2222_INTERLEAVED,
 
 	// Tilemap indices
