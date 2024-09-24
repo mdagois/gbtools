@@ -28,7 +28,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = false;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;
@@ -52,7 +52,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = true;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;
@@ -76,7 +76,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = false;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;
@@ -101,7 +101,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = true;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = hardware == kHardware_Cgb_Sprite_8x16 ? 2 : 1;
@@ -125,7 +125,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = false;
 			s_capabilities.palette.share_first_color = true;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;
@@ -136,7 +136,7 @@ bool initializeCapabilities(Hardware hardware)
 
 			s_capabilities.tilemap.enabled = true;
 			s_capabilities.tilemap.tile_index_format = kFormat_IDX8;
-			s_capabilities.tilemap.tile_parameter_format = kFormat_PAL2222;
+			s_capabilities.tilemap.tile_parameter_format = kFormat_PAL4x2;
 			s_capabilities.tilemap.supports_tile_flips = false;
 
 			s_capabilities.sprite.enabled = false;
@@ -149,7 +149,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = true;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222_COL2222_INTERLEAVED;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2_COL4x2_INTERLEAVED;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;
@@ -173,7 +173,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = false;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL2222;
+			s_capabilities.tileset.color_index_format = kFormat_COL4x2;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;
@@ -198,7 +198,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = true;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL1;
+			s_capabilities.tileset.color_index_format = kFormat_COL8x1;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = hardware == kHardware_Vdp_Sprite_16x16 ? 4 : 1;
@@ -222,7 +222,7 @@ bool initializeCapabilities(Hardware hardware)
 			s_capabilities.palette.insert_transparent_color = false;
 			s_capabilities.palette.share_first_color = false;
 
-			s_capabilities.tileset.color_index_format = kFormat_COL1;
+			s_capabilities.tileset.color_index_format = kFormat_COL8x1;
 			s_capabilities.tileset.basic_tile_width = 8;
 			s_capabilities.tileset.basic_tile_height = 8;
 			s_capabilities.tileset.tile_group_size = 1;

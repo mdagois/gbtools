@@ -15,12 +15,11 @@ enum Format : uint32_t
 	kFormat_None,
 
 	// 1-bit color indices
-	kFormat_COL1,
-
+	kFormat_COL8x1,
 	// 2-bit color indices
-	kFormat_COL2222,
+	kFormat_COL4x2,
 	// 4-bit interleaved color indices
-	kFormat_COL2222_COL2222_INTERLEAVED,
+	kFormat_COL4x2_COL4x2_INTERLEAVED,
 
 	// Tilemap indices
 	kFormat_IDX8,
@@ -28,7 +27,7 @@ enum Format : uint32_t
 	// CGB tilemap parameters
 	kFormat_PAL3_BNK1_X1_FLP2_PRI1,
 	// SGB screen attributes
-	kFormat_PAL2222,
+	kFormat_PAL4x2,
 	// SFC tilemap parameters
 	kFormat_IDX8_X2_PAL3_X1_FLP2,
 

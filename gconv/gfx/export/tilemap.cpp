@@ -103,7 +103,7 @@ bool TilemapData::initialize(
 					(entry.flip_horizontal ? 0x4000 : 0x0000) |
 					(entry.flip_vertical ? 0x8000 : 0x0000));
 				break;
-			case kFormat_PAL2222:
+			case kFormat_PAL4x2:
 				attribute |= ((palette_index & 0x3) << attribute_shift);
 				if(attribute_shift == 0)
 				{
@@ -120,7 +120,7 @@ bool TilemapData::initialize(
 				break;
 		}
 	}
-	if(	CAPS.tilemap.tile_parameter_format == kFormat_PAL2222 &&
+	if(	CAPS.tilemap.tile_parameter_format == kFormat_PAL4x2 &&
 		attribute_shift != 0)
 	{
 		m_parameters_8.push_back(attribute);
@@ -139,7 +139,7 @@ const uint8_t* TilemapData::getParameterData() const
 	switch(CAPS.tilemap.tile_parameter_format)
 	{
 		case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
-		case kFormat_PAL2222:
+		case kFormat_PAL4x2:
 			return reinterpret_cast<const uint8_t*>(m_parameters_8.data());
 		case kFormat_IDX8_X2_PAL3_X1_FLP2:
 			return reinterpret_cast<const uint8_t*>(m_parameters_16.data());
@@ -159,7 +159,7 @@ uint32_t TilemapData::getParameterDataSize() const
 	switch(CAPS.tilemap.tile_parameter_format)
 	{
 		case kFormat_PAL3_BNK1_X1_FLP2_PRI1:
-		case kFormat_PAL2222:
+		case kFormat_PAL4x2:
 			return static_cast<uint32_t>(m_parameters_8.size() * sizeof(uint8_t));
 		case kFormat_IDX8_X2_PAL3_X1_FLP2:
 			return static_cast<uint32_t>(m_parameters_16.size() * sizeof(uint16_t));

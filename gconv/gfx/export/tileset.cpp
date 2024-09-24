@@ -21,8 +21,9 @@ TilesetData::~TilesetData()
 
 bool TilesetData::initialize(const Tileset& tileset)
 {
-	if( CAPS.tileset.color_index_format != kFormat_COL2222 &&
-		CAPS.tileset.color_index_format != kFormat_COL2222_COL2222_INTERLEAVED)
+	if( CAPS.tileset.color_index_format != kFormat_COL8x1 &&
+		CAPS.tileset.color_index_format != kFormat_COL4x2 &&
+		CAPS.tileset.color_index_format != kFormat_COL4x2_COL4x2_INTERLEAVED)
 	{
 		GFX_LOG_ERROR("Unsupported tile format");
 		return false;
@@ -36,7 +37,17 @@ bool TilesetData::initialize(const Tileset& tileset)
 			GFX_LOG_ERROR("Unsupported flip size");
 			return false;
 		}
-		if(CAPS.tileset.color_index_format == kFormat_COL2222)
+		if(CAPS.tileset.color_index_format == kFormat_COL8x1)
+		{
+			for(uint32_t d = 0; d < flip.height; ++d)
+			{
+				const uint8_t* indices = flip.color_indices.data() + d * flip.width;
+				m_data.push_back(
+					((indices[0] << 7) & 0x80) | ((indices[1] << 6) & 0x40) | ((indices[2] << 5) & 0x20) | ((indices[3] << 4) & 0x10) |
+					((indices[4] << 3) & 0x08) | ((indices[5] << 2) & 0x04) | ((indices[6] << 1) & 0x02) | ((indices[7] << 0) & 0x01));
+			}
+		}
+		else if(CAPS.tileset.color_index_format == kFormat_COL4x2)
 		{
 			for(uint32_t d = 0; d < flip.height; ++d)
 			{
@@ -49,8 +60,18 @@ bool TilesetData::initialize(const Tileset& tileset)
 					((indices[4] << 2) & 0x08) | ((indices[5] << 1) & 0x04) | ((indices[6] << 0) & 0x02) | ((indices[7] >> 1) & 0x01));
 			}
 		}
-		if(CAPS.tileset.color_index_format == kFormat_COL2222_COL2222_INTERLEAVED)
+		else if(CAPS.tileset.color_index_format == kFormat_COL4x2_COL4x2_INTERLEAVED)
 		{
+			for(uint32_t d = 0; d < flip.height; ++d)
+			{
+				const uint8_t* indices = flip.color_indices.data() + d * flip.width;
+				m_data.push_back(
+					((indices[0] << 7) & 0x80) | ((indices[1] << 6) & 0x40) | ((indices[2] << 5) & 0x20) | ((indices[3] << 4) & 0x10) |
+					((indices[4] << 3) & 0x08) | ((indices[5] << 2) & 0x04) | ((indices[6] << 1) & 0x02) | ((indices[7] << 0) & 0x01));
+				m_data.push_back(
+					((indices[0] << 6) & 0x80) | ((indices[1] << 5) & 0x40) | ((indices[2] << 4) & 0x20) | ((indices[3] << 3) & 0x10) |
+					((indices[4] << 2) & 0x08) | ((indices[5] << 1) & 0x04) | ((indices[6] << 0) & 0x02) | ((indices[7] >> 1) & 0x01));
+			}
 			for(uint32_t d = 0; d < flip.height; ++d)
 			{
 				const uint8_t* indices = flip.color_indices.data() + d * flip.width;
