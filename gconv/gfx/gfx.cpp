@@ -105,23 +105,7 @@ static bool addBasicTileSize(std::vector<Division>& divisions)
 // Import
 ////////////////////////////////////////////////////////////////////////////////
 
-bool extractTileset(
-	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
-	const std::vector<Division>& divisions,
-	TileRemoval tile_removal, const char* image_filename)
-{
-	assert(areCapabilitiesInitialized());
-	Image image;
-	if(!image.read(image_filename))
-	{
-		return false;
-	}
-	return extractTileset(
-		out_tileset, out_palette_set, out_division_info,
-		divisions, tile_removal, image);
-}
-
-bool extractTileset(
+static bool extractTileset_FreeForm(
 	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image)
@@ -337,6 +321,46 @@ bool extractTileset(
 	}
 
 	return true;
+}
+
+static bool extractTileset_PaletteBucket(
+	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
+	const std::vector<Division>& divisions,
+	TileRemoval tile_removal, const Image& image)
+{
+	return true;
+}
+
+bool extractTileset(
+	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
+	const std::vector<Division>& divisions,
+	TileRemoval tile_removal, const char* image_filename)
+{
+	assert(areCapabilitiesInitialized());
+	Image image;
+	if(!image.read(image_filename))
+	{
+		return false;
+	}
+	return extractTileset(
+		out_tileset, out_palette_set, out_division_info,
+		divisions, tile_removal, image);
+}
+
+bool extractTileset(
+	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
+	const std::vector<Division>& divisions,
+	TileRemoval tile_removal, const Image& image)
+{
+	if(CAPS.palette.tiles_per_palette > 1)
+	{
+		return extractTileset_PaletteBucket(
+			out_tileset, out_palette_set, out_division_info,
+			divisions, tile_removal, image);
+	}
+	return extractTileset_FreeForm(
+		out_tileset, out_palette_set, out_division_info,
+		divisions, tile_removal, image);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

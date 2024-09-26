@@ -46,6 +46,8 @@ struct Capabilities
 		uint32_t max_count;
 		// Maximum number of colors per palette
 		uint32_t color_max_count;
+		// Number of tiles assigned per palette
+		uint32_t tiles_per_palette;
 		// The first color of all palette is transparent
 		bool insert_transparent_color;
 		// The first color of all palettes is shared
