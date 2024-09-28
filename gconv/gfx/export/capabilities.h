@@ -2,6 +2,7 @@
 
 #include <cstdint>
 
+#include "color.h"
 #include "enums.h"
 
 namespace gfx {
@@ -31,6 +32,11 @@ enum Format : uint32_t
 	// SFC tilemap parameters
 	kFormat_IDX8_X2_PAL3_X1_FLP2,
 
+	// BGR555 color
+	kFormat_Color_BGR555,
+	// 2 4-bit indices
+	kFormat_Color_IDX2x4,
+
 	kFormat_Count,
 };
 
@@ -52,6 +58,12 @@ struct Capabilities
 		bool insert_transparent_color;
 		// The first color of all palettes is shared
 		bool share_first_color;
+		// The format of a color
+		Format format;
+		// The fixed colors used in the system, if any
+		const ColorRGBA* fixed_colors;
+		// The number of fixed colors
+		uint32_t fixed_color_count;
 	} palette;
 
 	struct

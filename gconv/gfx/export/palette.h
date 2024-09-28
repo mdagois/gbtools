@@ -24,7 +24,8 @@ public:
 	uint32_t getDataSize() const;
 
 private:
-	std::vector<ColorBGR555> m_data;
+	std::vector<ColorBGR555> m_data_bgr555;
+	std::vector<ColorIndex> m_data_2x4;
 	uint32_t m_palette_count;
 };
 

@@ -13,6 +13,30 @@ static Capabilities s_capabilities = {};
 
 ////////////////////////////////////////////////////////////////////////////////
 
+static const ColorRGBA s_VDP_colors[] =
+{
+	{0xFFU, 0x00U, 0xFFU, 0xFFU}, // transparent
+	{0x01U, 0x01U, 0x01U, 0xFFU}, // black
+	{0x3EU, 0xB8U, 0x49U, 0xFFU}, // medium green
+	{0x74U, 0xD0U, 0x7DU, 0xFFU}, // light green
+	{0x59U, 0x55U, 0xE0U, 0xFFU}, // dark blue
+	{0x80U, 0x76U, 0xF1U, 0xFFU}, // light blue
+	{0xB9U, 0x5EU, 0x51U, 0xFFU}, // dark red
+	{0x65U, 0xDBU, 0xEFU, 0xFFU}, // cyan
+	{0xDBU, 0x65U, 0x59U, 0xFFU}, // medium red
+	{0xFFU, 0x89U, 0x7DU, 0xFFU}, // light red
+	{0xCCU, 0xC3U, 0x5EU, 0xFFU}, // dark yellow
+	{0xDEU, 0xD0U, 0x87U, 0xFFU}, // light yellow
+	{0x3AU, 0xA2U, 0x41U, 0xFFU}, // dark green
+	{0xB7U, 0x66U, 0xB5U, 0xFFU}, // magenta
+	{0xCCU, 0xCCU, 0xCCU, 0xFFU}, // gray
+	{0xFFU, 0xFFU, 0xFFU, 0xFFU}, // white
+};
+
+static const uint32_t s_VDP_color_count = sizeof(s_VDP_colors) / sizeof(ColorRGBA);
+
+////////////////////////////////////////////////////////////////////////////////
+
 bool initializeCapabilities(Hardware hardware)
 {
 	assert(hardware < kHardwareCount);
@@ -29,6 +53,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = false;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2;
 			cap.tileset.basic_tile_width = 8;
@@ -54,6 +81,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = true;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2;
 			cap.tileset.basic_tile_width = 8;
@@ -79,6 +109,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = false;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2;
 			cap.tileset.basic_tile_width = 8;
@@ -105,6 +138,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = true;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2;
 			cap.tileset.basic_tile_width = 8;
@@ -130,6 +166,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = false;
 			cap.palette.share_first_color = true;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2;
 			cap.tileset.basic_tile_width = 8;
@@ -155,6 +194,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = true;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2_COL4x2_INTERLEAVED;
 			cap.tileset.basic_tile_width = 8;
@@ -180,6 +222,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = false;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_BGR555;
+			cap.palette.fixed_colors = nullptr;
+			cap.palette.fixed_color_count = 0;
 
 			cap.tileset.color_index_format = kFormat_COL4x2;
 			cap.tileset.basic_tile_width = 8;
@@ -206,6 +251,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 1;
 			cap.palette.insert_transparent_color = true;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_IDX2x4;
+			cap.palette.fixed_colors = s_VDP_colors;
+			cap.palette.fixed_color_count = s_VDP_color_count;
 
 			cap.tileset.color_index_format = kFormat_COL8x1;
 			cap.tileset.basic_tile_width = 8;
@@ -231,6 +279,9 @@ bool initializeCapabilities(Hardware hardware)
 			cap.palette.tiles_per_palette = 8;
 			cap.palette.insert_transparent_color = false;
 			cap.palette.share_first_color = false;
+			cap.palette.format = kFormat_Color_IDX2x4;
+			cap.palette.fixed_colors = s_VDP_colors;
+			cap.palette.fixed_color_count = s_VDP_color_count;
 
 			cap.tileset.color_index_format = kFormat_COL8x1;
 			cap.tileset.basic_tile_width = 8;

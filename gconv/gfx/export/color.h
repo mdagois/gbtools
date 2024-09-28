@@ -9,6 +9,7 @@ namespace gfx {
 ////////////////////////////////////////////////////////////////////////////////
 
 typedef uint16_t ColorBGR555;
+typedef uint8_t ColorIndex;
 
 enum : ColorBGR555
 {
@@ -16,6 +17,7 @@ enum : ColorBGR555
 };
 
 ColorBGR555 convertColor(ColorRGBA rgba);
+ColorIndex convertColor(ColorRGBA rgba, const ColorRGBA* colors, uint32_t color_count);
 
 ////////////////////////////////////////////////////////////////////////////////
 
