@@ -288,7 +288,7 @@ bool initializeCapabilities(Hardware hardware)
 			cap.tileset.basic_tile_height = 8;
 			cap.tileset.tile_group_size = 1;
 			cap.tileset.tile_max_count = 256;
-			cap.tileset.tiles_per_bank = 1;
+			cap.tileset.tiles_per_bank = 256;
 			cap.tileset.bank_max_count = 1;
 			cap.tileset.supports_tile_removal = true;
 
