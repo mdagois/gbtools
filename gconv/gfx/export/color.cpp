@@ -27,9 +27,9 @@ static uint64_t computeDistance(ColorRGBA lhs, ColorRGBA rhs)
 	const int32_t lg = lhs.g;
 	const int32_t lb = lhs.b;
 
-	const int32_t rr = lhs.r;
-	const int32_t rg = lhs.g;
-	const int32_t rb = lhs.b;
+	const int32_t rr = rhs.r;
+	const int32_t rg = rhs.g;
+	const int32_t rb = rhs.b;
 
 	const int32_t dr = rr - lr;
 	const int32_t dg = rg - lg;
