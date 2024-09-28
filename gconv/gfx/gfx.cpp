@@ -675,6 +675,10 @@ static bool extractTilemap_PaletteBucket(
 					tile_found = true;
 					break;
 				}
+				if (tile_found)
+				{
+					break;
+				}
 			}
 			if(!tile_found)
 			{
