@@ -292,22 +292,6 @@ static bool extractTileset_FreeForm(
 		}
 	}
 
-	////////////////////////////////////////////////////////////
-	// Print information.
-	////////////////////////////////////////////////////////////
-
-	GFX_LOG_INFO(
-		"Tile count is " << out_tileset.size()
-		<< " and palette count is " << out_palette_set.size()
-		<< " in [" << image.getFilename() << "]"); 
-	if(out_tileset.size() > CAPS.tileset.tile_max_count)
-	{
-		GFX_LOG_INFO(
-			"The tile count " << out_tileset.size()
-			<< " is over the maximum of " << CAPS.tileset.tile_max_count);
-		return false;
-	}
-
 	return true;
 }
 
@@ -339,6 +323,18 @@ static bool extractTileset_PaletteBucket(
 		}))
 	{
 		return false;
+	}
+
+	for(uint32_t i = 0; i < palette_set.size(); ++i)
+	{
+		if(palette_set[i].size() > CAPS.palette.color_max_count)
+		{
+			GFX_LOG_ERROR(
+				"Palette #" << i <<  " in provided palette set has too many colors ("
+				<< palette_set[i].size() << " > " << CAPS.palette.color_max_count
+				<< ") in [" << image.getFilename() << "]");
+			return false;
+		}
 	}
 
 	////////////////////////////////////////////////////////////
@@ -473,59 +469,64 @@ bool extractTileset(
 	// Call the right extraction function.
 	////////////////////////////////////////////////////////////
 
+	bool success = false;
 	if(CAPS.palette.tiles_per_palette > 1)
 	{
-		return extractTileset_PaletteBucket(
+		success = extractTileset_PaletteBucket(
 			out_tileset, out_palette_set, out_division_info,
 			final_divisions, tile_removal, CAPS.palette.tiles_per_palette, image);
 	}
-	return extractTileset_FreeForm(
-		out_tileset, out_palette_set, out_division_info,
-		final_divisions, tile_removal, image);
+	else
+	{
+		success = extractTileset_FreeForm(
+			out_tileset, out_palette_set, out_division_info,
+			final_divisions, tile_removal, image);
+	}
+	if(!success)
+	{
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Print information.
+	////////////////////////////////////////////////////////////
+
+	GFX_LOG_INFO(
+		"Tile count is " << out_tileset.size()
+		<< " and palette count is " << out_palette_set.size()
+		<< " in [" << image.getFilename() << "]"); 
+	if(out_palette_set.size() > CAPS.palette.max_count)
+	{
+		GFX_LOG_ERROR(
+			"The palette count [" << out_palette_set.size()
+			<< "] is over the palette max count [" << CAPS.palette.max_count << "]");
+		return false;
+	}
+	if(out_tileset.size() > CAPS.tileset.tile_max_count)
+	{
+		GFX_LOG_INFO(
+			"The tile count " << out_tileset.size()
+			<< " is over the maximum of " << CAPS.tileset.tile_max_count);
+		return false;
+	}
+	return true;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 
-bool extractTilemap(
-	Tilemap& out_tilemap, DivisionInfo& out_division_info,
-	const Tileset& tileset, const PaletteSet& palette_set,
-	const std::vector<Division>& divisions,
-	const char* image_filename)
-{
-	assert(areCapabilitiesInitialized());
-	Image image;
-	if(!image.read(image_filename))
-	{
-		return false;
-	}
-	return extractTilemap(out_tilemap, out_division_info, tileset, palette_set, divisions, image);
-}
-
-bool extractTilemap(
+static bool extractTilemap_FreeForm(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions,
 	const Image& image)
 {
-	assert(areCapabilitiesInitialized());
-
 	////////////////////////////////////////////////////////////
-	// Prepare divisions.
-	////////////////////////////////////////////////////////////
-
-	std::vector<Division> final_divisions = divisions;
-	if(!addBasicTileSize(final_divisions))
-	{
-		return false;
-	}
-
-	////////////////////////////////////////////////////////////
-	// Generate all the tiles in the tileset.
+	// Generate all the tiles in the tilemap.
 	////////////////////////////////////////////////////////////
 
 	if(!image.iterateTiles(
 		out_division_info,
-		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		divisions.data(), static_cast<uint32_t>(divisions.size()),
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Palette tile_palette(CAPS.palette.insert_transparent_color);
@@ -600,6 +601,72 @@ bool extractTilemap(
 				priority);
 			return true;
 		}))
+	{
+		return false;
+	}
+	return true;
+}
+
+static bool extractTilemap_PaletteBucket(
+	Tilemap& out_tilemap, DivisionInfo& out_division_info,
+	const Tileset& tileset, const PaletteSet& palette_set,
+	const std::vector<Division>& divisions,
+	const Image& image)
+{
+	return true;
+}
+
+bool extractTilemap(
+	Tilemap& out_tilemap, DivisionInfo& out_division_info,
+	const Tileset& tileset, const PaletteSet& palette_set,
+	const std::vector<Division>& divisions,
+	const char* image_filename)
+{
+	assert(areCapabilitiesInitialized());
+	Image image;
+	if(!image.read(image_filename))
+	{
+		return false;
+	}
+	return extractTilemap(out_tilemap, out_division_info, tileset, palette_set, divisions, image);
+}
+
+bool extractTilemap(
+	Tilemap& out_tilemap, DivisionInfo& out_division_info,
+	const Tileset& tileset, const PaletteSet& palette_set,
+	const std::vector<Division>& divisions,
+	const Image& image)
+{
+	assert(areCapabilitiesInitialized());
+
+	////////////////////////////////////////////////////////////
+	// Prepare divisions.
+	////////////////////////////////////////////////////////////
+
+	std::vector<Division> final_divisions = divisions;
+	if(!addBasicTileSize(final_divisions))
+	{
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Call the right extraction function.
+	////////////////////////////////////////////////////////////
+
+	bool success = false;
+	if(CAPS.palette.tiles_per_palette > 1)
+	{
+		success = extractTilemap_PaletteBucket(
+			out_tilemap, out_division_info,
+			tileset, palette_set, final_divisions, image);
+	}
+	else
+	{
+		success = extractTilemap_FreeForm(
+			out_tilemap, out_division_info,
+			tileset, palette_set, final_divisions, image);
+	}
+	if(!success)
 	{
 		return false;
 	}
