@@ -389,7 +389,7 @@ static bool extractTileset_PaletteBucket(
 
 			for(Bucket& bucket : buckets)
 			{
-				if(bucket.palette == tile_palette)
+				if(bucket.palette.contains(tile_palette))
 				{
 					bucket.tiles.push_back(tile);
 					return true;
