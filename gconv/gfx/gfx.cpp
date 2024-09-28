@@ -369,8 +369,8 @@ static bool extractTileset_PaletteBucket(
 		divisions.data(), static_cast<uint32_t>(divisions.size()),
 		[&image, &buckets](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
-			Palette palette(CAPS.palette.insert_transparent_color);
-			if(!extractTilePalette(palette, image_tile))
+			Palette tile_palette(CAPS.palette.insert_transparent_color);
+			if(!extractTilePalette(tile_palette, image_tile))
 			{
 				GFX_LOG_ERROR(
 					"Could not extract palette from tile ("
@@ -379,7 +379,7 @@ static bool extractTileset_PaletteBucket(
 			}
 
 			Tile tile;
-			if(!generateTile(tile, image_tile, palette))
+			if(!generateTile(tile, image_tile, tile_palette))
 			{
 				GFX_LOG_ERROR(
 					"Could not generate tile ("
@@ -389,7 +389,7 @@ static bool extractTileset_PaletteBucket(
 
 			for(Bucket& bucket : buckets)
 			{
-				if(bucket.palette == palette)
+				if(bucket.palette == tile_palette)
 				{
 					bucket.tiles.push_back(tile);
 					return true;
@@ -613,6 +613,82 @@ static bool extractTilemap_PaletteBucket(
 	const std::vector<Division>& divisions,
 	const Image& image)
 {
+	////////////////////////////////////////////////////////////
+	// Generate all the tiles in the tilemap.
+	////////////////////////////////////////////////////////////
+
+	if(!image.iterateTiles(
+		out_division_info,
+		divisions.data(), static_cast<uint32_t>(divisions.size()),
+		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		{
+			Palette tile_palette(CAPS.palette.insert_transparent_color);
+			if(!extractTilePalette(tile_palette, image_tile))
+			{
+				GFX_LOG_ERROR(
+					"Could not extract palette for tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+
+			Tile tile;
+			if(!generateTile(tile, image_tile, tile_palette))
+			{
+				GFX_LOG_ERROR(
+					"Could not generate tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+
+			bool tile_found = false;
+			for(uint32_t p = 0; p < palette_set.size(); ++p)
+			{
+				const Palette palette = palette_set[p];
+				if(!palette.contains(tile_palette))
+				{
+					continue;
+				}
+				const uint32_t start_tile_index = p * CAPS.palette.tiles_per_palette;
+				const uint32_t end_tile_index = start_tile_index + CAPS.palette.tiles_per_palette;
+				for(uint32_t t = start_tile_index; t < end_tile_index; ++t)
+				{
+					if(tile.getTileFlip(kTileFlipType_None) != tileset[t].getTileFlip(kTileFlipType_None))
+					{
+						continue;
+					}
+					constexpr TileFlipType flip_type = kTileFlipType_None;
+					constexpr uint32_t priority = 0;
+					const uint32_t tile_index = t;
+					const uint32_t bank = tile_index / CAPS.tileset.tiles_per_bank;
+					if(bank >= CAPS.tileset.bank_max_count)
+					{
+						GFX_LOG_ERROR(
+							"The bank index [" << bank
+							<< "] is over the bank max count [" << CAPS.tileset.bank_max_count << "]");
+						return false;
+					}
+					out_tilemap.add(
+						tile_index % CAPS.tileset.tiles_per_bank, p, bank,
+						flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
+						flip_type == kTileFlipType_Vertical || flip_type == kTileFlipType_Both,
+						priority);
+					tile_found = true;
+					break;
+				}
+			}
+			if(!tile_found)
+			{
+				GFX_LOG_ERROR(
+					"Could not find tile ("
+					<< x << "," << y << ") in tileset from [" << image.getFilename() << "]");
+				return false;
+			}
+
+			return true;
+		}))
+	{
+		return false;
+	}
 	return true;
 }
 

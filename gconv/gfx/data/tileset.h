@@ -38,6 +38,7 @@ struct TileFlip
 
 void initializeTileFlip(TileFlip& out_tile_flip, uint32_t width, uint32_t height);
 bool operator==(const TileFlip& lhs, const TileFlip& rhs);
+bool operator!=(const TileFlip& lhs, const TileFlip& rhs);
 bool operator<(const TileFlip& lhs, const TileFlip& rhs);
 
 ////////////////////////////////////////////////////////////////////////////////

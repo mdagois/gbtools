@@ -33,6 +33,11 @@ bool operator==(const TileFlip& lhs, const TileFlip& rhs)
 			lhs.color_indices.size() * sizeof(lhs.color_indices[0])) == 0;
 }
 
+bool operator!=(const TileFlip& lhs, const TileFlip& rhs)
+{
+	return !(lhs == rhs);
+}
+
 bool operator<(const TileFlip& lhs, const TileFlip& rhs)
 {
 	return
