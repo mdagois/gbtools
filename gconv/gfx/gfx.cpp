@@ -110,18 +110,6 @@ static bool extractTileset_FreeForm(
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image)
 {
-	assert(areCapabilitiesInitialized());
-
-	////////////////////////////////////////////////////////////
-	// Prepare divisions.
-	////////////////////////////////////////////////////////////
-
-	std::vector<Division> final_divisions = divisions;
-	if(!addBasicTileSize(final_divisions))
-	{
-		return false;
-	}
-
 	////////////////////////////////////////////////////////////
 	// Extract palettes and build palette set.
 	////////////////////////////////////////////////////////////
@@ -144,7 +132,7 @@ static bool extractTileset_FreeForm(
 	{
 		if(!image.iterateTiles(
 			out_division_info,
-			final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+			divisions.data(), static_cast<uint32_t>(divisions.size()),
 			[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 			{
 				Palette palette(CAPS.palette.insert_transparent_color);
@@ -179,7 +167,7 @@ static bool extractTileset_FreeForm(
 	std::vector<TileMetadata> metadata_buffer;
 	if(!image.iterateTiles(
 		out_division_info,
-		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		divisions.data(), static_cast<uint32_t>(divisions.size()),
 		[&out_tileset, &out_palette_set, &image, &metadata_buffer](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Palette tile_palette(CAPS.palette.insert_transparent_color);
@@ -254,7 +242,7 @@ static bool extractTileset_FreeForm(
 	uint32_t tile_index = 0;
 	if(!image.iterateTiles(
 		out_division_info,
-		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		divisions.data(), static_cast<uint32_t>(divisions.size()),
 		[&out_tileset, &out_palette_set, &image, &tile_index, &tile_palette_index](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			const uint32_t palette_index = tile_palette_index[tile_index];
@@ -326,8 +314,125 @@ static bool extractTileset_FreeForm(
 static bool extractTileset_PaletteBucket(
 	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
 	const std::vector<Division>& divisions,
-	TileRemoval tile_removal, const Image& image)
+	TileRemoval tile_removal, uint32_t tiles_per_palette, const Image& image)
 {
+	////////////////////////////////////////////////////////////
+	// Build a temporary palette set.
+	////////////////////////////////////////////////////////////
+
+	PaletteSet palette_set;
+	if(!image.iterateTiles(
+		out_division_info,
+		divisions.data(), static_cast<uint32_t>(divisions.size()),
+		[&palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		{
+			Palette palette(CAPS.palette.insert_transparent_color);
+			if(!extractTilePalette(palette, image_tile))
+			{
+				GFX_LOG_ERROR(
+					"Could not extract palette from tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+			palette_set.add(palette);
+			return true;
+		}))
+	{
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Create the empty buckets.
+	////////////////////////////////////////////////////////////
+
+	struct Bucket
+	{
+		Bucket()
+		: palette(false)
+		{
+		}
+
+		Palette palette;
+		std::vector<Tile> tiles;
+	};
+	std::vector<Bucket> buckets;
+
+	for(uint32_t i = 0; i < palette_set.size(); ++i)
+	{
+		Bucket bucket;
+		bucket.palette = palette_set[i];
+		buckets.push_back(bucket);
+	}
+
+	////////////////////////////////////////////////////////////
+	// Fill the buckets with tiles.
+	////////////////////////////////////////////////////////////
+
+	if(!image.iterateTiles(
+		out_division_info,
+		divisions.data(), static_cast<uint32_t>(divisions.size()),
+		[&image, &buckets](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		{
+			Palette palette(CAPS.palette.insert_transparent_color);
+			if(!extractTilePalette(palette, image_tile))
+			{
+				GFX_LOG_ERROR(
+					"Could not extract palette from tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+
+			Tile tile;
+			if(!generateTile(tile, image_tile, palette))
+			{
+				GFX_LOG_ERROR(
+					"Could not generate tile ("
+					<< x << "," << y << ") in [" << image.getFilename() << "]");
+				return false;
+			}
+
+			for(Bucket& bucket : buckets)
+			{
+				if(bucket.palette == palette)
+				{
+					bucket.tiles.push_back(tile);
+					return true;
+				}
+			}
+			GFX_LOG_ERROR(
+				"Could not find a matching bucket for tile ("
+				<< x << "," << y << ") in [" << image.getFilename() << "]");
+			return false;
+		}))
+	{
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Generate the final palette set and tileset.
+	////////////////////////////////////////////////////////////
+
+	for(Bucket& bucket : buckets)
+	{
+		uint32_t tile_count = CAPS.palette.tiles_per_palette;
+		for(Tile& tile : bucket.tiles)
+		{
+			if(tile_count == CAPS.palette.tiles_per_palette)
+			{
+				tile_count = 0;
+				out_palette_set.add(bucket.palette, false);
+			}
+			tile.setPaletteIndex(out_palette_set.size() - 1);
+			out_tileset.add(tile);
+			++tile_count;
+		}
+		while(tile_count < CAPS.palette.tiles_per_palette)
+		{
+			out_tileset.add(bucket.tiles[0]);
+			++tile_count;
+		}
+	}
+
 	return true;
 }
 
@@ -352,15 +457,31 @@ bool extractTileset(
 	const std::vector<Division>& divisions,
 	TileRemoval tile_removal, const Image& image)
 {
+	assert(areCapabilitiesInitialized());
+
+	////////////////////////////////////////////////////////////
+	// Prepare divisions.
+	////////////////////////////////////////////////////////////
+
+	std::vector<Division> final_divisions = divisions;
+	if(!addBasicTileSize(final_divisions))
+	{
+		return false;
+	}
+
+	////////////////////////////////////////////////////////////
+	// Call the right extraction function.
+	////////////////////////////////////////////////////////////
+
 	if(CAPS.palette.tiles_per_palette > 1)
 	{
 		return extractTileset_PaletteBucket(
 			out_tileset, out_palette_set, out_division_info,
-			divisions, tile_removal, image);
+			final_divisions, tile_removal, CAPS.palette.tiles_per_palette, image);
 	}
 	return extractTileset_FreeForm(
 		out_tileset, out_palette_set, out_division_info,
-		divisions, tile_removal, image);
+		final_divisions, tile_removal, image);
 }
 
 ////////////////////////////////////////////////////////////////////////////////

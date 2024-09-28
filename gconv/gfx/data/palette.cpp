@@ -9,7 +9,7 @@ namespace gfx {
 
 ////////////////////////////////////////////////////////////////////////////////
 
-static bool operator==(const Palette& lhs, const Palette& rhs)
+bool operator==(const Palette& lhs, const Palette& rhs)
 {
     if(lhs.size() != rhs.size())
 	{
@@ -190,18 +190,21 @@ PaletteSet::~PaletteSet()
 {
 }
 
-uint32_t PaletteSet::add(const Palette& palette)
+uint32_t PaletteSet::add(const Palette& palette, bool merge_palettes)
 {
-	for(uint32_t i = 0; i < m_palettes.size(); ++i)
+	if(merge_palettes)
 	{
-		if(m_palettes[i].contains(palette))
+		for(uint32_t i = 0; i < m_palettes.size(); ++i)
 		{
-			return i;
-		}
-		if(palette.contains(m_palettes[i]))
-		{
-			m_palettes[i] = palette;
-			return i;
+			if(m_palettes[i].contains(palette))
+			{
+				return i;
+			}
+			if(palette.contains(m_palettes[i]))
+			{
+				m_palettes[i] = palette;
+				return i;
+			}
 		}
 	}
 	m_palettes.push_back(palette);

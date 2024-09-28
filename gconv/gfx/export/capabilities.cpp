@@ -239,7 +239,7 @@ bool initializeCapabilities(Hardware hardware)
 			cap.tileset.tile_max_count = 256;
 			cap.tileset.tiles_per_bank = 1;
 			cap.tileset.bank_max_count = 1;
-			cap.tileset.supports_tile_removal = false;
+			cap.tileset.supports_tile_removal = true;
 
 			cap.tilemap.enabled = true;
 			cap.tilemap.tile_index_format = kFormat_IDX8;

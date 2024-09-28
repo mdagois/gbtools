@@ -38,6 +38,8 @@ private:
 	std::vector<ColorRGBA> m_colors;
 };
 
+extern bool operator==(const Palette& lhs, const Palette& rhs);
+
 ////////////////////////////////////////////////////////////////////////////////
 // Palette set
 ////////////////////////////////////////////////////////////////////////////////
@@ -48,7 +50,7 @@ public:
 	PaletteSet();
 	virtual ~PaletteSet();
 
-	uint32_t add(const Palette& palette);
+	uint32_t add(const Palette& palette, bool merge_palettes = true);
 	const Palette& operator[](int32_t index) const;
 	Palette& operator[](int32_t index);
 	uint32_t size() const;
