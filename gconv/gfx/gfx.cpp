@@ -364,10 +364,10 @@ static bool extractTileset_PaletteBucket(
 	// Fill the buckets with tiles.
 	////////////////////////////////////////////////////////////
 
-	if(!image.iterateTiles(
+	if (!image.iterateTiles(
 		out_division_info,
 		divisions.data(), static_cast<uint32_t>(divisions.size()),
-		[&image, &buckets](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		[&image, &buckets, tile_removal](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Palette tile_palette(CAPS.palette.insert_transparent_color);
 			if(!extractTilePalette(tile_palette, image_tile))
@@ -391,6 +391,16 @@ static bool extractTileset_PaletteBucket(
 			{
 				if(bucket.palette.contains(tile_palette))
 				{
+					if(tile_removal != kTileRemovalNone)
+					{
+						for(const Tile& bucket_tile : bucket.tiles)
+						{
+							if(tile.getTileFlip(kTileFlipType_None) == bucket_tile.getTileFlip(kTileFlipType_None))
+							{
+								return true;
+							}
+						}
+					}
 					bucket.tiles.push_back(tile);
 					return true;
 				}
