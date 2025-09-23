@@ -193,9 +193,11 @@ void Tileset::removeDoubles(bool compare_flips)
 
 		bool operator<(const CheckEntry& other) const
 		{
-			return
-				palette_index < other.palette_index ||
-				flip < other.flip;
+			if(palette_index == other.palette_index)
+			{
+				return flip < other.flip;
+			}
+			return palette_index < other.palette_index;
 		}
 	};
 	std::set<CheckEntry> check_set;
