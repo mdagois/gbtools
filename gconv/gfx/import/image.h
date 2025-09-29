@@ -36,6 +36,14 @@ private:
 // Image
 ////////////////////////////////////////////////////////////////////////////////
 
+struct Rectangle
+{
+	uint32_t x = 0;
+	uint32_t y = 0;
+	uint32_t w = 0;
+	uint32_t h = 0;
+};
+
 class Image
 {
 public:

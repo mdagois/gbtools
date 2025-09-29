@@ -323,6 +323,7 @@ directory	./options.h	/^		const char* directory = nullptr;$/;"	m	struct:Options:
 division	./gfx/import/division.h	/^	Division division;$/;"	m	struct:gfx::DivisionStatusList	typeref:typename:Division
 division.cpp	./gfx/import/division.cpp	1;"	F	epoch:1758245999
 division.h	./gfx/import/division.h	1;"	F	epoch:1758245999
+divisions	./options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::vector<gfx::Division>
 divisions	./options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:std::vector<gfx::Division>
 eflags	./gfx/third_party/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 enabled	./gfx/export/capabilities.h	/^		bool enabled;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70308	typeref:typename:bool
@@ -345,7 +346,6 @@ extractTileset	./gfx/gfx.cpp	/^bool extractTileset($/;"	f	namespace:gfx	typeref:
 fast	./gfx/third_party/stb_image.h	/^   stbi__uint16 fast[1 << STBI__ZFAST_BITS];$/;"	m	struct:__anonbc04e6d00b08	typeref:typename:stbi__uint16[]
 fast	./gfx/third_party/stb_image.h	/^   stbi_uc  fast[1 << FAST_BITS];$/;"	m	struct:__anonbc04e6d00708	typeref:typename:stbi_uc[]
 fast_ac	./gfx/third_party/stb_image.h	/^   stbi__int16 fast_ac[4][1 << FAST_BITS];$/;"	m	struct:__anonbc04e6d00808	typeref:typename:stbi__int16[4][]
-filename	./options.h	/^		std::string filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
 fill	./gfx/data/palette.cpp	/^void Palette::fill(ColorRGBA color, uint32_t max_color_count)$/;"	f	class:gfx::Palette	typeref:typename:void
 fillDivisionStatusList	./gfx/import/image.cpp	/^static void fillDivisionStatusList($/;"	f	namespace:gfx	typeref:typename:void	file:
 fillOptionBase	./cli/commandline.cpp	/^static void fillOptionBase(Option& out_option, const char* name, const char* short_name, const c/;"	f	namespace:cli	typeref:typename:void	file:
@@ -367,7 +367,7 @@ flip_horizontal	./gfx/data/tilemap.h	/^	bool flip_horizontal;$/;"	m	struct:gfx::
 flip_vertical	./gfx/data/tilemap.h	/^	bool flip_vertical;$/;"	m	struct:gfx::TilemapEntry	typeref:typename:bool
 func	./gfx/third_party/stb_image_write.h	/^   stbi_write_func *func;$/;"	m	struct:__anond9c785ba0108	typeref:typename:stbi_write_func *
 g	./gfx/data/color.h	/^	uint8_t g;$/;"	m	struct:gfx::ColorRGBA	typeref:typename:uint8_t
-gconv.cpp	./gconv.cpp	1;"	F	epoch:1758245999
+gconv.cpp	./gconv.cpp	1;"	F	epoch:1759117255
 generateFlips	./gfx/data/tileset.cpp	/^static void generateFlips(TileFlip* inout_tile_flips)$/;"	f	namespace:gfx	typeref:typename:void	file:
 generateTile	./gfx/gfx.cpp	/^static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Palette& palette)$/;"	f	namespace:gfx	typeref:typename:bool	file:
 generateTileFlip	./gfx/gfx.cpp	/^static bool generateTileFlip($/;"	f	namespace:gfx	typeref:typename:bool	file:
@@ -436,7 +436,7 @@ gfx	./gfx/utils/log.cpp	/^namespace gfx {$/;"	n	file:
 gfx	./gfx/utils/log.h	/^namespace gfx {$/;"	n
 gfx.cpp	./gfx/gfx.cpp	1;"	F	epoch:1758245999
 gfx.h	./gfx/gfx.h	1;"	F	epoch:1758245999
-h	./gfx/import/image.h	/^	uint32_t h;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
+h	./gfx/import/image.h	/^	uint32_t h = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 h	./gfx/third_party/stb_image.h	/^      int h,v;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 h	./gfx/third_party/stb_image.h	/^   int w,h;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 h2	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
@@ -457,8 +457,10 @@ id	./gfx/third_party/stb_image.h	/^      int id;$/;"	m	struct:__anonbc04e6d00808
 idata	./gfx/third_party/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:stbi_uc *
 idct_block_kernel	./gfx/third_party/stb_image.h	/^   void (*idct_block_kernel)(stbi_uc *out, int out_stride, short data[64]);$/;"	m	struct:__anonbc04e6d00808	typeref:typename:void (*)(stbi_uc * out,int out_stride,short data[64])
 image.cpp	./gfx/import/image.cpp	1;"	F	epoch:1758245999
-image.h	./gfx/import/image.h	1;"	F	epoch:1759108437
+image.h	./gfx/import/image.h	1;"	F	epoch:1759111217
+image_disguise_filename	./options.h	/^		std::string image_disguise_filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
 image_filename	./options.h	/^		const char* image_filename = nullptr;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:const char *
+image_filename	./options.h	/^		std::string image_filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
 image_height	./gfx/import/division.h	/^	uint32_t image_height;$/;"	m	struct:gfx::DivisionInfo	typeref:typename:uint32_t
 image_width	./gfx/import/division.h	/^	uint32_t image_width;$/;"	m	struct:gfx::DivisionInfo	typeref:typename:uint32_t
 img_buffer	./gfx/third_party/stb_image.h	/^   stbi_uc *img_buffer, *img_buffer_end;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:stbi_uc *
@@ -559,6 +561,7 @@ kOptionTileIndexOffset	./options.cpp	/^		kOptionTileIndexOffset,$/;"	e	enum:pars
 kOptionTileRemoval	./options.cpp	/^		kOptionTileRemoval,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
 kOptionTilemap	./options.cpp	/^		kOptionTilemap,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
 kOptionTilemapDivisions	./options.cpp	/^		kOptionTilemapDivisions,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
+kOptionTilemapOutput	./options.cpp	/^		kOptionTilemapOutput,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
 kOptionTilemapRectangle	./options.cpp	/^		kOptionTilemapRectangle,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
 kOptionTileset	./options.cpp	/^		kOptionTileset,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
 kOptionTilesetDivisions	./options.cpp	/^		kOptionTilesetDivisions,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
@@ -673,8 +676,8 @@ operator []	./gfx/import/image.cpp	/^const ColorRGBA ImageArea::operator[](int32
 operator []	./gfx/import/image.cpp	/^const ColorRGBA ImageTile::operator[](int32_t index) const$/;"	f	class:gfx::ImageTile	typeref:typename:const ColorRGBA
 optimize	./gfx/data/palette.cpp	/^bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_pa/;"	f	class:gfx::PaletteSet	typeref:typename:bool
 option_type	./cli/commandline.h	/^	OptionType option_type;$/;"	m	struct:cli::Option	typeref:typename:OptionType
-options.cpp	./options.cpp	1;"	F	epoch:1759108557
-options.h	./options.h	1;"	F	epoch:1759108420
+options.cpp	./options.cpp	1;"	F	epoch:1759118022
+options.h	./options.h	1;"	F	epoch:1759117271
 order	./gfx/third_party/stb_image.h	/^   int scan_n, order[4];$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int[4]
 out	./gfx/third_party/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:stbi_uc *
 out	./gfx/third_party/stb_image.h	/^   stbi_uc *out;                 \/\/ output buffer (always 4 components)$/;"	m	struct:__anonbc04e6d01308	typeref:typename:stbi_uc *
@@ -694,6 +697,7 @@ parameter_type	./cli/commandline.h	/^	ParameterType parameter_type;$/;"	m	struct
 parse	./gfx/third_party/stb_image.h	/^   int parse, step;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 parseCliOptions	./options.cpp	/^bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv)$/;"	f	typeref:typename:bool
 parseDivisions	./options.cpp	/^static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::string sequence)$/;"	f	typeref:typename:bool	file:
+parseRectangle	./options.cpp	/^static bool parseRectangle(gfx::Rectangle& out_rectangle, std::string sequence)$/;"	f	typeref:typename:bool	file:
 prefix	./gfx/third_party/stb_image.h	/^   stbi__int16 prefix;$/;"	m	struct:__anonbc04e6d01208	typeref:typename:stbi__int16
 printDivisionInfo	./gfx/gfx.cpp	/^bool printDivisionInfo(const DivisionInfo& info)$/;"	f	namespace:gfx	typeref:typename:bool
 printHelp	./cli/commandline.cpp	/^void Parser::printHelp() const$/;"	f	class:cli::Parser	typeref:typename:void
@@ -707,8 +711,8 @@ read	./gfx/import/image.cpp	/^bool Image::read(const char* filename)$/;"	f	class
 read	./gfx/third_party/stb_image.h	/^   int      (*read)  (void *user,char *data,int size);   \/\/ fill 'data' with 'size' bytes.  re/;"	m	struct:__anonbc04e6d00208	typeref:typename:int (*)(void * user,char * data,int size)
 read_from_callbacks	./gfx/third_party/stb_image.h	/^   int read_from_callbacks;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:int
 readinfo.cpp	./readinfo.cpp	1;"	F	epoch:1758245999
-rectangle	./options.h	/^		Rectangle rectangle;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:Rectangle
-rectangle	./options.h	/^		gfx::Rectangle rectangle:$/;"	m	struct:Options::TilemapEntry	typeref:typename:gfx::Rectangle
+rectangle	./options.h	/^		gfx::Rectangle rectangle;$/;"	m	struct:Options::TilemapEntry	typeref:typename:gfx::Rectangle
+rectangle	./options.h	/^		gfx::Rectangle rectangle;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:gfx::Rectangle
 removeDoubles	./gfx/data/tileset.cpp	/^void Tileset::removeDoubles(bool compare_flips)$/;"	f	class:gfx::Tileset	typeref:typename:void
 required	./cli/commandline.h	/^	bool required;$/;"	m	struct:cli::Option	typeref:typename:bool
 resample	./gfx/third_party/stb_image.h	/^   resample_row_func resample;$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:resample_row_func
@@ -1181,7 +1185,7 @@ value	./gfx/third_party/stb_image.h	/^   stbi__uint16 value[STBI__ZNSYMS];$/;"	m
 values	./gfx/third_party/stb_image.h	/^   stbi_uc  values[256];$/;"	m	struct:__anonbc04e6d00708	typeref:typename:stbi_uc[256]
 verbose	./options.h	/^	bool verbose = false;$/;"	m	struct:Options	typeref:typename:bool
 vs	./gfx/third_party/stb_image.h	/^   int hs,vs;   \/\/ expansion factor in each axis$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
-w	./gfx/import/image.h	/^	uint32_t w;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
+w	./gfx/import/image.h	/^	uint32_t w = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 w	./gfx/third_party/stb_image.h	/^   int w,h;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 w2	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 w_lores	./gfx/third_party/stb_image.h	/^   int w_lores; \/\/ horizontal pixels pre-expansion$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
@@ -1195,9 +1199,9 @@ write_back_address	./cli/commandline.h	/^			bool* write_back_address;$/;"	m	stru
 write_back_address	./cli/commandline.h	/^			const char** write_back_address;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460408	typeref:typename:const char **
 write_back_address	./cli/commandline.h	/^			int32_t* write_back_address;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460308	typeref:typename:int32_t *
 write_back_address	./cli/commandline.h	/^			int32_t* write_back_address;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460508	typeref:typename:int32_t *
-x	./gfx/import/image.h	/^	uint32_t x;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
+x	./gfx/import/image.h	/^	uint32_t x = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 x	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
-y	./gfx/import/image.h	/^	uint32_t y;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
+y	./gfx/import/image.h	/^	uint32_t y = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 y	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 ypos	./gfx/third_party/stb_image.h	/^   int ypos;    \/\/ which pre-expansion row we're on$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
 ystep	./gfx/third_party/stb_image.h	/^   int ystep;   \/\/ how far through vertical expansion we are$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int

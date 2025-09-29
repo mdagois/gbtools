@@ -57,18 +57,18 @@ static bool importData(
 
 	out_tilemaps.clear();
 	out_tilemap_division_infos.clear();
-	for(auto image_filename : options.tilemap.image_filenames)
+	for(auto& entry : options.tilemap.entries)
 	{
-		GFX_LOG_INFO("Extracting tilemap from [" << image_filename << "]");
+		GFX_LOG_INFO("Extracting tilemap from [" << entry.image_filename << "]");
 		const size_t size = out_tilemaps.size();
 		out_tilemaps.resize(size + 1);
 		out_tilemap_division_infos.resize(size + 1);
 		if(!gfx::extractTilemap(
 			out_tilemaps[size], out_tilemap_division_infos[size],
 			out_tileset, out_palette_set,
-			options.tilemap.divisions, image_filename))
+			entry.divisions, entry.image_filename.c_str()))
 		{
-			GFX_LOG_ERROR("Could not extract tilemap from [" << image_filename << "]");
+			GFX_LOG_ERROR("Could not extract tilemap from [" << entry.image_filename << "]");
 			return false;
 		}
 	}
@@ -124,10 +124,10 @@ static bool exportData(
 
 	if(!options.output.skip_export_indices || !options.output.skip_export_parameters)
 	{
-		assert(tilemaps.size() == options.tilemap.image_filenames.size());
+		assert(tilemaps.size() == options.tilemap.entries.size());
 		for(size_t i = 0; i < tilemaps.size(); ++i)
 		{
-			const char* image_filename = options.tilemap.image_filenames[i];
+			const char* image_filename = options.tilemap.entries[i].image_disguise_filename.c_str();
 			const std::string idx_filename = getOutputFilename(image_filename, ".idx", options);
 			const std::string prm_filename = getOutputFilename(image_filename, ".prm", options);
 			GFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
@@ -167,10 +167,10 @@ static bool exportInfo(
 
 	if(!options.output.skip_export_tilemap_info)
 	{
-		assert(tilemap_division_infos.size() == options.tilemap.image_filenames.size());
+		assert(tilemap_division_infos.size() == options.tilemap.entries.size());
 		for(size_t i = 0; i < tilemap_division_infos.size(); ++i)
 		{
-			const std::string filename = getOutputFilename(options.tilemap.image_filenames[i], ".tlm.info", options);
+			const std::string filename = getOutputFilename(options.tilemap.entries[i].image_disguise_filename.c_str(), ".tlm.info", options);
 			GFX_LOG_INFO("Writing tilemap info to [" << filename << "]");
 			if(!gfx::writeDivisionInfo(tilemap_division_infos[i], filename.c_str()))
 			{
