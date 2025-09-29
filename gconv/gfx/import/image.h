@@ -36,6 +36,14 @@ private:
 // Image
 ////////////////////////////////////////////////////////////////////////////////
 
+struct Rectangle
+{
+	uint32_t x = 0;
+	uint32_t y = 0;
+	uint32_t w = 0;
+	uint32_t h = 0;
+};
+
 class Image
 {
 public:
@@ -52,6 +60,7 @@ public:
 	bool iterateTiles(
 		DivisionInfo& out_division_info,
 		const Division* divisions, uint32_t division_count,
+		const Rectangle rectangle,
 		std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const;
 
 private:

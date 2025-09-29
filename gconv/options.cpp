@@ -16,7 +16,7 @@ static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::strin
 		std::smatch match = *it;
 		if(match.size() != 4)
 		{
-			GFX_LOG_ERROR("Unspected error when matching the division sequence");
+			GFX_LOG_ERROR("Unspected error when matching the division sequence [" << sequence << "]");
 			return false;
 		}
 
@@ -25,6 +25,28 @@ static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::strin
 		division.height = std::stoi(match[2]);
 		division.skip_transparent = (match[3].str())[0] == 's';
 		out_divisions.push_back(division);
+	}
+	return true;
+}
+
+static bool parseRectangle(gfx::Rectangle& out_rectangle, std::string sequence)
+{
+	std::regex pattern("(\\d+):(\\d+):(\\d+):(\\d+)");
+	auto match_begin = std::sregex_iterator(sequence.begin(), sequence.end(), pattern);
+	auto match_end = std::sregex_iterator();
+	for(std::sregex_iterator it = match_begin; it != match_end; ++it)
+	{
+		std::smatch match = *it;
+		if(match.size() != 5)
+		{
+			GFX_LOG_ERROR("Unspected error when matching the rectangle sequence [" << sequence << "]");
+			return false;
+		}
+
+		out_rectangle.x = std::stoi(match[1]);
+		out_rectangle.y = std::stoi(match[2]);
+		out_rectangle.w = std::stoi(match[3]);
+		out_rectangle.h = std::stoi(match[4]);
 	}
 	return true;
 }
@@ -57,7 +79,12 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	};
 
 	const char* tileset_divisions = nullptr;
+	const char* tileset_rectangle = nullptr;
+
+	const char* tilemap_filename = nullptr;
+	const char* tilemap_disguise_filename = nullptr;
 	const char* tilemap_divisions = nullptr;
+	const char* tilemap_rectangle = nullptr;
 
 	enum : uint32_t
 	{
@@ -65,8 +92,12 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		kOptionTileset,
 		kOptionTilesetDivisions,
 		kOptionTileRemoval,
+		kOptionTilesetRectangle,
 		kOptionInputPaletteSet,
+		kOptionTilemap,
+		kOptionTilemapDisguise,
 		kOptionTilemapDivisions,
+		kOptionTilemapRectangle,
 		kOptionOutputDirectory,
 		kOptionPaletteIndexOffset,
 		kOptionTileIndexOffset,
@@ -90,6 +121,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionStringToInteger(
 			"hardware", "hw", "The target hardware", true, kOptionHard, reinterpret_cast<int32_t*>(&out_options.hardware),
 			hardware_mapping, sizeof(hardware_mapping) / sizeof(hardware_mapping[0])),
+
 		// tileset
 		OptionString("tileset", "ts", "The tileset image", true, kOptionTileset, &out_options.tileset.image_filename),
 		OptionString("tileset-divisions", "tsd", "The tileset division", false, kOptionTilesetDivisions, &tileset_divisions),
@@ -97,8 +129,14 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 			"tile-removal", "trm", "Tile removal mode", false, kOptionTileRemoval, reinterpret_cast<int32_t*>(&out_options.tileset.tile_removal),
 			tile_removal_mapping, sizeof(tile_removal_mapping) / sizeof(tile_removal_mapping[0])),
 		OptionString("input-palette-set", "ips", "Provided palette set image", false, kOptionInputPaletteSet, &out_options.tileset.palette_set_filename),
+		OptionString("tileset-rectangle", "tsr", "Tileset rectangle", false, kOptionTilesetRectangle, &tileset_rectangle),
+
 		// tilemap
+		OptionString("tilemap", "tm", "A tilemap image", false, kOptionTilemap, &tilemap_filename),
+		OptionString("tilemap-disguise", "tdf", "The tilemap disguise filename", false, kOptionTilemapDisguise, &tilemap_disguise_filename),
 		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, kOptionTilemapDivisions, &tilemap_divisions),
+		OptionString("tilemap-rectangle", "tmr", "The tilemap rectangle", false, kOptionTilemapRectangle, &tilemap_rectangle),
+
 		// output
 		OptionString("output-directory", "o", "The output directory", false, kOptionOutputDirectory, &out_options.output.directory),
 		OptionInteger("palette-index-offset", "pio", "Palette index offset", false, kOptionPaletteIndexOffset, &out_options.output.palette_index_offset),
@@ -111,9 +149,11 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemap parameters", kOptionSkipExportParameter, &out_options.output.skip_export_parameters),
 		OptionFlag("skip-export-tileset-info", "sti", "Skip export of the tileset info", kOptionSkipExportTilesetInfo, &out_options.output.skip_export_tileset_info),
 		OptionFlag("skip-export-tilemap-info", "smi", "Skip export of the tilemap info", kOptionSkipExportTilemapInfo, &out_options.output.skip_export_tilemap_info),
+
 		// debug
 		OptionFlag("generate-png-palette", "gpal", "Generate a PNG file of the palette", kOptionGeneratePalette, &out_options.debug.generate_palette_png),
 		OptionFlag("generate-png-tileset", "gtls", "Generate a PNG file of the tileset", kOptionGenerateTileset, &out_options.debug.generate_tileset_png),
+
 		// misc
 		OptionFlag("verbose", "v", "Enable verbose mode", kOptionVerbose, &out_options.verbose),
 		OptionFlag("help", "h", "Show help", kOptionHelp, &out_options.help),
@@ -131,13 +171,32 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	{
 		switch(code)
 		{
+			case kOptionTilemap:
+			{
+				Options::TilemapEntry entry;
+				entry.image_filename = tilemap_filename;
+				entry.image_disguise_filename =
+					tilemap_disguise_filename == nullptr || tilemap_disguise_filename == "" ?
+					tilemap_filename : tilemap_disguise_filename;
+				if( tilemap_divisions != nullptr &&
+					!parseDivisions(entry.divisions, tilemap_divisions))
+				{
+					GFX_LOG_ERROR("Cannot parse tilemap divisions");
+					return false;
+				}
+				if( tilemap_rectangle != nullptr &&
+					!parseRectangle(entry.rectangle, tilemap_rectangle))
+				{
+					GFX_LOG_ERROR("Cannot parse tilemap rectangle");
+					return false;
+				}
+				out_options.tilemap.entries.push_back(entry);
+				break;
+			}
 			case kRemainingCode:
 			{
-				const char** arguments = cli_parser.getRemainingArguments();
-				for(int32_t i = 0; i < cli_parser.getRemainingArgumentCount(); ++i)
-				{
-					out_options.tilemap.image_filenames.push_back(arguments[i]);
-				}
+				GFX_LOG_ERROR("Unsupported trailing parameters");
+				return false;
 			}
 			default:
 			{
@@ -165,10 +224,10 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		GFX_LOG_ERROR("Cannot parse tileset divisions");
 		return false;
 	}
-	if( tilemap_divisions != nullptr &&
-		!parseDivisions(out_options.tilemap.divisions, tilemap_divisions))
+	if( tileset_rectangle != nullptr &&
+		!parseRectangle(out_options.tileset.rectangle, tileset_rectangle))
 	{
-		GFX_LOG_ERROR("Cannot parse tilemap divisions");
+		GFX_LOG_ERROR("Cannot parse tileset rectangle");
 		return false;
 	}
 

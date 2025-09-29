@@ -25,22 +25,22 @@ bool initialize(Hardware hardware);
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	TileRemoval tile_removal, const char* image_filename);
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	TileRemoval tile_removal, const Image& image);
 
 bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	const char* image_filename);
 bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	const Image& image);
 
 ////////////////////////////////////////////////////////////////////////////////

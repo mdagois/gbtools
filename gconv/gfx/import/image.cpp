@@ -303,6 +303,44 @@ static bool validateDivisionInfo(
 }
 
 ////////////////////////////////////////////////////////////////////////////////
+// Rectangle
+////////////////////////////////////////////////////////////////////////////////
+
+static bool computeRectangle(Rectangle& out_rectangle, const Rectangle rectangle, uint32_t width, uint32_t height)
+{
+	if(rectangle.x > width - 1)
+	{
+		GFX_LOG_ERROR("The rectangle X offset is beyond the width (" << rectangle.x << " > " << width - 1 << ")");
+		return false;
+	}
+	if(rectangle.y > height - 1)
+	{
+		GFX_LOG_ERROR("The rectangle Y offset is beyond the height (" << rectangle.y << " > " << height - 1 << ")");
+		return false;
+	}
+	if(rectangle.w > 0 && rectangle.x + rectangle.w > width)
+	{
+		GFX_LOG_ERROR("The rectangle X + W is beyond the width (" << rectangle.x + rectangle.w << " > " << width << ")");
+		return false;
+	}
+	if(rectangle.h > 0 && rectangle.y + rectangle.h > height)
+	{
+		GFX_LOG_ERROR("The rectangle Y + H is beyond the height (" << rectangle.y + rectangle.h << " > " << height << ")");
+		return false;
+	}
+	out_rectangle = rectangle;
+	if(out_rectangle.w == 0)
+	{
+		out_rectangle.w = width - out_rectangle.x;
+	}
+	if(out_rectangle.h == 0)
+	{
+		out_rectangle.h = height - out_rectangle.y;
+	}
+	return true;
+}
+
+////////////////////////////////////////////////////////////////////////////////
 // Image
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -364,6 +402,7 @@ const ColorRGBA* Image::getPixels() const
 bool Image::iterateTiles(
 	DivisionInfo& out_division_info,
 	const Division* divisions, uint32_t division_count,
+	const Rectangle rectangle,
 	std::function<bool(const ImageTile&, uint32_t, uint32_t)> tile_callback) const
 {
 	if(!validateDivisions(m_width, m_height, divisions, division_count))
@@ -401,12 +440,18 @@ bool Image::iterateTiles(
 		std::fill(list.begin(), list.end(), kDivisionStatus_Invalid);
 	}
 
-	ImageArea full_image(
+	Rectangle start_rectangle;
+	if(!computeRectangle(start_rectangle, rectangle, m_width, m_height))
+	{
+		GFX_LOG_ERROR("Could not compute the start rectangle");
+		return false;
+	}
+	ImageArea start_image(
 		m_pixels,
-		0, 0, m_width, m_height,
+		start_rectangle.x, start_rectangle.y, start_rectangle.w, start_rectangle.h,
 		m_width);
 	return
-		full_image.iterateArea(out_division_info.data(), division_count - 1, area_callback) &&
+		start_image.iterateArea(out_division_info.data(), division_count - 1, area_callback) &&
 		validateDivisionInfo(m_width, m_height, out_division_info, divisions, division_count) &&
 		computeDivisionInfoOffsets(out_division_info);
 }

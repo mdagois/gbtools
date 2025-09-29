@@ -17,14 +17,22 @@ struct Options
 		const char* image_filename = nullptr;
 		gfx::TileRemoval tile_removal = gfx::kTileRemovalNone;
 		std::vector<gfx::Division> divisions;
+		gfx::Rectangle rectangle;
 		const char* palette_set_filename = nullptr;
 	}
 	tileset;
 
+	struct TilemapEntry
+	{
+		std::string image_filename;
+		std::string image_disguise_filename;
+		std::vector<gfx::Division> divisions;
+		gfx::Rectangle rectangle;
+	};
+
 	struct
 	{
-		std::vector<const char*> image_filenames;
-		std::vector<gfx::Division> divisions;
+		std::vector<TilemapEntry> entries;
 	}
 	tilemap;
 

@@ -107,7 +107,7 @@ static bool addBasicTileSize(std::vector<Division>& divisions)
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	TileRemoval tile_removal, const char* image_filename)
 {
 	assert(areCapabilitiesInitialized());
@@ -118,12 +118,12 @@ bool extractTileset(
 	}
 	return extractTileset(
 		out_tileset, out_palette_set, out_division_info,
-		divisions, tile_removal, image);
+		divisions, rectangle, tile_removal, image);
 }
 
 bool extractTileset(
 	Tileset& out_tileset, PaletteSet& out_palette_set, DivisionInfo& out_division_info,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	TileRemoval tile_removal, const Image& image)
 {
 	assert(areCapabilitiesInitialized());
@@ -161,6 +161,7 @@ bool extractTileset(
 		if(!image.iterateTiles(
 			out_division_info,
 			final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+			rectangle,
 			[&out_palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 			{
 				Palette palette(CAPS.palette.insert_transparent_color);
@@ -196,6 +197,7 @@ bool extractTileset(
 	if(!image.iterateTiles(
 		out_division_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		rectangle,
 		[&out_tileset, &out_palette_set, &image, &metadata_buffer](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Palette tile_palette(CAPS.palette.insert_transparent_color);
@@ -271,6 +273,7 @@ bool extractTileset(
 	if(!image.iterateTiles(
 		out_division_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		rectangle,
 		[&out_tileset, &out_palette_set, &image, &tile_index, &tile_palette_index](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			const uint32_t palette_index = tile_palette_index[tile_index];
@@ -344,7 +347,7 @@ bool extractTileset(
 bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	const char* image_filename)
 {
 	assert(areCapabilitiesInitialized());
@@ -353,13 +356,13 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, out_division_info, tileset, palette_set, divisions, image);
+	return extractTilemap(out_tilemap, out_division_info, tileset, palette_set, divisions, rectangle, image);
 }
 
 bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
-	const std::vector<Division>& divisions,
+	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	const Image& image)
 {
 	assert(areCapabilitiesInitialized());
@@ -381,6 +384,7 @@ bool extractTilemap(
 	if(!image.iterateTiles(
 		out_division_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
+		rectangle,
 		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			Palette tile_palette(CAPS.palette.insert_transparent_color);
