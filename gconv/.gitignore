@@ -1,10 +1,12 @@
 build
-test/demo_tileset_*.png
+test/
 *.chr
+*.chr.info
 *.chr.png
 *.idx
 *.pal
 *.pal.png
+*.png
 *.prm
 *.swp
 *.tiles.png
