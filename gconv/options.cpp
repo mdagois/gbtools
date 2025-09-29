@@ -85,6 +85,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	const char* tilemap_disguise_filename = nullptr;
 	const char* tilemap_divisions = nullptr;
 	const char* tilemap_rectangle = nullptr;
+	bool tilemap_reset = false;
 
 	enum : uint32_t
 	{
@@ -98,6 +99,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		kOptionTilemapDisguise,
 		kOptionTilemapDivisions,
 		kOptionTilemapRectangle,
+		kOptionTilemapResetParameters,
 		kOptionOutputDirectory,
 		kOptionPaletteIndexOffset,
 		kOptionTileIndexOffset,
@@ -136,6 +138,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionString("tilemap-disguise", "tdf", "The tilemap disguise filename", false, kOptionTilemapDisguise, &tilemap_disguise_filename),
 		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, kOptionTilemapDivisions, &tilemap_divisions),
 		OptionString("tilemap-rectangle", "tmr", "The tilemap rectangle", false, kOptionTilemapRectangle, &tilemap_rectangle),
+		OptionFlag("tilemap-reset-parameters", "trp", "Reset the tilemap parameters", kOptionTilemapResetParameters, &tilemap_reset),
 
 		// output
 		OptionString("output-directory", "o", "The output directory", false, kOptionOutputDirectory, &out_options.output.directory),
@@ -191,6 +194,13 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 					return false;
 				}
 				out_options.tilemap.entries.push_back(entry);
+				break;
+			}
+			case kOptionTilemapResetParameters:
+			{
+				tilemap_disguise_filename = nullptr;
+				tilemap_divisions = nullptr;
+				tilemap_rectangle = nullptr;
 				break;
 			}
 			case kRemainingCode:
