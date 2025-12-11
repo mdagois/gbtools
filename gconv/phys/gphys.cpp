@@ -39,6 +39,7 @@ struct Point
 
 struct Entry
 {
+	uint32_t column;
 	Point left;
 	Point right;
 };
@@ -103,11 +104,12 @@ static bool read(Data& data, Options options)
 			for(uint32_t i = 0; i < kTileWidth * kTileHeight; ++i)
 			{
 				const ColorRGBA color = tile[i];
-				if(color != kRGBA_Magenta)
+				if(color == kRGBA_Magenta)
 				{
-					assert(color == kRGBA_Black);
-					register_entry = true;
+					continue;
 				}
+				assert(color == kRGBA_Black);
+				register_entry = true;
 
 				const int32_t px = i % kTileWidth;
 				const int32_t py = i / kTileWidth;
@@ -125,6 +127,7 @@ static bool read(Data& data, Options options)
 			if(register_entry)
 			{
 				Entry entry;
+				entry.column = column_num;
 				entry.left = leftmost;
 				entry.right = rightmost;
 				data.entries.push_back(entry);
