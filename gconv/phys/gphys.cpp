@@ -20,6 +20,8 @@ enum : uint32_t
 	kColumnWidth = 8U,
 	kTileWidth = 8U,
 	kTileHeight = 8U,
+
+	kBaseAddress = 0x4000U,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -69,6 +71,25 @@ static bool read(Data& data, Options options)
 	Column current_column;
 	current_column.num = kInvalidColumnNum;
 
+	auto addColumn = [&data, &current_column]()
+	{
+		if(current_column.num != kInvalidColumnNum)
+		{
+			uint32_t column_count = static_cast<uint32_t>(data.columns.size());
+			while(column_count < current_column.num)
+			{
+				Column column;
+				column.num = column_count;
+				data.columns.push_back(column);
+				++column_count;
+			}
+			assert(data.columns.size() == current_column.num);
+			current_column.entry_count = static_cast<uint32_t>(data.entries.size()) - current_column.start_entry;
+			data.columns.push_back(current_column);
+		}
+	};
+
+	int32_t last_column_num = 0;
 	DivisionInfo division_info;
 	Rectangle rectangle;
 	if(!image.iterateTiles(
@@ -76,7 +97,7 @@ static bool read(Data& data, Options options)
 		options.input.divisions.data(),
 		static_cast<uint32_t>(options.input.divisions.size()),
 		rectangle,
-		[&data, &current_column](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&data, &current_column, &addColumn](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			assert(tile.getWidth() == kTileWidth && tile.getHeight() == kTileHeight);
 			assert(tile.getWidth() % kTileWidth == 0);
@@ -86,12 +107,7 @@ static bool read(Data& data, Options options)
 
 			if(column_num != current_column.num)
 			{
-				if(current_column.num != kInvalidColumnNum)
-				{
-					current_column.entry_count = entry_count - current_column.start_entry;
-					data.columns.push_back(current_column);
-				}
-
+				addColumn();
 				current_column.num = column_num;
 				current_column.start_entry = entry_count;
 			}
@@ -139,11 +155,8 @@ static bool read(Data& data, Options options)
 		return false;
 	}
 
-	if(current_column.num != kInvalidColumnNum)
-	{
-		current_column.entry_count = static_cast<uint32_t>(data.entries.size()) - current_column.start_entry;
-		data.columns.push_back(current_column);
-	}
+	addColumn();
+	assert(static_cast<uint32_t>(data.columns.size()) == image.getWidth() / kTileWidth);
 
 	return true;
 }
@@ -152,6 +165,7 @@ static bool read(Data& data, Options options)
 
 static bool write(const Data& data, const Options options)
 {
+	//TODO
 	return true;
 }
 
