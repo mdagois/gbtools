@@ -30,8 +30,8 @@ enum : uint32_t
 struct Column
 {
 	uint32_t num = 0;
-	uint32_t start_entry = 0;
-	uint32_t entry_count = 0;
+	uint32_t start_box = 0;
+	uint32_t box_count = 0;
 };
 
 struct Point
@@ -40,7 +40,7 @@ struct Point
 	int32_t y = 0;
 };
 
-struct Entry
+struct Box
 {
 	uint32_t column;
 	Point left;
@@ -50,7 +50,7 @@ struct Entry
 struct Data
 {
 	std::vector<Column> columns;
-	std::vector<Entry> entries;
+	std::vector<Box> boxes;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ static bool read(Data& out_data, Options options)
 				++column_count;
 			}
 			assert(out_data.columns.size() == current_column.num);
-			current_column.entry_count = static_cast<uint32_t>(out_data.entries.size()) - current_column.start_entry;
+			current_column.box_count = static_cast<uint32_t>(out_data.boxes.size()) - current_column.start_box;
 			out_data.columns.push_back(current_column);
 		}
 	};
@@ -104,20 +104,20 @@ static bool read(Data& out_data, Options options)
 			assert(tile.getWidth() % kTileWidth == 0);
 
 			const uint32_t column_num = x / kTileWidth;
-			const uint32_t entry_count = static_cast<uint32_t>(out_data.entries.size());
+			const uint32_t box_count = static_cast<uint32_t>(out_data.boxes.size());
 
 			if(column_num != current_column.num)
 			{
 				addColumn();
 				current_column.num = column_num;
-				current_column.start_entry = entry_count;
+				current_column.start_box = box_count;
 			}
 
 			Point leftmost;
 			leftmost.x = kTileWidth;
 			Point rightmost;
 			rightmost.x = -1;
-			bool register_entry = false;
+			bool register_box = false;
 			for(uint32_t i = 0; i < kTileWidth * kTileHeight; ++i)
 			{
 				const ColorRGBA color = tile[i];
@@ -126,7 +126,7 @@ static bool read(Data& out_data, Options options)
 					continue;
 				}
 				assert(color == kRGBA_Black);
-				register_entry = true;
+				register_box = true;
 
 				const int32_t px = i % kTileWidth;
 				const int32_t py = i / kTileWidth;
@@ -141,13 +141,13 @@ static bool read(Data& out_data, Options options)
 					rightmost.y = py;
 				}
 			}
-			if(register_entry)
+			if(register_box)
 			{
-				Entry entry;
-				entry.column = column_num;
-				entry.left = leftmost;
-				entry.right = rightmost;
-				out_data.entries.push_back(entry);
+				Box box;
+				box.column = column_num;
+				box.left = leftmost;
+				box.right = rightmost;
+				out_data.boxes.push_back(box);
 			}
 
 			return true;
@@ -166,26 +166,26 @@ static bool read(Data& out_data, Options options)
 
 static bool writeTable(FILE* out_file, const Data& data, const Options options)
 {
-	constexpr uint32_t kEntrySize = 1;
-	constexpr uint32_t kTableEntrySize = 3;
+	constexpr uint32_t kBoxByteSize = 1;
+	constexpr uint32_t kTableEntryByteSize = 3;
 
-	const uint32_t kTableSize = kTableEntrySize * static_cast<uint32_t>(data.columns.size());
+	const uint32_t kTableSize = kTableEntryByteSize * static_cast<uint32_t>(data.columns.size());
 	for(const Column& column : data.columns)
 	{
-		assert(column.entry_count < 256);
-		const uint8_t entry_count = static_cast<uint8_t>(column.entry_count);
-		fwrite(&entry_count, sizeof(entry_count), 1, out_file);
+		assert(column.box_count < 256);
+		const uint8_t box_count = static_cast<uint8_t>(column.box_count);
+		fwrite(&box_count, sizeof(box_count), 1, out_file);
 		
-		assert(kTableSize + column.start_entry * kEntrySize < kBankSize);
-		const uint16_t start_entry_address = static_cast<uint16_t>(kTableSize + column.start_entry * kEntrySize);
-		fwrite(&start_entry_address, sizeof(start_entry_address), 1, out_file);
+		assert(kTableSize + column.start_box * kBoxByteSize < kBankSize);
+		const uint16_t start_box_address = static_cast<uint16_t>(kTableSize + column.start_box * kBoxByteSize);
+		fwrite(&start_box_address, sizeof(start_box_address), 1, out_file);
 	}
 	return true;
 }
 
-static bool writeEntries(FILE* out_file, const Data& data, const Options options)
+static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 {
-	//TODO Write entries
+	//TODO Write boxes
 	return true;
 }
 
@@ -198,9 +198,9 @@ static bool write(const Data& data, const Options options)
 		std::cout << "Could not write table to [" << options.output.filename << "]" << std::endl;
 		result = false;
 	}
-	else if(!writeEntries(file, data, options))
+	else if(!writeBoxes(file, data, options))
 	{
-		std::cout << "Could not write entries to [" << options.output.filename << "]" << std::endl;
+		std::cout << "Could not write boxes to [" << options.output.filename << "]" << std::endl;
 		result = false;
 	}
 	fclose(file);
@@ -228,8 +228,8 @@ int main(int argc, const char** argv)
 	}
 
 	std::cout << "# columns: " << data.columns.size() << std::endl;
-	std::cout << "# entries: " << data.entries.size() << std::endl;
-	std::cout << "Entries per column: " << (static_cast<double>(data.entries.size()) / data.columns.size()) << std::endl;
+	std::cout << "# boxes: " << data.boxes.size() << std::endl;
+	std::cout << "Boxes per column: " << (static_cast<double>(data.boxes.size()) / data.columns.size()) << std::endl;
 
 	if(!write(data, options))
 	{
