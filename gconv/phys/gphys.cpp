@@ -22,6 +22,7 @@ enum : uint32_t
 	kTileHeight = 8U,
 
 	kBaseAddress = 0x4000U,
+	kBankSize = 16U * 1024U,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -54,7 +55,7 @@ struct Data
 
 //////////////////////////////////////////////////////////////////////////////
 
-static bool read(Data& data, Options options)
+static bool read(Data& out_data, Options options)
 {
 	Image image;
 	if(!image.read(options.input.filename))
@@ -71,21 +72,21 @@ static bool read(Data& data, Options options)
 	Column current_column;
 	current_column.num = kInvalidColumnNum;
 
-	auto addColumn = [&data, &current_column]()
+	auto addColumn = [&out_data, &current_column]()
 	{
 		if(current_column.num != kInvalidColumnNum)
 		{
-			uint32_t column_count = static_cast<uint32_t>(data.columns.size());
+			uint32_t column_count = static_cast<uint32_t>(out_data.columns.size());
 			while(column_count < current_column.num)
 			{
 				Column column;
 				column.num = column_count;
-				data.columns.push_back(column);
+				out_data.columns.push_back(column);
 				++column_count;
 			}
-			assert(data.columns.size() == current_column.num);
-			current_column.entry_count = static_cast<uint32_t>(data.entries.size()) - current_column.start_entry;
-			data.columns.push_back(current_column);
+			assert(out_data.columns.size() == current_column.num);
+			current_column.entry_count = static_cast<uint32_t>(out_data.entries.size()) - current_column.start_entry;
+			out_data.columns.push_back(current_column);
 		}
 	};
 
@@ -97,13 +98,13 @@ static bool read(Data& data, Options options)
 		options.input.divisions.data(),
 		static_cast<uint32_t>(options.input.divisions.size()),
 		rectangle,
-		[&data, &current_column, &addColumn](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&out_data, &current_column, &addColumn](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			assert(tile.getWidth() == kTileWidth && tile.getHeight() == kTileHeight);
 			assert(tile.getWidth() % kTileWidth == 0);
 
 			const uint32_t column_num = x / kTileWidth;
-			const uint32_t entry_count = static_cast<uint32_t>(data.entries.size());
+			const uint32_t entry_count = static_cast<uint32_t>(out_data.entries.size());
 
 			if(column_num != current_column.num)
 			{
@@ -146,7 +147,7 @@ static bool read(Data& data, Options options)
 				entry.column = column_num;
 				entry.left = leftmost;
 				entry.right = rightmost;
-				data.entries.push_back(entry);
+				out_data.entries.push_back(entry);
 			}
 
 			return true;
@@ -156,17 +157,54 @@ static bool read(Data& data, Options options)
 	}
 
 	addColumn();
-	assert(static_cast<uint32_t>(data.columns.size()) == image.getWidth() / kTileWidth);
+	assert(static_cast<uint32_t>(out_data.columns.size()) == image.getWidth() / kTileWidth);
 
 	return true;
 }
 
 //////////////////////////////////////////////////////////////////////////////
 
+static bool writeTable(FILE* out_file, const Data& data, const Options options)
+{
+	constexpr uint32_t kEntrySize = 1;
+	constexpr uint32_t kTableEntrySize = 3;
+
+	const uint32_t kTableSize = kTableEntrySize * static_cast<uint32_t>(data.columns.size());
+	for(const Column& column : data.columns)
+	{
+		assert(column.entry_count < 256);
+		const uint8_t entry_count = static_cast<uint8_t>(column.entry_count);
+		fwrite(&entry_count, sizeof(entry_count), 1, out_file);
+		
+		assert(kTableSize + column.start_entry * kEntrySize < kBankSize);
+		const uint16_t start_entry_address = static_cast<uint16_t>(kTableSize + column.start_entry * kEntrySize);
+		fwrite(&start_entry_address, sizeof(start_entry_address), 1, out_file);
+	}
+	return true;
+}
+
+static bool writeEntries(FILE* out_file, const Data& data, const Options options)
+{
+	//TODO Write entries
+	return true;
+}
+
 static bool write(const Data& data, const Options options)
 {
-	//TODO
-	return true;
+	FILE* file = fopen(options.output.filename, "wb");
+	bool result = true;
+	if(!writeTable(file, data, options))
+	{
+		std::cout << "Could not write table to [" << options.output.filename << "]" << std::endl;
+		result = false;
+	}
+	else if(!writeEntries(file, data, options))
+	{
+		std::cout << "Could not write entries to [" << options.output.filename << "]" << std::endl;
+		result = false;
+	}
+	fclose(file);
+	return result;
 }
 
 //////////////////////////////////////////////////////////////////////////////
