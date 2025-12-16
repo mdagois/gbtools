@@ -22,7 +22,9 @@ enum : uint32_t
 	kTileHeight = 8U,
 
 	kBaseAddress = 0x4000U,
-	kBankSize = 16U * 1024U,
+	kBankByteSize = 16U * 1024U,
+	kBoxByteSize = 1,
+	kTableEntryByteSize = 3,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -166,9 +168,6 @@ static bool read(Data& out_data, Options options)
 
 static bool writeTable(FILE* out_file, const Data& data, const Options options)
 {
-	constexpr uint32_t kBoxByteSize = 1;
-	constexpr uint32_t kTableEntryByteSize = 3;
-
 	const uint32_t kTableSize = kTableEntryByteSize * static_cast<uint32_t>(data.columns.size());
 	for(const Column& column : data.columns)
 	{
@@ -176,8 +175,9 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 		const uint8_t box_count = static_cast<uint8_t>(column.box_count);
 		fwrite(&box_count, sizeof(box_count), 1, out_file);
 		
-		assert(kTableSize + column.start_box * kBoxByteSize < kBankSize);
-		const uint16_t start_box_address = static_cast<uint16_t>(kTableSize + column.start_box * kBoxByteSize);
+		const uint32_t relative_start_address = kTableSize + column.start_box * kBoxByteSize;
+		assert(relative_start_address < kBankByteSize);
+		const uint16_t start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_address);
 		fwrite(&start_box_address, sizeof(start_box_address), 1, out_file);
 	}
 	return true;
