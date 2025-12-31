@@ -54,7 +54,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionString("divisions", "d", "The input division", false, kOptionDivisions, &divisions),
 
 		// output
-		OptionString("output", "o", "The output data", false, kOptionOutputFilename, &out_options.output.filename),
+		OptionString("output", "o", "The output data", true, kOptionOutputFilename, &out_options.output.filename),
 
 		// misc
 		OptionFlag("verbose", "v", "Enable verbose mode", kOptionVerbose, &out_options.verbose),

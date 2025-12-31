@@ -20,10 +20,11 @@ enum : uint32_t
 	kColumnWidth = 8U,
 	kTileWidth = 8U,
 	kTileHeight = 8U,
+	kMaxHeight = 512U,
 
 	kBaseAddress = 0x4000U,
 	kBankByteSize = 16U * 1024U,
-	kBoxByteSize = 1,
+	kBoxByteSize = 3,
 	kTableEntryByteSize = 3,
 };
 
@@ -185,7 +186,32 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 
 static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 {
-	//TODO Write boxes
+	for(const Box& box : data.boxes)
+	{
+		assert(box.left.y < kMaxHeight);
+
+		const uint8_t height_low = static_cast<uint8_t>(box.left.y & 0xFF);
+		const uint8_t height_high = static_cast<uint8_t>((box.left.y >> 8) && 0x1);
+		assert(box.left.x < kTileWidth);
+		const uint8_t left = static_cast<uint8_t>(box.left.x & 0x7);
+		assert(box.right.x < kTileWidth);
+		const int32_t left_right_diff = box.right.x - box.left.x;
+		assert(left_right_diff >= 0);
+		const uint8_t diff = static_cast<uint8_t>((left_right_diff) & 0x7);
+		const double slope = left_right_diff == 0 ? 0 : (box.right.y - box.left.y) / left_right_diff;
+		const int32_t slope_integral = static_cast<int32_t>(slope);
+		assert(slope_integral > -8 && slope_integral < 8);
+		const int32_t slope_decimal = static_cast<int32_t>((slope - slope_integral) * 256.0);
+		const uint8_t slope_nibble_low = static_cast<uint8_t>(slope_integral >= 0 ? slope_integral : (-slope_integral | 0x1000));
+		const uint8_t slope_nibble_high = static_cast<uint8_t>((slope_decimal >> 4) & 0x0F);
+
+		uint8_t bytes[3];
+		bytes[0] = height_low;
+		bytes[1] = height_high | (left << 1) | (diff << 4);
+		bytes[2] = (slope_nibble_high << 4) | slope_nibble_low;
+
+		fwrite(bytes, sizeof(bytes), 1, out_file);
+	}
 	return true;
 }
 

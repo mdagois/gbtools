@@ -12,8 +12,6 @@
 !_TAG_FIELD_DESCRIPTION!C++	name	/aliased names/
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
-!_TAG_KIND_DESCRIPTION!C++	M,module	/modules/
-!_TAG_KIND_DESCRIPTION!C++	P,partition	/partitions/
 !_TAG_KIND_DESCRIPTION!C++	c,class	/classes/
 !_TAG_KIND_DESCRIPTION!C++	d,macro	/macro definitions/
 !_TAG_KIND_DESCRIPTION!C++	e,enumerator	/enumerators (values inside an enumeration)/
@@ -36,21 +34,19 @@
 !_TAG_PROGRAM_AUTHOR	Universal Ctags Team	//
 !_TAG_PROGRAM_NAME	Universal Ctags	/Derived from Exuberant Ctags/
 !_TAG_PROGRAM_URL	https://ctags.io/	/official site/
-!_TAG_PROGRAM_VERSION	6.1.0	/030eca1/
-!_TAG_ROLE_DESCRIPTION!C++!header	exported	/exported with "exported imported ..."/
-!_TAG_ROLE_DESCRIPTION!C++!header	imported	/imported with "imported ..."/
+!_TAG_PROGRAM_VERSION	6.1.0	/v6.1.0/
 !_TAG_ROLE_DESCRIPTION!C++!header	local	/local header/
 !_TAG_ROLE_DESCRIPTION!C++!header	system	/system header/
 !_TAG_ROLE_DESCRIPTION!C++!macro	undef	/undefined/
-!_TAG_ROLE_DESCRIPTION!C++!module	imported	/imported with "imported ..."/
-!_TAG_ROLE_DESCRIPTION!C++!module	partOwner	/used for specifying a partition/
-!_TAG_ROLE_DESCRIPTION!C++!partition	imported	/imported with "imported ..."/
 AreaCallback	./gfx/import/image.cpp	/^typedef std::function<bool(DivisionStatusList* out_division_status_list, const ImageArea&, uint3/;"	t	namespace:gfx	file:
+Box	./phys/gphys.cpp	/^struct Box$/;"	s	file:
 CAPS	./gfx/export/capabilities.h	/^#define CAPS /;"	d
 Capabilities	./gfx/export/capabilities.h	/^struct Capabilities$/;"	s	namespace:gfx
 CheckEntry	./gfx/data/tileset.cpp	/^	struct CheckEntry$/;"	s	function:gfx::Tileset::removeDoubles	file:
 ColorBGR555	./gfx/export/color.h	/^typedef uint16_t ColorBGR555;$/;"	t	namespace:gfx	typeref:typename:uint16_t
 ColorRGBA	./gfx/data/color.h	/^struct ColorRGBA$/;"	s	namespace:gfx
+Column	./phys/gphys.cpp	/^struct Column$/;"	s	file:
+Data	./phys/gphys.cpp	/^struct Data$/;"	s	file:
 Division	./gfx/import/division.h	/^struct Division$/;"	s	namespace:gfx
 DivisionInfo	./gfx/import/division.h	/^struct DivisionInfo : std::vector<DivisionStatusList>$/;"	s	namespace:gfx
 DivisionStatus	./gfx/import/division.h	/^enum DivisionStatus : uint8_t$/;"	g	namespace:gfx	typeref:typename:uint8_t
@@ -82,7 +78,8 @@ OptionInteger	./cli/commandline.cpp	/^Option OptionInteger(const char* name, con
 OptionString	./cli/commandline.cpp	/^Option OptionString(const char* name, const char* short_name, const char* description, bool requ/;"	f	namespace:cli	typeref:typename:Option
 OptionStringToInteger	./cli/commandline.cpp	/^Option OptionStringToInteger(const char* name, const char* short_name, const char* description, /;"	f	namespace:cli	typeref:typename:Option
 OptionType	./cli/commandline.h	/^enum class OptionType : uint16_t$/;"	g	namespace:cli	typeref:typename:uint16_t
-Options	./options.h	/^struct Options$/;"	s
+Options	./conv/options.h	/^struct Options$/;"	s
+Options	./phys/options.h	/^struct Options$/;"	s
 Palette	./gfx/data/palette.cpp	/^Palette::Palette(bool insert_transparent_color)$/;"	f	class:gfx::Palette
 Palette	./gfx/data/palette.h	/^class Palette$/;"	c	namespace:gfx
 PaletteSet	./gfx/data/palette.cpp	/^PaletteSet::PaletteSet()$/;"	f	class:gfx::PaletteSet
@@ -92,6 +89,7 @@ PaletteSetData	./gfx/export/palette.h	/^class PaletteSetData$/;"	c	namespace:gfx
 ParameterType	./cli/commandline.h	/^enum class ParameterType : uint16_t$/;"	g	namespace:cli	typeref:typename:uint16_t
 Parser	./cli/commandline.cpp	/^Parser::Parser(const char** argv, int32_t argc, const Option* options, uint32_t option_count, co/;"	f	class:cli::Parser
 Parser	./cli/commandline.h	/^class Parser$/;"	c	namespace:cli
+Point	./phys/gphys.cpp	/^struct Point$/;"	s	file:
 RETURN_ERROR	./cli/commandline.cpp	/^#define RETURN_ERROR(/;"	d	file:
 Rectangle	./gfx/import/image.h	/^struct Rectangle$/;"	s	namespace:gfx
 STBIDEF	./gfx/third_party/stb_image.h	/^#define STBIDEF /;"	d
@@ -172,8 +170,8 @@ Tilemap	./gfx/data/tilemap.cpp	/^Tilemap::Tilemap()$/;"	f	class:gfx::Tilemap
 Tilemap	./gfx/data/tilemap.h	/^class Tilemap$/;"	c	namespace:gfx
 TilemapData	./gfx/export/tilemap.cpp	/^TilemapData::TilemapData()$/;"	f	class:gfx::TilemapData
 TilemapData	./gfx/export/tilemap.h	/^class TilemapData$/;"	c	namespace:gfx
+TilemapEntry	./conv/options.h	/^	struct TilemapEntry$/;"	s	struct:Options
 TilemapEntry	./gfx/data/tilemap.h	/^struct TilemapEntry$/;"	s	namespace:gfx
-TilemapEntry	./options.h	/^	struct TilemapEntry$/;"	s	struct:Options
 Tileset	./gfx/data/tileset.cpp	/^Tileset::Tileset()$/;"	f	class:gfx::Tileset
 Tileset	./gfx/data/tileset.h	/^class Tileset$/;"	c	namespace:gfx
 TilesetData	./gfx/export/tileset.cpp	/^TilesetData::TilesetData()$/;"	f	class:gfx::TilesetData
@@ -181,16 +179,22 @@ TilesetData	./gfx/export/tileset.h	/^class TilesetData$/;"	c	namespace:gfx
 YCbCr_to_RGB_kernel	./gfx/third_party/stb_image.h	/^   void (*YCbCr_to_RGB_kernel)(stbi_uc *out, const stbi_uc *y, const stbi_uc *pcb, const stbi_uc/;"	m	struct:__anonbc04e6d00808	typeref:typename:void (*)(stbi_uc * out,const stbi_uc * y,const stbi_uc * pcb,const stbi_uc * pcr,int count,int step)
 _CRT_NONSTDC_NO_DEPRECATE	./gfx/third_party/stb_image_write.h	/^   #define _CRT_NONSTDC_NO_DEPRECATE$/;"	d
 _CRT_SECURE_NO_WARNINGS	./gfx/third_party/stb_image_write.h	/^   #define _CRT_SECURE_NO_WARNINGS$/;"	d
+__anon1f2b1ab20103	./phys/options.cpp	/^	{$/;"	g	function:parseCliOptions	typeref:typename:uint32_t	file:
+__anon39e961490108	./conv/options.h	/^	{$/;"	s	struct:Options
+__anon39e961490208	./conv/options.h	/^	{$/;"	s	struct:Options
+__anon39e961490308	./conv/options.h	/^	{$/;"	s	struct:Options
+__anon39e961490408	./conv/options.h	/^	{$/;"	s	struct:Options
 __anon3bd2bc540103	./gfx/data/color.h	/^{$/;"	g	namespace:gfx
 __anon4dce22f40102	./gfx/import/image.cpp	/^	{$/;"	f	function:gfx::Image::iterateTiles	file:
-__anon5d2d33240108	./options.h	/^	{$/;"	s	struct:Options
-__anon5d2d33240208	./options.h	/^	{$/;"	s	struct:Options
-__anon5d2d33240308	./options.h	/^	{$/;"	s	struct:Options
-__anon5d2d33240408	./options.h	/^	{$/;"	s	struct:Options
-__anon5d4685bf0103	./options.cpp	/^	{$/;"	g	function:parseCliOptions	typeref:typename:uint32_t	file:
+__anon59c6d1240103	./conv/options.cpp	/^	{$/;"	g	function:parseCliOptions	typeref:typename:uint32_t	file:
 __anon64ff0dbc0103	./gfx/export/color.h	/^{$/;"	g	namespace:gfx	typeref:typename:ColorBGR555
 __anon7b731aef0102	./gfx/data/color.cpp	/^		{$/;"	f	function:gfx::sortColorsRGBA	file:
+__anon80cb26910103	./phys/gphys.cpp	/^{$/;"	g	typeref:typename:uint32_t	file:
+__anon80cb26910202	./phys/gphys.cpp	/^	{$/;"	f	function:read	file:
+__anon80cb26910302	./phys/gphys.cpp	/^		{$/;"	f	function:read	file:
 __anon9708898f0103	./gfx/data/tileset.h	/^{$/;"	g	namespace:gfx	typeref:typename:uint32_t
+__anon9af1ef570108	./phys/options.h	/^	{$/;"	s	struct:Options
+__anon9af1ef570208	./phys/options.h	/^	{$/;"	s	struct:Options
 __anona3abd846010a	./cli/commandline.h	/^	{$/;"	u	struct:cli::Option
 __anona3abd8460208	./cli/commandline.h	/^		{$/;"	s	union:cli::Option::__anona3abd846010a
 __anona3abd8460308	./cli/commandline.h	/^		{$/;"	s	union:cli::Option::__anona3abd846010a
@@ -233,7 +237,7 @@ add	./gfx/data/palette.cpp	/^void Palette::add(ColorRGBA color)$/;"	f	class:gfx:
 add	./gfx/data/tilemap.cpp	/^void Tilemap::add($/;"	f	class:gfx::Tilemap	typeref:typename:void
 add	./gfx/data/tileset.cpp	/^void Tileset::add(const Tile& tile)$/;"	f	class:gfx::Tileset	typeref:typename:void
 addBasicTileSize	./gfx/gfx.cpp	/^static bool addBasicTileSize(std::vector<Division>& divisions)$/;"	f	namespace:gfx	typeref:typename:bool	file:
-add_binary_headers	./options.h	/^		bool add_binary_headers = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
+add_binary_headers	./conv/options.h	/^		bool add_binary_headers = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
 all_a	./gfx/third_party/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anonbc04e6d01008	typeref:typename:unsigned int
 app14_color_transform	./gfx/third_party/stb_image.h	/^   int            app14_color_transform; \/\/ Adobe APP14 tag$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 areCapabilitiesInitialized	./gfx/export/capabilities.cpp	/^bool areCapabilitiesInitialized()$/;"	f	namespace:gfx	typeref:typename:bool
@@ -247,14 +251,16 @@ basic_tile_width	./gfx/export/capabilities.h	/^		uint32_t basic_tile_width;$/;"	
 bgindex	./gfx/third_party/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 bits_per_channel	./gfx/third_party/stb_image.h	/^   int bits_per_channel;$/;"	m	struct:__anonbc04e6d00508	typeref:typename:int
 blitTile	./gfx/gfx.cpp	/^static void blitTile(ColorRGBA* out_pixels, uint32_t pitch, const TileFlip& flip, const Palette&/;"	f	namespace:gfx	typeref:typename:void	file:
+box_count	./phys/gphys.cpp	/^	uint32_t box_count = 0;$/;"	m	struct:Column	typeref:typename:uint32_t	file:
+boxes	./phys/gphys.cpp	/^	std::vector<Box> boxes;$/;"	m	struct:Data	typeref:typename:std::vector<Box>	file:
 bpp	./gfx/third_party/stb_image.h	/^   int bpp, offset, hsz;$/;"	m	struct:__anonbc04e6d01008	typeref:typename:int
 buf_used	./gfx/third_party/stb_image_write.h	/^   int buf_used;$/;"	m	struct:__anond9c785ba0108	typeref:typename:int
 buffer	./gfx/third_party/stb_image_write.h	/^   unsigned char buffer[64];$/;"	m	struct:__anond9c785ba0108	typeref:typename:unsigned char[64]
 buffer_start	./gfx/third_party/stb_image.h	/^   stbi_uc buffer_start[128];$/;"	m	struct:__anonbc04e6d00308	typeref:typename:stbi_uc[128]
 buflen	./gfx/third_party/stb_image.h	/^   int buflen;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:int
 callback_already_read	./gfx/third_party/stb_image.h	/^   int callback_already_read;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:int
-capabilities.cpp	./gfx/export/capabilities.cpp	1;"	F	epoch:1758245999
-capabilities.h	./gfx/export/capabilities.h	1;"	F	epoch:1758245999
+capabilities.cpp	./gfx/export/capabilities.cpp	1;"	F	epoch:1766727435
+capabilities.h	./gfx/export/capabilities.h	1;"	F	epoch:1766727435
 channel	./gfx/third_party/stb_image.h	/^   stbi_uc size,type,channel;$/;"	m	struct:__anonbc04e6d01108	typeref:typename:stbi_uc
 channel_order	./gfx/third_party/stb_image.h	/^   int channel_order;$/;"	m	struct:__anonbc04e6d00508	typeref:typename:int
 clear	./gfx/data/palette.cpp	/^void Palette::clear()$/;"	f	class:gfx::Palette	typeref:typename:void
@@ -269,18 +275,21 @@ codes	./gfx/third_party/stb_image.h	/^   stbi__gif_lzw codes[8192];$/;"	m	struct
 coeff	./gfx/third_party/stb_image.h	/^      short   *coeff;   \/\/ progressive only$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:short *
 coeff_h	./gfx/third_party/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 coeff_w	./gfx/third_party/stb_image.h	/^      int      coeff_w, coeff_h; \/\/ number of 8x8 coefficient blocks$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
-color.cpp	./gfx/data/color.cpp	1;"	F	epoch:1758245999
-color.cpp	./gfx/export/color.cpp	1;"	F	epoch:1758245999
-color.h	./gfx/data/color.h	1;"	F	epoch:1758245999
-color.h	./gfx/export/color.h	1;"	F	epoch:1758245999
+color.cpp	./gfx/data/color.cpp	1;"	F	epoch:1766727435
+color.cpp	./gfx/export/color.cpp	1;"	F	epoch:1766727435
+color.h	./gfx/data/color.h	1;"	F	epoch:1766727664
+color.h	./gfx/export/color.h	1;"	F	epoch:1766727435
 color_index_format	./gfx/export/capabilities.h	/^		Format color_index_format;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70208	typeref:typename:Format
 color_indices	./gfx/data/tileset.h	/^	std::vector<uint8_t> color_indices;$/;"	m	struct:gfx::TileFlip	typeref:typename:std::vector<uint8_t>
 color_max_count	./gfx/export/capabilities.h	/^		uint32_t color_max_count;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70108	typeref:typename:uint32_t
 color_table	./gfx/third_party/stb_image.h	/^   stbi_uc *color_table;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:stbi_uc *
-commandline.cpp	./cli/commandline.cpp	1;"	F	epoch:1758245999
-commandline.h	./cli/commandline.h	1;"	F	epoch:1758245999
+column	./phys/gphys.cpp	/^	uint32_t column;$/;"	m	struct:Box	typeref:typename:uint32_t	file:
+columns	./phys/gphys.cpp	/^	std::vector<Column> columns;$/;"	m	struct:Data	typeref:typename:std::vector<Column>	file:
+commandline.cpp	./cli/commandline.cpp	1;"	F	epoch:1766727435
+commandline.h	./cli/commandline.h	1;"	F	epoch:1766727435
 compatible_palettes	./gfx/gfx.cpp	/^		std::set<uint32_t> compatible_palettes;$/;"	m	struct:gfx::extractTileset::TileMetadata	typeref:typename:std::set<uint32_t>	file:
 computeDivisionInfoOffsets	./gfx/import/division.cpp	/^bool computeDivisionInfoOffsets(DivisionInfo& inout_division_info)$/;"	f	namespace:gfx	typeref:typename:bool
+computeRectangle	./gfx/import/image.cpp	/^static bool computeRectangle(Rectangle& out_rectangle, const Rectangle rectangle, uint32_t width/;"	f	namespace:gfx	typeref:typename:bool	file:
 contains	./gfx/data/palette.cpp	/^bool Palette::contains(const Palette& sub_palette) const$/;"	f	class:gfx::Palette	typeref:typename:bool
 context	./gfx/third_party/stb_image_write.h	/^   void *context;$/;"	m	struct:__anond9c785ba0108	typeref:typename:void *
 convertColor	./gfx/export/color.cpp	/^ColorBGR555 convertColor(ColorRGBA rgba)$/;"	f	namespace:gfx	typeref:typename:ColorBGR555
@@ -288,7 +297,7 @@ copyRow	./gfx/data/tileset.cpp	/^static void copyRow(uint8_t* out, const uint8_t
 cur_x	./gfx/third_party/stb_image.h	/^   int cur_x, cur_y;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 cur_y	./gfx/third_party/stb_image.h	/^   int cur_x, cur_y;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 data	./gfx/third_party/stb_image.h	/^      stbi_uc *data;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:stbi_uc *
-data.h	./gfx/data/data.h	1;"	F	epoch:1758245999
+data.h	./gfx/data/data.h	1;"	F	epoch:1766727435
 dc_pred	./gfx/third_party/stb_image.h	/^      int dc_pred;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 dct_bfly32o	./gfx/third_party/stb_image.h	/^   #define dct_bfly32o(/;"	d
 dct_bfly32o	./gfx/third_party/stb_image.h	/^#define dct_bfly32o(/;"	d
@@ -312,30 +321,31 @@ dct_widen	./gfx/third_party/stb_image.h	/^   #define dct_widen(/;"	d
 dct_widen	./gfx/third_party/stb_image.h	/^#define dct_widen(/;"	d
 dct_wsub	./gfx/third_party/stb_image.h	/^   #define dct_wsub(/;"	d
 dct_wsub	./gfx/third_party/stb_image.h	/^#define dct_wsub(/;"	d
-debug	./options.h	/^	debug;$/;"	m	struct:Options	typeref:struct:Options::__anon5d2d33240408
+debug	./conv/options.h	/^	debug;$/;"	m	struct:Options	typeref:struct:Options::__anon39e961490408
 delay	./gfx/third_party/stb_image.h	/^   int delay;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 delta	./gfx/third_party/stb_image.h	/^   int    delta[17];   \/\/ old 'firstsymbol' - old 'firstcode'$/;"	m	struct:__anonbc04e6d00708	typeref:typename:int[17]
 depth	./gfx/third_party/stb_image.h	/^   int depth;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:int
 dequant	./gfx/third_party/stb_image.h	/^   stbi__uint16 dequant[4][64];$/;"	m	struct:__anonbc04e6d00808	typeref:typename:stbi__uint16[4][64]
 desc	./cli/commandline.h	/^	const char* desc;$/;"	m	struct:cli::Mapping	typeref:typename:const char *
 description	./cli/commandline.h	/^	const char* description;$/;"	m	struct:cli::Option	typeref:typename:const char *
-directory	./options.h	/^		const char* directory = nullptr;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:const char *
+directory	./conv/options.h	/^		const char* directory = nullptr;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:const char *
 division	./gfx/import/division.h	/^	Division division;$/;"	m	struct:gfx::DivisionStatusList	typeref:typename:Division
-division.cpp	./gfx/import/division.cpp	1;"	F	epoch:1758245999
-division.h	./gfx/import/division.h	1;"	F	epoch:1758245999
-divisions	./options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::vector<gfx::Division>
-divisions	./options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:std::vector<gfx::Division>
+division.cpp	./gfx/import/division.cpp	1;"	F	epoch:1766727435
+division.h	./gfx/import/division.h	1;"	F	epoch:1766727435
+divisions	./conv/options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::vector<gfx::Division>
+divisions	./conv/options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::__anon39e961490108	typeref:typename:std::vector<gfx::Division>
+divisions	./phys/options.h	/^		std::vector<gfx::Division> divisions;$/;"	m	struct:Options::__anon9af1ef570108	typeref:typename:std::vector<gfx::Division>
 eflags	./gfx/third_party/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 enabled	./gfx/export/capabilities.h	/^		bool enabled;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70308	typeref:typename:bool
 enabled	./gfx/export/capabilities.h	/^		bool enabled;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70408	typeref:typename:bool
-entries	./options.h	/^		std::vector<TilemapEntry> entries;$/;"	m	struct:Options::__anon5d2d33240208	typeref:typename:std::vector<TilemapEntry>
-enums.h	./gfx/export/enums.h	1;"	F	epoch:1758245999
+entries	./conv/options.h	/^		std::vector<TilemapEntry> entries;$/;"	m	struct:Options::__anon39e961490208	typeref:typename:std::vector<TilemapEntry>
+enums.h	./gfx/export/enums.h	1;"	F	epoch:1766727435
 eob_run	./gfx/third_party/stb_image.h	/^   int            eob_run;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 eof	./gfx/third_party/stb_image.h	/^   int      (*eof)   (void *user);                       \/\/ returns nonzero if we are at end o/;"	m	struct:__anonbc04e6d00208	typeref:typename:int (*)(void * user)
 expanded	./gfx/third_party/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:stbi_uc *
-export.h	./gfx/export/export.h	1;"	F	epoch:1758245999
-exportData	./gconv.cpp	/^static bool exportData($/;"	f	typeref:typename:bool	file:
-exportInfo	./gconv.cpp	/^static bool exportInfo($/;"	f	typeref:typename:bool	file:
+export.h	./gfx/export/export.h	1;"	F	epoch:1766727435
+exportData	./conv/gconv.cpp	/^static bool exportData($/;"	f	typeref:typename:bool	file:
+exportInfo	./conv/gconv.cpp	/^static bool exportInfo($/;"	f	typeref:typename:bool	file:
 exportPaletteSet	./gfx/gfx.cpp	/^bool exportPaletteSet($/;"	f	namespace:gfx	typeref:typename:bool
 exportTilemap	./gfx/gfx.cpp	/^bool exportTilemap($/;"	f	namespace:gfx	typeref:typename:bool
 exportTileset	./gfx/gfx.cpp	/^bool exportTileset($/;"	f	namespace:gfx	typeref:typename:bool
@@ -346,6 +356,8 @@ extractTileset	./gfx/gfx.cpp	/^bool extractTileset($/;"	f	namespace:gfx	typeref:
 fast	./gfx/third_party/stb_image.h	/^   stbi__uint16 fast[1 << STBI__ZFAST_BITS];$/;"	m	struct:__anonbc04e6d00b08	typeref:typename:stbi__uint16[]
 fast	./gfx/third_party/stb_image.h	/^   stbi_uc  fast[1 << FAST_BITS];$/;"	m	struct:__anonbc04e6d00708	typeref:typename:stbi_uc[]
 fast_ac	./gfx/third_party/stb_image.h	/^   stbi__int16 fast_ac[4][1 << FAST_BITS];$/;"	m	struct:__anonbc04e6d00808	typeref:typename:stbi__int16[4][]
+filename	./phys/options.h	/^		const char* filename = nullptr;$/;"	m	struct:Options::__anon9af1ef570108	typeref:typename:const char *
+filename	./phys/options.h	/^		const char* filename = nullptr;$/;"	m	struct:Options::__anon9af1ef570208	typeref:typename:const char *
 fill	./gfx/data/palette.cpp	/^void Palette::fill(ColorRGBA color, uint32_t max_color_count)$/;"	f	class:gfx::Palette	typeref:typename:void
 fillDivisionStatusList	./gfx/import/image.cpp	/^static void fillDivisionStatusList($/;"	f	namespace:gfx	typeref:typename:void	file:
 fillOptionBase	./cli/commandline.cpp	/^static void fillOptionBase(Option& out_option, const char* name, const char* short_name, const c/;"	f	namespace:cli	typeref:typename:void	file:
@@ -367,12 +379,12 @@ flip_horizontal	./gfx/data/tilemap.h	/^	bool flip_horizontal;$/;"	m	struct:gfx::
 flip_vertical	./gfx/data/tilemap.h	/^	bool flip_vertical;$/;"	m	struct:gfx::TilemapEntry	typeref:typename:bool
 func	./gfx/third_party/stb_image_write.h	/^   stbi_write_func *func;$/;"	m	struct:__anond9c785ba0108	typeref:typename:stbi_write_func *
 g	./gfx/data/color.h	/^	uint8_t g;$/;"	m	struct:gfx::ColorRGBA	typeref:typename:uint8_t
-gconv.cpp	./gconv.cpp	1;"	F	epoch:1759117255
+gconv.cpp	./conv/gconv.cpp	1;"	F	epoch:1766727664
 generateFlips	./gfx/data/tileset.cpp	/^static void generateFlips(TileFlip* inout_tile_flips)$/;"	f	namespace:gfx	typeref:typename:void	file:
 generateTile	./gfx/gfx.cpp	/^static bool generateTile(Tile& out_tile, const ImageTile& image_tile, const Palette& palette)$/;"	f	namespace:gfx	typeref:typename:bool	file:
 generateTileFlip	./gfx/gfx.cpp	/^static bool generateTileFlip($/;"	f	namespace:gfx	typeref:typename:bool	file:
-generate_palette_png	./options.h	/^		bool generate_palette_png = false;$/;"	m	struct:Options::__anon5d2d33240408	typeref:typename:bool
-generate_tileset_png	./options.h	/^		bool generate_tileset_png = false;$/;"	m	struct:Options::__anon5d2d33240408	typeref:typename:bool
+generate_palette_png	./conv/options.h	/^		bool generate_palette_png = false;$/;"	m	struct:Options::__anon39e961490408	typeref:typename:bool
+generate_tileset_png	./conv/options.h	/^		bool generate_tileset_png = false;$/;"	m	struct:Options::__anon39e961490408	typeref:typename:bool
 getAverageLuminance	./gfx/data/palette.cpp	/^double Palette::getAverageLuminance() const$/;"	f	class:gfx::Palette	typeref:typename:double
 getBasicTileWidth	./gfx/gfx.cpp	/^uint32_t getBasicTileWidth()$/;"	f	namespace:gfx	typeref:typename:uint32_t
 getCapabilities	./gfx/export/capabilities.cpp	/^const Capabilities& getCapabilities()$/;"	f	namespace:gfx	typeref:typename:const Capabilities &
@@ -393,7 +405,7 @@ getLuminance	./gfx/data/color.cpp	/^double getLuminance(const ColorRGBA color)$/
 getNextOption	./cli/commandline.cpp	/^bool Parser::getNextOption(uint32_t& out_code, const char*& out_parameter, Error& out_error)$/;"	f	class:cli::Parser	typeref:typename:bool
 getOffsetX	./gfx/import/image.cpp	/^uint32_t ImageArea::getOffsetX() const$/;"	f	class:gfx::ImageArea	typeref:typename:uint32_t
 getOffsetY	./gfx/import/image.cpp	/^uint32_t ImageArea::getOffsetY() const$/;"	f	class:gfx::ImageArea	typeref:typename:uint32_t
-getOutputFilename	./gconv.cpp	/^static const std::string getOutputFilename($/;"	f	typeref:typename:const std::string	file:
+getOutputFilename	./conv/gconv.cpp	/^static const std::string getOutputFilename($/;"	f	typeref:typename:const std::string	file:
 getPaletteCount	./gfx/export/palette.cpp	/^uint32_t PaletteSetData::getPaletteCount() const$/;"	f	class:gfx::PaletteSetData	typeref:typename:uint32_t
 getPaletteIndex	./gfx/data/tileset.cpp	/^uint32_t Tile::getPaletteIndex() const$/;"	f	class:gfx::Tile	typeref:typename:uint32_t
 getParameterData	./gfx/export/tilemap.cpp	/^const uint8_t* TilemapData::getParameterData() const$/;"	f	class:gfx::TilemapData	typeref:typename:const uint8_t *
@@ -434,19 +446,21 @@ gfx	./gfx/import/image.cpp	/^namespace gfx {$/;"	n	file:
 gfx	./gfx/import/image.h	/^namespace gfx {$/;"	n
 gfx	./gfx/utils/log.cpp	/^namespace gfx {$/;"	n	file:
 gfx	./gfx/utils/log.h	/^namespace gfx {$/;"	n
-gfx.cpp	./gfx/gfx.cpp	1;"	F	epoch:1758245999
-gfx.h	./gfx/gfx.h	1;"	F	epoch:1758245999
+gfx.cpp	./gfx/gfx.cpp	1;"	F	epoch:1766727435
+gfx.h	./gfx/gfx.h	1;"	F	epoch:1766727435
+gphys.cpp	./phys/gphys.cpp	1;"	F	epoch:1767191083
 h	./gfx/import/image.h	/^	uint32_t h = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 h	./gfx/third_party/stb_image.h	/^      int h,v;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 h	./gfx/third_party/stb_image.h	/^   int w,h;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 h2	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 ha	./gfx/third_party/stb_image.h	/^      int hd,ha;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
-hardware	./options.h	/^	gfx::Hardware hardware = gfx::kHardwareCount;$/;"	m	struct:Options	typeref:typename:gfx::Hardware
+hardware	./conv/options.h	/^	gfx::Hardware hardware = gfx::kHardwareCount;$/;"	m	struct:Options	typeref:typename:gfx::Hardware
 hasColor	./gfx/data/palette.cpp	/^bool Palette::hasColor(ColorRGBA color) const$/;"	f	class:gfx::Palette	typeref:typename:bool
 hd	./gfx/third_party/stb_image.h	/^      int hd,ha;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 height	./gfx/data/tileset.h	/^	uint32_t height;$/;"	m	struct:gfx::TileFlip	typeref:typename:uint32_t
 height	./gfx/import/division.h	/^	uint32_t height;$/;"	m	struct:gfx::Division	typeref:typename:uint32_t
-help	./options.h	/^	bool help = false;$/;"	m	struct:Options	typeref:typename:bool
+help	./conv/options.h	/^	bool help = false;$/;"	m	struct:Options	typeref:typename:bool
+help	./phys/options.h	/^	bool help = false;$/;"	m	struct:Options	typeref:typename:bool
 history	./gfx/third_party/stb_image.h	/^   stbi_uc *history;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:stbi_uc *
 hit_zeof_once	./gfx/third_party/stb_image.h	/^   int hit_zeof_once;$/;"	m	struct:__anonbc04e6d00c08	typeref:typename:int
 hs	./gfx/third_party/stb_image.h	/^   int hs,vs;   \/\/ expansion factor in each axis$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
@@ -456,11 +470,11 @@ huff_dc	./gfx/third_party/stb_image.h	/^   stbi__huffman huff_dc[4];$/;"	m	struc
 id	./gfx/third_party/stb_image.h	/^      int id;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 idata	./gfx/third_party/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:stbi_uc *
 idct_block_kernel	./gfx/third_party/stb_image.h	/^   void (*idct_block_kernel)(stbi_uc *out, int out_stride, short data[64]);$/;"	m	struct:__anonbc04e6d00808	typeref:typename:void (*)(stbi_uc * out,int out_stride,short data[64])
-image.cpp	./gfx/import/image.cpp	1;"	F	epoch:1758245999
-image.h	./gfx/import/image.h	1;"	F	epoch:1759111217
-image_disguise_filename	./options.h	/^		std::string image_disguise_filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
-image_filename	./options.h	/^		const char* image_filename = nullptr;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:const char *
-image_filename	./options.h	/^		std::string image_filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
+image.cpp	./gfx/import/image.cpp	1;"	F	epoch:1766727435
+image.h	./gfx/import/image.h	1;"	F	epoch:1766727435
+image_disguise_filename	./conv/options.h	/^		std::string image_disguise_filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
+image_filename	./conv/options.h	/^		const char* image_filename = nullptr;$/;"	m	struct:Options::__anon39e961490108	typeref:typename:const char *
+image_filename	./conv/options.h	/^		std::string image_filename;$/;"	m	struct:Options::TilemapEntry	typeref:typename:std::string
 image_height	./gfx/import/division.h	/^	uint32_t image_height;$/;"	m	struct:gfx::DivisionInfo	typeref:typename:uint32_t
 image_width	./gfx/import/division.h	/^	uint32_t image_width;$/;"	m	struct:gfx::DivisionInfo	typeref:typename:uint32_t
 img_buffer	./gfx/third_party/stb_image.h	/^   stbi_uc *img_buffer, *img_buffer_end;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:stbi_uc *
@@ -478,9 +492,9 @@ img_out_n	./gfx/third_party/stb_image.h	/^   int img_n, img_out_n;$/;"	m	struct:
 img_v_max	./gfx/third_party/stb_image.h	/^   int img_h_max, img_v_max;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 img_x	./gfx/third_party/stb_image.h	/^   stbi__uint32 img_x, img_y;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:stbi__uint32
 img_y	./gfx/third_party/stb_image.h	/^   stbi__uint32 img_x, img_y;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:stbi__uint32
-import.h	./gfx/import/import.h	1;"	F	epoch:1758245999
-importData	./gconv.cpp	/^static bool importData($/;"	f	typeref:typename:bool	file:
-importPaletteSet	./gconv.cpp	/^static bool importPaletteSet(gfx::PaletteSet& out_palette_set, const Options& options)$/;"	f	typeref:typename:bool	file:
+import.h	./gfx/import/import.h	1;"	F	epoch:1766727435
+importData	./conv/gconv.cpp	/^static bool importData($/;"	f	typeref:typename:bool	file:
+importPaletteSet	./conv/gconv.cpp	/^static bool importPaletteSet(gfx::PaletteSet& out_palette_set, const Options& options)$/;"	f	typeref:typename:bool	file:
 initialize	./gfx/export/palette.cpp	/^bool PaletteSetData::initialize(const PaletteSet& palette_set)$/;"	f	class:gfx::PaletteSetData	typeref:typename:bool
 initialize	./gfx/export/tilemap.cpp	/^bool TilemapData::initialize($/;"	f	class:gfx::TilemapData	typeref:typename:bool
 initialize	./gfx/export/tileset.cpp	/^bool TilesetData::initialize(const Tileset& tileset)$/;"	f	class:gfx::TilesetData	typeref:typename:bool
@@ -488,6 +502,7 @@ initialize	./gfx/gfx.cpp	/^bool initialize(Hardware hardware)$/;"	f	namespace:gf
 initializeCapabilities	./gfx/export/capabilities.cpp	/^bool initializeCapabilities(Hardware hardware)$/;"	f	namespace:gfx	typeref:typename:bool
 initializeFlips	./gfx/data/tileset.cpp	/^void Tile::initializeFlips(const TileFlip& none_tile_flip)$/;"	f	class:gfx::Tile	typeref:typename:void
 initializeTileFlip	./gfx/data/tileset.cpp	/^void initializeTileFlip(TileFlip& out_tile_flip, uint32_t width, uint32_t height)$/;"	f	namespace:gfx	typeref:typename:void
+input	./phys/options.h	/^	input;$/;"	m	struct:Options	typeref:struct:Options::__anon9af1ef570108
 insert_transparent_color	./gfx/export/capabilities.h	/^		bool insert_transparent_color;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70108	typeref:typename:bool
 integer	./cli/commandline.h	/^		} integer;$/;"	m	union:cli::Option::__anona3abd846010a	typeref:struct:cli::Option::__anona3abd846010a::__anona3abd8460308
 io	./gfx/third_party/stb_image.h	/^   stbi_io_callbacks io;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:stbi_io_callbacks
@@ -500,7 +515,11 @@ iterateArea	./gfx/import/image.cpp	/^bool ImageArea::iterateArea(DivisionStatusL
 iterateTiles	./gfx/import/image.cpp	/^bool Image::iterateTiles($/;"	f	class:gfx::Image	typeref:typename:bool
 jfif	./gfx/third_party/stb_image.h	/^   int            jfif;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 kBGR555_Invalid	./gfx/export/color.h	/^	kBGR555_Invalid = 0x8000U,$/;"	e	enum:gfx::__anon64ff0dbc0103
+kBankByteSize	./phys/gphys.cpp	/^	kBankByteSize = 16U * 1024U,$/;"	e	enum:__anon80cb26910103	file:
+kBaseAddress	./phys/gphys.cpp	/^	kBaseAddress = 0x4000U,$/;"	e	enum:__anon80cb26910103	file:
+kBoxByteSize	./phys/gphys.cpp	/^	kBoxByteSize = 3,$/;"	e	enum:__anon80cb26910103	file:
 kCannotFetchParameter	./cli/commandline.h	/^	kCannotFetchParameter,$/;"	e	enum:cli::Error
+kColumnWidth	./phys/gphys.cpp	/^	kColumnWidth = 8U,$/;"	e	enum:__anon80cb26910103	file:
 kCount	./cli/commandline.h	/^	kCount,$/;"	e	enum:cli::Error
 kCustom	./cli/commandline.h	/^	kCustom,$/;"	e	enum:cli::OptionType
 kDivisionStatus_Count	./gfx/import/division.h	/^	kDivisionStatus_Count,$/;"	e	enum:gfx::DivisionStatus
@@ -530,6 +549,7 @@ kHighPriorityColorAlpha	./gfx/data/color.h	/^	kHighPriorityColorAlpha = 0,$/;"	e
 kIgnoreCode	./cli/commandline.h	/^static const uint32_t kIgnoreCode = 0xFFFFFFFEU;$/;"	v	namespace:cli	typeref:typename:const uint32_t
 kInteger	./cli/commandline.h	/^	kInteger,$/;"	e	enum:cli::OptionType
 kInternalError	./cli/commandline.h	/^	kInternalError,$/;"	e	enum:cli::Error
+kInvalidColumnNum	./phys/gphys.cpp	/^	kInvalidColumnNum = 0xFFFFFFFFU,$/;"	e	enum:__anon80cb26910103	file:
 kInvalidIndex	./gfx/data/tileset.h	/^	kInvalidIndex = 0xFFFFFFFFU,$/;"	e	enum:gfx::__anon9708898f0103
 kInvalidParameter	./cli/commandline.h	/^	kInvalidParameter,$/;"	e	enum:cli::Error
 kLogLevel_All	./gfx/utils/log.h	/^	kLogLevel_All,$/;"	e	enum:gfx::LogLevel
@@ -538,35 +558,43 @@ kLogLevel_Error	./gfx/utils/log.h	/^	kLogLevel_Error,$/;"	e	enum:gfx::LogLevel
 kLogLevel_Info	./gfx/utils/log.h	/^	kLogLevel_Info,$/;"	e	enum:gfx::LogLevel
 kLogLevel_None	./gfx/utils/log.h	/^	kLogLevel_None,$/;"	e	enum:gfx::LogLevel
 kLogLevel_Warn	./gfx/utils/log.h	/^	kLogLevel_Warn,$/;"	e	enum:gfx::LogLevel
+kMaxHeight	./phys/gphys.cpp	/^	kMaxHeight = 512U,$/;"	e	enum:__anon80cb26910103	file:
 kNoArgumentSpecified	./cli/commandline.h	/^	kNoArgumentSpecified,$/;"	e	enum:cli::Error
 kNoValidMapping	./cli/commandline.h	/^	kNoValidMapping,$/;"	e	enum:cli::Error
 kNone	./cli/commandline.h	/^	kNone,$/;"	e	enum:cli::Error
 kNone	./cli/commandline.h	/^	kNone,$/;"	e	enum:cli::ParameterType
-kOption8800Addressing	./options.cpp	/^		kOption8800Addressing,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionAddHeaders	./options.cpp	/^		kOptionAddHeaders,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionGeneratePalette	./options.cpp	/^		kOptionGeneratePalette,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionGenerateTileset	./options.cpp	/^		kOptionGenerateTileset,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionHard	./options.cpp	/^		kOptionHard,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionHelp	./options.cpp	/^		kOptionHelp,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionInputPaletteSet	./options.cpp	/^		kOptionInputPaletteSet,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionOutputDirectory	./options.cpp	/^		kOptionOutputDirectory,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionPaletteIndexOffset	./options.cpp	/^		kOptionPaletteIndexOffset,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionSkipExportIndices	./options.cpp	/^		kOptionSkipExportIndices,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionSkipExportPalette	./options.cpp	/^		kOptionSkipExportPalette,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionSkipExportParameter	./options.cpp	/^		kOptionSkipExportParameter,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionSkipExportTilemapInfo	./options.cpp	/^		kOptionSkipExportTilemapInfo,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionSkipExportTileset	./options.cpp	/^		kOptionSkipExportTileset,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionSkipExportTilesetInfo	./options.cpp	/^		kOptionSkipExportTilesetInfo,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTileIndexOffset	./options.cpp	/^		kOptionTileIndexOffset,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTileRemoval	./options.cpp	/^		kOptionTileRemoval,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTilemap	./options.cpp	/^		kOptionTilemap,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTilemapDivisions	./options.cpp	/^		kOptionTilemapDivisions,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTilemapOutput	./options.cpp	/^		kOptionTilemapOutput,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTilemapRectangle	./options.cpp	/^		kOptionTilemapRectangle,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTileset	./options.cpp	/^		kOptionTileset,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTilesetDivisions	./options.cpp	/^		kOptionTilesetDivisions,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionTilesetRectangle	./options.cpp	/^		kOptionTilesetRectangle,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
-kOptionVerbose	./options.cpp	/^		kOptionVerbose,$/;"	e	enum:parseCliOptions::__anon5d4685bf0103	file:
+kOption8800Addressing	./conv/options.cpp	/^		kOption8800Addressing,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionAddHeaders	./conv/options.cpp	/^		kOptionAddHeaders,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionDivisions	./phys/options.cpp	/^		kOptionDivisions,$/;"	e	enum:parseCliOptions::__anon1f2b1ab20103	file:
+kOptionGeneratePalette	./conv/options.cpp	/^		kOptionGeneratePalette,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionGenerateTileset	./conv/options.cpp	/^		kOptionGenerateTileset,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionHard	./conv/options.cpp	/^		kOptionHard,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionHelp	./conv/options.cpp	/^		kOptionHelp,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionHelp	./phys/options.cpp	/^		kOptionHelp,$/;"	e	enum:parseCliOptions::__anon1f2b1ab20103	file:
+kOptionInputFilename	./phys/options.cpp	/^		kOptionInputFilename,$/;"	e	enum:parseCliOptions::__anon1f2b1ab20103	file:
+kOptionInputPaletteSet	./conv/options.cpp	/^		kOptionInputPaletteSet,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionOutputDirectory	./conv/options.cpp	/^		kOptionOutputDirectory,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionOutputFilename	./phys/options.cpp	/^		kOptionOutputFilename,$/;"	e	enum:parseCliOptions::__anon1f2b1ab20103	file:
+kOptionPaletteIndexOffset	./conv/options.cpp	/^		kOptionPaletteIndexOffset,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionSkipExportIndices	./conv/options.cpp	/^		kOptionSkipExportIndices,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionSkipExportPalette	./conv/options.cpp	/^		kOptionSkipExportPalette,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionSkipExportParameter	./conv/options.cpp	/^		kOptionSkipExportParameter,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionSkipExportTilemapInfo	./conv/options.cpp	/^		kOptionSkipExportTilemapInfo,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionSkipExportTileset	./conv/options.cpp	/^		kOptionSkipExportTileset,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionSkipExportTilesetInfo	./conv/options.cpp	/^		kOptionSkipExportTilesetInfo,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTileIndexOffset	./conv/options.cpp	/^		kOptionTileIndexOffset,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTileRemoval	./conv/options.cpp	/^		kOptionTileRemoval,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilemap	./conv/options.cpp	/^		kOptionTilemap,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilemapDisguise	./conv/options.cpp	/^		kOptionTilemapDisguise,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilemapDivisions	./conv/options.cpp	/^		kOptionTilemapDivisions,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilemapRectangle	./conv/options.cpp	/^		kOptionTilemapRectangle,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilemapResetParameters	./conv/options.cpp	/^		kOptionTilemapResetParameters,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTileset	./conv/options.cpp	/^		kOptionTileset,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilesetDivisions	./conv/options.cpp	/^		kOptionTilesetDivisions,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionTilesetRectangle	./conv/options.cpp	/^		kOptionTilesetRectangle,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionVerbose	./conv/options.cpp	/^		kOptionVerbose,$/;"	e	enum:parseCliOptions::__anon59c6d1240103	file:
+kOptionVerbose	./phys/options.cpp	/^		kOptionVerbose,$/;"	e	enum:parseCliOptions::__anon1f2b1ab20103	file:
+kRGBA_Black	./gfx/data/color.h	/^static ColorRGBA kRGBA_Black = {0x00U, 0x00U, 0x00U, 0x00U};$/;"	v	namespace:gfx	typeref:typename:ColorRGBA
 kRGBA_Magenta	./gfx/data/color.h	/^static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};$/;"	v	namespace:gfx	typeref:typename:ColorRGBA
 kRGBA_White	./gfx/data/color.h	/^static ColorRGBA kRGBA_White = {0xFFU, 0xFFU, 0xFFU, 0xFFU};$/;"	v	namespace:gfx	typeref:typename:ColorRGBA
 kRemainingCode	./cli/commandline.h	/^static const uint32_t kRemainingCode = 0xFFFFFFFFU;$/;"	v	namespace:cli	typeref:typename:const uint32_t
@@ -575,17 +603,21 @@ kRequiredOptionNotSpecified	./cli/commandline.h	/^	kRequiredOptionNotSpecified,$
 kSingleHiphenDetected	./cli/commandline.h	/^	kSingleHiphenDetected,$/;"	e	enum:cli::Error
 kString	./cli/commandline.h	/^	kString,$/;"	e	enum:cli::OptionType
 kStringToInteger	./cli/commandline.h	/^	kStringToInteger,$/;"	e	enum:cli::OptionType
+kTableEntryByteSize	./phys/gphys.cpp	/^	kTableEntryByteSize = 3,$/;"	e	enum:__anon80cb26910103	file:
 kTileFlipType_Both	./gfx/data/tileset.h	/^	kTileFlipType_Both,$/;"	e	enum:gfx::TileFlipType
 kTileFlipType_Count	./gfx/data/tileset.h	/^	kTileFlipType_Count,$/;"	e	enum:gfx::TileFlipType
 kTileFlipType_Horizontal	./gfx/data/tileset.h	/^	kTileFlipType_Horizontal,$/;"	e	enum:gfx::TileFlipType
 kTileFlipType_None	./gfx/data/tileset.h	/^	kTileFlipType_None,$/;"	e	enum:gfx::TileFlipType
 kTileFlipType_Vertical	./gfx/data/tileset.h	/^	kTileFlipType_Vertical,$/;"	e	enum:gfx::TileFlipType
+kTileHeight	./phys/gphys.cpp	/^	kTileHeight = 8U,$/;"	e	enum:__anon80cb26910103	file:
 kTileRemovalDoubles	./gfx/export/enums.h	/^	kTileRemovalDoubles,$/;"	e	enum:gfx::TileRemoval
 kTileRemovalFlips	./gfx/export/enums.h	/^	kTileRemovalFlips,$/;"	e	enum:gfx::TileRemoval
 kTileRemovalNone	./gfx/export/enums.h	/^	kTileRemovalNone,$/;"	e	enum:gfx::TileRemoval
+kTileWidth	./phys/gphys.cpp	/^	kTileWidth = 8U,$/;"	e	enum:__anon80cb26910103	file:
 kUnknownOption	./cli/commandline.h	/^	kUnknownOption,$/;"	e	enum:cli::Error
 key	./cli/commandline.h	/^	const char* key;$/;"	m	struct:cli::Mapping	typeref:typename:const char *
 last_list_offsets	./gfx/import/division.h	/^	OffsetList last_list_offsets;$/;"	m	struct:gfx::DivisionInfo	typeref:typename:OffsetList
+left	./phys/gphys.cpp	/^	Point left;$/;"	m	struct:Box	typeref:typename:Point	file:
 length	./gfx/third_party/stb_image.h	/^   stbi__uint32 length;$/;"	m	struct:__anonbc04e6d00d08	typeref:typename:stbi__uint32
 lflags	./gfx/third_party/stb_image.h	/^   int lflags;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 line0	./gfx/third_party/stb_image.h	/^   stbi_uc *line0,*line1;$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:stbi_uc *
@@ -599,8 +631,8 @@ loadRawPaletteData	./gfx/data/palette.cpp	/^void PaletteSet::loadRawPaletteData(
 load_jpeg_image	./gfx/third_party/stb_image.h	/^static stbi_uc *load_jpeg_image(stbi__jpeg *z, int *out_x, int *out_y, int *comp, int req_comp)$/;"	f	typeref:typename:stbi_uc *
 lock	./gfx/data/palette.cpp	/^void PaletteSet::lock()$/;"	f	class:gfx::PaletteSet	typeref:typename:void
 log	./gfx/utils/log.cpp	/^void log(LogLevel level, const char* message)$/;"	f	namespace:gfx	typeref:typename:void
-log.cpp	./gfx/utils/log.cpp	1;"	F	epoch:1758245999
-log.h	./gfx/utils/log.h	1;"	F	epoch:1758245999
+log.cpp	./gfx/utils/log.cpp	1;"	F	epoch:1766727435
+log.h	./gfx/utils/log.h	1;"	F	epoch:1766727435
 lpal	./gfx/third_party/stb_image.h	/^   stbi_uc lpal[256][4];$/;"	m	struct:__anonbc04e6d01308	typeref:typename:stbi_uc[256][4]
 m_argument_count	./cli/commandline.h	/^	const int32_t m_argument_count;$/;"	m	class:cli::Parser	typeref:typename:const int32_t
 m_arguments	./cli/commandline.h	/^	const char** m_arguments;$/;"	m	class:cli::Parser	typeref:typename:const char **
@@ -640,8 +672,9 @@ m_tiles	./gfx/data/tileset.h	/^	std::vector<Tile> m_tiles;$/;"	m	class:gfx::Tile
 m_width	./gfx/import/image.cpp	/^	uint32_t m_width;$/;"	m	class:gfx::ImageArea	typeref:typename:uint32_t	file:
 m_width	./gfx/import/image.h	/^	uint32_t m_width;$/;"	m	class:gfx::Image	typeref:typename:uint32_t
 ma	./gfx/third_party/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anonbc04e6d01008	typeref:typename:unsigned int
-main	./gconv.cpp	/^int main(int argc, const char** argv)$/;"	f	typeref:typename:int
-main	./readinfo.cpp	/^int main(int argc, const char** argv)$/;"	f	typeref:typename:int
+main	./conv/gconv.cpp	/^int main(int argc, const char** argv)$/;"	f	typeref:typename:int
+main	./conv/readinfo.cpp	/^int main(int argc, const char** argv)$/;"	f	typeref:typename:int
+main	./phys/gphys.cpp	/^int main(int argc, const char** argv)$/;"	f	typeref:typename:int
 makeFirstColor	./gfx/data/palette.cpp	/^void Palette::makeFirstColor(ColorRGBA color)$/;"	f	class:gfx::Palette	typeref:typename:void
 mapping_count	./cli/commandline.h	/^			uint32_t mapping_count;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460508	typeref:typename:uint32_t
 mappings	./cli/commandline.h	/^			const Mapping* mappings;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460508	typeref:typename:const Mapping *
@@ -657,6 +690,7 @@ mg	./gfx/third_party/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	str
 mr	./gfx/third_party/stb_image.h	/^   unsigned int mr,mg,mb,ma, all_a;$/;"	m	struct:__anonbc04e6d01008	typeref:typename:unsigned int
 name	./cli/commandline.h	/^	const char* name;$/;"	m	struct:cli::Option	typeref:typename:const char *
 nomore	./gfx/third_party/stb_image.h	/^   int            nomore;      \/\/ flag if we saw a marker so must stop$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
+num	./phys/gphys.cpp	/^	uint32_t num = 0;$/;"	m	struct:Column	typeref:typename:uint32_t	file:
 num_bits	./gfx/third_party/stb_image.h	/^   int num_bits;$/;"	m	struct:__anonbc04e6d00c08	typeref:typename:int
 num_channels	./gfx/third_party/stb_image.h	/^   int num_channels;$/;"	m	struct:__anonbc04e6d00508	typeref:typename:int
 offset	./gfx/third_party/stb_image.h	/^   int bpp, offset, hsz;$/;"	m	struct:__anonbc04e6d01008	typeref:typename:int
@@ -676,28 +710,33 @@ operator []	./gfx/import/image.cpp	/^const ColorRGBA ImageArea::operator[](int32
 operator []	./gfx/import/image.cpp	/^const ColorRGBA ImageTile::operator[](int32_t index) const$/;"	f	class:gfx::ImageTile	typeref:typename:const ColorRGBA
 optimize	./gfx/data/palette.cpp	/^bool PaletteSet::optimize(uint32_t palette_color_max_count, bool share_first_color, bool fill_pa/;"	f	class:gfx::PaletteSet	typeref:typename:bool
 option_type	./cli/commandline.h	/^	OptionType option_type;$/;"	m	struct:cli::Option	typeref:typename:OptionType
-options.cpp	./options.cpp	1;"	F	epoch:1759118022
-options.h	./options.h	1;"	F	epoch:1759117271
+options.cpp	./conv/options.cpp	1;"	F	epoch:1766727664
+options.cpp	./phys/options.cpp	1;"	F	epoch:1767089852
+options.h	./conv/options.h	1;"	F	epoch:1766727664
+options.h	./phys/options.h	1;"	F	epoch:1766727664
 order	./gfx/third_party/stb_image.h	/^   int scan_n, order[4];$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int[4]
 out	./gfx/third_party/stb_image.h	/^   stbi_uc *idata, *expanded, *out;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:stbi_uc *
 out	./gfx/third_party/stb_image.h	/^   stbi_uc *out;                 \/\/ output buffer (always 4 components)$/;"	m	struct:__anonbc04e6d01308	typeref:typename:stbi_uc *
-output	./options.h	/^	output;$/;"	m	struct:Options	typeref:struct:Options::__anon5d2d33240308
-outputDebugData	./gconv.cpp	/^static bool outputDebugData($/;"	f	typeref:typename:bool	file:
+output	./conv/options.h	/^	output;$/;"	m	struct:Options	typeref:struct:Options::__anon39e961490308
+output	./phys/options.h	/^	output;$/;"	m	struct:Options	typeref:struct:Options::__anon9af1ef570208
+outputDebugData	./conv/gconv.cpp	/^static bool outputDebugData($/;"	f	typeref:typename:bool	file:
 pal	./gfx/third_party/stb_image.h	/^   stbi_uc  pal[256][4];$/;"	m	struct:__anonbc04e6d01308	typeref:typename:stbi_uc[256][4]
 palette	./gfx/export/capabilities.h	/^	} palette;$/;"	m	struct:gfx::Capabilities	typeref:struct:gfx::Capabilities::__anondbbac8a70108
-palette.cpp	./gfx/data/palette.cpp	1;"	F	epoch:1758245999
-palette.cpp	./gfx/export/palette.cpp	1;"	F	epoch:1758245999
-palette.h	./gfx/data/palette.h	1;"	F	epoch:1758245999
-palette.h	./gfx/export/palette.h	1;"	F	epoch:1758245999
+palette.cpp	./gfx/data/palette.cpp	1;"	F	epoch:1766727435
+palette.cpp	./gfx/export/palette.cpp	1;"	F	epoch:1766727435
+palette.h	./gfx/data/palette.h	1;"	F	epoch:1766727435
+palette.h	./gfx/export/palette.h	1;"	F	epoch:1766727435
 palette_index	./gfx/data/tilemap.h	/^	uint8_t palette_index;$/;"	m	struct:gfx::TilemapEntry	typeref:typename:uint8_t
 palette_index	./gfx/data/tileset.cpp	/^		uint32_t palette_index;$/;"	m	struct:gfx::Tileset::removeDoubles::CheckEntry	typeref:typename:uint32_t	file:
-palette_index_offset	./options.h	/^		int32_t palette_index_offset = 0;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:int32_t
-palette_set_filename	./options.h	/^		const char* palette_set_filename = nullptr;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:const char *
+palette_index_offset	./conv/options.h	/^		int32_t palette_index_offset = 0;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:int32_t
+palette_set_filename	./conv/options.h	/^		const char* palette_set_filename = nullptr;$/;"	m	struct:Options::__anon39e961490108	typeref:typename:const char *
 parameter_type	./cli/commandline.h	/^	ParameterType parameter_type;$/;"	m	struct:cli::Option	typeref:typename:ParameterType
 parse	./gfx/third_party/stb_image.h	/^   int parse, step;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
-parseCliOptions	./options.cpp	/^bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv)$/;"	f	typeref:typename:bool
-parseDivisions	./options.cpp	/^static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::string sequence)$/;"	f	typeref:typename:bool	file:
-parseRectangle	./options.cpp	/^static bool parseRectangle(gfx::Rectangle& out_rectangle, std::string sequence)$/;"	f	typeref:typename:bool	file:
+parseCliOptions	./conv/options.cpp	/^bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv)$/;"	f	typeref:typename:bool
+parseCliOptions	./phys/options.cpp	/^bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const char** argv)$/;"	f	typeref:typename:bool
+parseDivisions	./conv/options.cpp	/^static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::string sequence)$/;"	f	typeref:typename:bool	file:
+parseDivisions	./phys/options.cpp	/^static bool parseDivisions(std::vector<gfx::Division>& out_divisions, std::string sequence)$/;"	f	typeref:typename:bool	file:
+parseRectangle	./conv/options.cpp	/^static bool parseRectangle(gfx::Rectangle& out_rectangle, std::string sequence)$/;"	f	typeref:typename:bool	file:
 prefix	./gfx/third_party/stb_image.h	/^   stbi__int16 prefix;$/;"	m	struct:__anonbc04e6d01208	typeref:typename:stbi__int16
 printDivisionInfo	./gfx/gfx.cpp	/^bool printDivisionInfo(const DivisionInfo& info)$/;"	f	namespace:gfx	typeref:typename:bool
 printHelp	./cli/commandline.cpp	/^void Parser::printHelp() const$/;"	f	class:cli::Parser	typeref:typename:void
@@ -709,10 +748,11 @@ raw_coeff	./gfx/third_party/stb_image.h	/^      void *raw_data, *raw_coeff;$/;"	
 raw_data	./gfx/third_party/stb_image.h	/^      void *raw_data, *raw_coeff;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:void *
 read	./gfx/import/image.cpp	/^bool Image::read(const char* filename)$/;"	f	class:gfx::Image	typeref:typename:bool
 read	./gfx/third_party/stb_image.h	/^   int      (*read)  (void *user,char *data,int size);   \/\/ fill 'data' with 'size' bytes.  re/;"	m	struct:__anonbc04e6d00208	typeref:typename:int (*)(void * user,char * data,int size)
+read	./phys/gphys.cpp	/^static bool read(Data& out_data, Options options)$/;"	f	typeref:typename:bool	file:
 read_from_callbacks	./gfx/third_party/stb_image.h	/^   int read_from_callbacks;$/;"	m	struct:__anonbc04e6d00308	typeref:typename:int
-readinfo.cpp	./readinfo.cpp	1;"	F	epoch:1758245999
-rectangle	./options.h	/^		gfx::Rectangle rectangle;$/;"	m	struct:Options::TilemapEntry	typeref:typename:gfx::Rectangle
-rectangle	./options.h	/^		gfx::Rectangle rectangle;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:gfx::Rectangle
+readinfo.cpp	./conv/readinfo.cpp	1;"	F	epoch:1766727664
+rectangle	./conv/options.h	/^		gfx::Rectangle rectangle;$/;"	m	struct:Options::TilemapEntry	typeref:typename:gfx::Rectangle
+rectangle	./conv/options.h	/^		gfx::Rectangle rectangle;$/;"	m	struct:Options::__anon39e961490108	typeref:typename:gfx::Rectangle
 removeDoubles	./gfx/data/tileset.cpp	/^void Tileset::removeDoubles(bool compare_flips)$/;"	f	class:gfx::Tileset	typeref:typename:void
 required	./cli/commandline.h	/^	bool required;$/;"	m	struct:cli::Option	typeref:typename:bool
 resample	./gfx/third_party/stb_image.h	/^   resample_row_func resample;$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:resample_row_func
@@ -721,6 +761,7 @@ resample_row_func	./gfx/third_party/stb_image.h	/^typedef stbi_uc *(*resample_ro
 resample_row_hv_2_kernel	./gfx/third_party/stb_image.h	/^   stbi_uc *(*resample_row_hv_2_kernel)(stbi_uc *out, stbi_uc *in_near, stbi_uc *in_far, int w, /;"	m	struct:__anonbc04e6d00808	typeref:typename:stbi_uc * (*)(stbi_uc * out,stbi_uc * in_near,stbi_uc * in_far,int w,int hs)
 restart_interval	./gfx/third_party/stb_image.h	/^   int restart_interval, todo;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 rgb	./gfx/third_party/stb_image.h	/^   int            rgb;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
+right	./phys/gphys.cpp	/^	Point right;$/;"	m	struct:Box	typeref:typename:Point	file:
 s	./gfx/third_party/stb_image.h	/^   stbi__context *s;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:stbi__context *
 s	./gfx/third_party/stb_image.h	/^   stbi__context *s;$/;"	m	struct:__anonbc04e6d00e08	typeref:typename:stbi__context *
 s_capabilities	./gfx/export/capabilities.cpp	/^static Capabilities s_capabilities = {};$/;"	v	namespace:gfx	typeref:typename:Capabilities	file:
@@ -742,24 +783,25 @@ size	./gfx/third_party/stb_image.h	/^   stbi_uc  size[257];$/;"	m	struct:__anonb
 size	./gfx/third_party/stb_image.h	/^   stbi_uc  size[STBI__ZNSYMS];$/;"	m	struct:__anonbc04e6d00b08	typeref:typename:stbi_uc[]
 size	./gfx/third_party/stb_image.h	/^   stbi_uc size,type,channel;$/;"	m	struct:__anonbc04e6d01108	typeref:typename:stbi_uc
 skip	./gfx/third_party/stb_image.h	/^   void     (*skip)  (void *user,int n);                 \/\/ skip the next 'n' bytes, or 'unget/;"	m	struct:__anonbc04e6d00208	typeref:typename:void (*)(void * user,int n)
-skip_export_indices	./options.h	/^		bool skip_export_indices = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
-skip_export_palette	./options.h	/^		bool skip_export_palette = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
-skip_export_parameters	./options.h	/^		bool skip_export_parameters = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
-skip_export_tilemap_info	./options.h	/^		bool skip_export_tilemap_info = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
-skip_export_tileset	./options.h	/^		bool skip_export_tileset = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
-skip_export_tileset_info	./options.h	/^		bool skip_export_tileset_info = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
+skip_export_indices	./conv/options.h	/^		bool skip_export_indices = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
+skip_export_palette	./conv/options.h	/^		bool skip_export_palette = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
+skip_export_parameters	./conv/options.h	/^		bool skip_export_parameters = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
+skip_export_tilemap_info	./conv/options.h	/^		bool skip_export_tilemap_info = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
+skip_export_tileset	./conv/options.h	/^		bool skip_export_tileset = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
+skip_export_tileset_info	./conv/options.h	/^		bool skip_export_tileset_info = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
 skip_transparent	./gfx/import/division.h	/^	bool skip_transparent;$/;"	m	struct:gfx::Division	typeref:typename:bool
 sort	./gfx/data/palette.cpp	/^void Palette::sort()$/;"	f	class:gfx::Palette	typeref:typename:void
 sortColorsRGBA	./gfx/data/color.cpp	/^void sortColorsRGBA(ColorRGBA* colors, uint32_t count)$/;"	f	namespace:gfx	typeref:typename:void
 spec_end	./gfx/third_party/stb_image.h	/^   int            spec_end;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 spec_start	./gfx/third_party/stb_image.h	/^   int            spec_start;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 sprite	./gfx/export/capabilities.h	/^	} sprite;$/;"	m	struct:gfx::Capabilities	typeref:struct:gfx::Capabilities::__anondbbac8a70408
+start_box	./phys/gphys.cpp	/^	uint32_t start_box = 0;$/;"	m	struct:Column	typeref:typename:uint32_t	file:
 start_x	./gfx/third_party/stb_image.h	/^   int start_x, start_y;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 start_y	./gfx/third_party/stb_image.h	/^   int start_x, start_y;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
-stb_image.cpp	./gfx/third_party/stb_image.cpp	1;"	F	epoch:1758245999
-stb_image.h	./gfx/third_party/stb_image.h	1;"	F	epoch:1758245999
-stb_image_write.cpp	./gfx/third_party/stb_image_write.cpp	1;"	F	epoch:1758245999
-stb_image_write.h	./gfx/third_party/stb_image_write.h	1;"	F	epoch:1758245999
+stb_image.cpp	./gfx/third_party/stb_image.cpp	1;"	F	epoch:1766727435
+stb_image.h	./gfx/third_party/stb_image.h	1;"	F	epoch:1766727435
+stb_image_write.cpp	./gfx/third_party/stb_image_write.cpp	1;"	F	epoch:1766727435
+stb_image_write.h	./gfx/third_party/stb_image_write.h	1;"	F	epoch:1766727435
 stb_image_write_test	./gfx/third_party/stb_image_write.h	/^typedef int stb_image_write_test[sizeof(stbiw_uint32)==4 ? 1 : -1];$/;"	t	typeref:typename:int[sizeof (stbiw_uint32)==4?1:-1]
 stbi__DNL	./gfx/third_party/stb_image.h	/^#define stbi__DNL(/;"	d
 stbi__EOI	./gfx/third_party/stb_image.h	/^#define stbi__EOI(/;"	d
@@ -1147,35 +1189,35 @@ suffix	./gfx/third_party/stb_image.h	/^   stbi_uc suffix;$/;"	m	struct:__anonbc0
 supports_tile_flips	./gfx/export/capabilities.h	/^		bool supports_tile_flips;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70308	typeref:typename:bool
 supports_tile_flips	./gfx/export/capabilities.h	/^		bool supports_tile_flips;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70408	typeref:typename:bool
 supports_tile_removal	./gfx/export/capabilities.h	/^		bool supports_tile_removal;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70208	typeref:typename:bool
-third_party.h	./gfx/third_party/third_party.h	1;"	F	epoch:1758245999
+third_party.h	./gfx/third_party/third_party.h	1;"	F	epoch:1766727435
 tile_group_size	./gfx/export/capabilities.h	/^		uint32_t tile_group_size;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70208	typeref:typename:uint32_t
 tile_index	./gfx/data/tilemap.h	/^	uint8_t tile_index;$/;"	m	struct:gfx::TilemapEntry	typeref:typename:uint8_t
 tile_index_format	./gfx/export/capabilities.h	/^		Format tile_index_format;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70308	typeref:typename:Format
-tile_index_offset	./options.h	/^		int32_t tile_index_offset = 0;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:int32_t
+tile_index_offset	./conv/options.h	/^		int32_t tile_index_offset = 0;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:int32_t
 tile_max_count	./gfx/export/capabilities.h	/^		uint32_t tile_max_count;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70208	typeref:typename:uint32_t
 tile_parameter_format	./gfx/export/capabilities.h	/^		Format tile_parameter_format;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70308	typeref:typename:Format
-tile_removal	./options.h	/^		gfx::TileRemoval tile_removal = gfx::kTileRemovalNone;$/;"	m	struct:Options::__anon5d2d33240108	typeref:typename:gfx::TileRemoval
+tile_removal	./conv/options.h	/^		gfx::TileRemoval tile_removal = gfx::kTileRemovalNone;$/;"	m	struct:Options::__anon39e961490108	typeref:typename:gfx::TileRemoval
+tilemap	./conv/options.h	/^	tilemap;$/;"	m	struct:Options	typeref:struct:Options::__anon39e961490208
 tilemap	./gfx/export/capabilities.h	/^	} tilemap;$/;"	m	struct:gfx::Capabilities	typeref:struct:gfx::Capabilities::__anondbbac8a70308
-tilemap	./options.h	/^	tilemap;$/;"	m	struct:Options	typeref:struct:Options::__anon5d2d33240208
-tilemap.cpp	./gfx/data/tilemap.cpp	1;"	F	epoch:1758245999
-tilemap.cpp	./gfx/export/tilemap.cpp	1;"	F	epoch:1758245999
-tilemap.h	./gfx/data/tilemap.h	1;"	F	epoch:1758245999
-tilemap.h	./gfx/export/tilemap.h	1;"	F	epoch:1758245999
+tilemap.cpp	./gfx/data/tilemap.cpp	1;"	F	epoch:1766727435
+tilemap.cpp	./gfx/export/tilemap.cpp	1;"	F	epoch:1766727435
+tilemap.h	./gfx/data/tilemap.h	1;"	F	epoch:1766727435
+tilemap.h	./gfx/export/tilemap.h	1;"	F	epoch:1766727435
 tiles_per_bank	./gfx/export/capabilities.h	/^		uint32_t tiles_per_bank;$/;"	m	struct:gfx::Capabilities::__anondbbac8a70208	typeref:typename:uint32_t
+tileset	./conv/options.h	/^	tileset;$/;"	m	struct:Options	typeref:struct:Options::__anon39e961490108
 tileset	./gfx/export/capabilities.h	/^	} tileset;$/;"	m	struct:gfx::Capabilities	typeref:struct:gfx::Capabilities::__anondbbac8a70208
-tileset	./options.h	/^	tileset;$/;"	m	struct:Options	typeref:struct:Options::__anon5d2d33240108
-tileset.cpp	./gfx/data/tileset.cpp	1;"	F	epoch:1758638151
-tileset.cpp	./gfx/export/tileset.cpp	1;"	F	epoch:1758245999
-tileset.h	./gfx/data/tileset.h	1;"	F	epoch:1758245999
-tileset.h	./gfx/export/tileset.h	1;"	F	epoch:1758245999
+tileset.cpp	./gfx/data/tileset.cpp	1;"	F	epoch:1766727435
+tileset.cpp	./gfx/export/tileset.cpp	1;"	F	epoch:1766727435
+tileset.h	./gfx/data/tileset.h	1;"	F	epoch:1766727435
+tileset.h	./gfx/export/tileset.h	1;"	F	epoch:1766727435
 todo	./gfx/third_party/stb_image.h	/^   int restart_interval, todo;$/;"	m	struct:__anonbc04e6d00808	typeref:typename:int
 tq	./gfx/third_party/stb_image.h	/^      int tq;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 transparent	./gfx/third_party/stb_image.h	/^   int flags, bgindex, ratio, transparent, eflags;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
 type	./gfx/third_party/stb_image.h	/^   stbi__uint32 type;$/;"	m	struct:__anonbc04e6d00d08	typeref:typename:stbi__uint32
 type	./gfx/third_party/stb_image.h	/^   stbi_uc size,type,channel;$/;"	m	struct:__anonbc04e6d01108	typeref:typename:stbi_uc
 unload	./gfx/import/image.cpp	/^void Image::unload()$/;"	f	class:gfx::Image	typeref:typename:void
-use_8800_addressing_mode	./options.h	/^		bool use_8800_addressing_mode = false;$/;"	m	struct:Options::__anon5d2d33240308	typeref:typename:bool
-utils.h	./gfx/utils/utils.h	1;"	F	epoch:1758245999
+use_8800_addressing_mode	./conv/options.h	/^		bool use_8800_addressing_mode = false;$/;"	m	struct:Options::__anon39e961490308	typeref:typename:bool
+utils.h	./gfx/utils/utils.h	1;"	F	epoch:1766727435
 v	./gfx/third_party/stb_image.h	/^      int h,v;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
 validateDivisionInfo	./gfx/import/image.cpp	/^static bool validateDivisionInfo($/;"	f	namespace:gfx	typeref:typename:bool	file:
 validateDivisions	./gfx/import/image.cpp	/^static bool validateDivisions($/;"	f	namespace:gfx	typeref:typename:bool	file:
@@ -1183,7 +1225,8 @@ validate_uint32	./gfx/third_party/stb_image.h	/^typedef unsigned char validate_u
 value	./cli/commandline.h	/^	int32_t value;$/;"	m	struct:cli::Mapping	typeref:typename:int32_t
 value	./gfx/third_party/stb_image.h	/^   stbi__uint16 value[STBI__ZNSYMS];$/;"	m	struct:__anonbc04e6d00b08	typeref:typename:stbi__uint16[]
 values	./gfx/third_party/stb_image.h	/^   stbi_uc  values[256];$/;"	m	struct:__anonbc04e6d00708	typeref:typename:stbi_uc[256]
-verbose	./options.h	/^	bool verbose = false;$/;"	m	struct:Options	typeref:typename:bool
+verbose	./conv/options.h	/^	bool verbose = false;$/;"	m	struct:Options	typeref:typename:bool
+verbose	./phys/options.h	/^	bool verbose = false;$/;"	m	struct:Options	typeref:typename:bool
 vs	./gfx/third_party/stb_image.h	/^   int hs,vs;   \/\/ expansion factor in each axis$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
 w	./gfx/import/image.h	/^	uint32_t w = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 w	./gfx/third_party/stb_image.h	/^   int w,h;$/;"	m	struct:__anonbc04e6d01308	typeref:typename:int
@@ -1191,8 +1234,11 @@ w2	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e
 w_lores	./gfx/third_party/stb_image.h	/^   int w_lores; \/\/ horizontal pixels pre-expansion$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
 width	./gfx/data/tileset.h	/^	uint32_t width;$/;"	m	struct:gfx::TileFlip	typeref:typename:uint32_t
 width	./gfx/import/division.h	/^	uint32_t width;$/;"	m	struct:gfx::Division	typeref:typename:uint32_t
+write	./phys/gphys.cpp	/^static bool write(const Data& data, const Options options)$/;"	f	typeref:typename:bool	file:
+writeBoxes	./phys/gphys.cpp	/^static bool writeBoxes(FILE* out_file, const Data& data, const Options options)$/;"	f	typeref:typename:bool	file:
 writeDivisionInfo	./gfx/gfx.cpp	/^bool writeDivisionInfo(const DivisionInfo& division_info, const char* output_filename)$/;"	f	namespace:gfx	typeref:typename:bool
 writePaletteSetToPNG	./gfx/gfx.cpp	/^bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)$/;"	f	namespace:gfx	typeref:typename:bool
+writeTable	./phys/gphys.cpp	/^static bool writeTable(FILE* out_file, const Data& data, const Options options)$/;"	f	typeref:typename:bool	file:
 writeTilesetToPNG	./gfx/gfx.cpp	/^bool writeTilesetToPNG($/;"	f	namespace:gfx	typeref:typename:bool
 writeToFile	./gfx/gfx.cpp	/^static bool writeToFile($/;"	f	namespace:gfx	typeref:typename:bool	file:
 write_back_address	./cli/commandline.h	/^			bool* write_back_address;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460208	typeref:typename:bool *
@@ -1201,8 +1247,10 @@ write_back_address	./cli/commandline.h	/^			int32_t* write_back_address;$/;"	m	s
 write_back_address	./cli/commandline.h	/^			int32_t* write_back_address;$/;"	m	struct:cli::Option::__anona3abd846010a::__anona3abd8460508	typeref:typename:int32_t *
 x	./gfx/import/image.h	/^	uint32_t x = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 x	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
+x	./phys/gphys.cpp	/^	int32_t x = 0;$/;"	m	struct:Point	typeref:typename:int32_t	file:
 y	./gfx/import/image.h	/^	uint32_t y = 0;$/;"	m	struct:gfx::Rectangle	typeref:typename:uint32_t
 y	./gfx/third_party/stb_image.h	/^      int x,y,w2,h2;$/;"	m	struct:__anonbc04e6d00808::__anonbc04e6d00908	typeref:typename:int
+y	./phys/gphys.cpp	/^	int32_t y = 0;$/;"	m	struct:Point	typeref:typename:int32_t	file:
 ypos	./gfx/third_party/stb_image.h	/^   int ypos;    \/\/ which pre-expansion row we're on$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
 ystep	./gfx/third_party/stb_image.h	/^   int ystep;   \/\/ how far through vertical expansion we are$/;"	m	struct:__anonbc04e6d00a08	typeref:typename:int
 z_distance	./gfx/third_party/stb_image.h	/^   stbi__zhuffman z_length, z_distance;$/;"	m	struct:__anonbc04e6d00c08	typeref:typename:stbi__zhuffman
