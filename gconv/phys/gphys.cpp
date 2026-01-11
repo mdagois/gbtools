@@ -1,4 +1,5 @@
 #include <cassert>
+#include <cmath>
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -24,8 +25,8 @@ enum : uint32_t
 
 	kBaseAddress = 0x4000U,
 	kBankByteSize = 16U * 1024U,
-	kBoxByteSize = 3,
-	kTableEntryByteSize = 3,
+	kTableEntryByteSize = 4,
+	kBoxByteSize = 4,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -180,6 +181,9 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 		assert(relative_start_address < kBankByteSize);
 		const uint16_t start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_address);
 		fwrite(&start_box_address, sizeof(start_box_address), 1, out_file);
+
+		const uint8_t dummy = 0U;
+		fwrite(&dummy, sizeof(dummy), 1, out_file);
 	}
 	return true;
 }
@@ -199,16 +203,14 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		assert(left_right_diff >= 0);
 		const uint8_t diff = static_cast<uint8_t>((left_right_diff) & 0x7);
 		const double slope = left_right_diff == 0 ? 0 : (box.right.y - box.left.y) / left_right_diff;
-		const int32_t slope_integral = static_cast<int32_t>(slope);
-		assert(slope_integral > -8 && slope_integral < 8);
-		const int32_t slope_decimal = static_cast<int32_t>((slope - slope_integral) * 256.0);
-		const uint8_t slope_nibble_low = static_cast<uint8_t>(slope_integral >= 0 ? slope_integral : (-slope_integral | 0x1000));
-		const uint8_t slope_nibble_high = static_cast<uint8_t>((slope_decimal >> 4) & 0x0F);
+		assert(slope > -8.0 && slope < 8.0);
+		const int16_t slope_integral = static_cast<int16_t>(round(slope * 256.0));
 
-		uint8_t bytes[3];
+		uint8_t bytes[4];
 		bytes[0] = height_low;
 		bytes[1] = height_high | (left << 1) | (diff << 4);
-		bytes[2] = (slope_nibble_high << 4) | slope_nibble_low;
+		bytes[2] = static_cast<uint8_t>(slope_integral & 0xFF);
+		bytes[3] = static_cast<uint8_t>((slope_integral >> 8) & 0xFF);
 
 		fwrite(bytes, sizeof(bytes), 1, out_file);
 	}
