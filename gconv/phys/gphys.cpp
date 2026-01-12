@@ -177,13 +177,13 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 		const uint8_t box_count = static_cast<uint8_t>(column.box_count);
 		fwrite(&box_count, sizeof(box_count), 1, out_file);
 		
-		const uint32_t relative_start_address = kTableSize + column.start_box * kBoxByteSize;
-		assert(relative_start_address < kBankByteSize);
-		const uint16_t start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_address);
-		fwrite(&start_box_address, sizeof(start_box_address), 1, out_file);
+		const uint32_t relative_start_box_address = kTableSize + column.start_box * kBoxByteSize;
+		assert(relative_start_box_address < kBankByteSize);
+		const uint16_t absolute_start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_box_address);
+		fwrite(&absolute_start_box_address, sizeof(absolute_start_box_address), 1, out_file);
 
-		const uint8_t dummy = 0U;
-		fwrite(&dummy, sizeof(dummy), 1, out_file);
+		const uint8_t padding = 0U;
+		fwrite(&padding, sizeof(padding), 1, out_file);
 	}
 	return true;
 }
@@ -199,16 +199,16 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		assert(box.left.x < kTileWidth);
 		const uint8_t left = static_cast<uint8_t>(box.left.x & 0x7);
 		assert(box.right.x < kTileWidth);
+		const uint8_t right = static_cast<uint8_t>(box.right.x & 0x7);
 		const int32_t left_right_diff = box.right.x - box.left.x;
 		assert(left_right_diff >= 0);
-		const uint8_t diff = static_cast<uint8_t>((left_right_diff) & 0x7);
 		const double slope = left_right_diff == 0 ? 0 : (box.right.y - box.left.y) / left_right_diff;
 		assert(slope > -8.0 && slope < 8.0);
 		const int16_t slope_integral = static_cast<int16_t>(round(slope * 256.0));
 
 		uint8_t bytes[4];
-		bytes[0] = height_low;
-		bytes[1] = height_high | (left << 1) | (diff << 4);
+		bytes[0] = (height_high << 7) | (right << 4) | left;
+		bytes[1] = height_low;
 		bytes[2] = static_cast<uint8_t>(slope_integral & 0xFF);
 		bytes[3] = static_cast<uint8_t>((slope_integral >> 8) & 0xFF);
 
