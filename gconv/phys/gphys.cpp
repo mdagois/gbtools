@@ -207,7 +207,7 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		const int16_t slope_integral = static_cast<int16_t>(round(slope * 256.0));
 
 		uint8_t bytes[4];
-		bytes[0] = (height_high << 7) | (right << 4) | left;
+		bytes[0] = (height_high << 7) | (left << 4) | right;
 		bytes[1] = height_low;
 		bytes[2] = static_cast<uint8_t>(slope_integral & 0xFF);
 		bytes[3] = static_cast<uint8_t>((slope_integral >> 8) & 0xFF);
