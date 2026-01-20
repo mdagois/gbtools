@@ -25,8 +25,10 @@ enum : uint32_t
 
 	kBaseAddress = 0x4000U,
 	kBankByteSize = 16U * 1024U,
-	kTableEntryByteSize = 4,
-	kBoxByteSize = 4,
+	kTableEntryByteSize = 3,
+	kBoxByteSize = 5,
+
+	kCollisionNone = 0x08,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -38,17 +40,11 @@ struct Column
 	uint32_t box_count = 0;
 };
 
-struct Point
-{
-	int32_t x = 0;
-	int32_t y = 0;
-};
-
 struct Box
 {
 	uint32_t column;
-	Point left;
-	Point right;
+	uint32_t height;
+	uint8_t offsets[kColumnWidth];
 };
 
 struct Data
@@ -117,43 +113,34 @@ static bool read(Data& out_data, Options options)
 				current_column.start_box = box_count;
 			}
 
-			Point leftmost;
-			leftmost.x = kTileWidth;
-			Point rightmost;
-			rightmost.x = -1;
-			bool register_box = false;
-			for(uint32_t i = 0; i < kTileWidth * kTileHeight; ++i)
+			Box box;
+			box.column = column_num;
+			box.height = y;
+			for(uint32_t col = 0; col < kTileWidth; ++col)
 			{
-				const ColorRGBA color = tile[i];
-				if(color == kRGBA_Magenta)
+				box.offsets[col] = kCollisionNone;
+			}
+			bool found = false;
+			for(uint32_t col = 0; col < kTileWidth; ++col)
+			{
+				for(uint32_t row = 0; row < kTileHeight; ++row)
 				{
-					continue;
-				}
-				assert(color == kRGBA_Black);
-				register_box = true;
-
-				const int32_t px = i % kTileWidth;
-				const int32_t py = i / kTileWidth;
-				if(px < leftmost.x)
-				{
-					leftmost.x = px;
-					leftmost.y = py;
-				}
-				if(px > rightmost.x)
-				{
-					rightmost.x = px;
-					rightmost.y = py;
+					const uint32_t index = row * kTileWidth + col;
+					const ColorRGBA color = tile[index];
+					if(color == kRGBA_Magenta)
+					{
+						continue;
+					}
+					assert(color == kRGBA_Black);
+					found = true;
+					box.offsets[col] = row;
+					break;
 				}
 			}
-			if(register_box)
+			if(found)
 			{
-				Box box;
-				box.column = column_num;
-				box.left = leftmost;
-				box.right = rightmost;
 				out_data.boxes.push_back(box);
 			}
-
 			return true;
 		}))
 	{
@@ -181,9 +168,6 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 		assert(relative_start_box_address < kBankByteSize);
 		const uint16_t absolute_start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_box_address);
 		fwrite(&absolute_start_box_address, sizeof(absolute_start_box_address), 1, out_file);
-
-		const uint8_t padding = 0U;
-		fwrite(&padding, sizeof(padding), 1, out_file);
 	}
 	return true;
 }
@@ -192,25 +176,15 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 {
 	for(const Box& box : data.boxes)
 	{
-		assert(box.left.y < kMaxHeight);
+		assert(box.height < kMaxHeight);
+		assert(box.height % kTileHeight == 0);
 
-		const uint8_t height_low = static_cast<uint8_t>(box.left.y & 0xFF);
-		const uint8_t height_high = static_cast<uint8_t>((box.left.y >> 8) && 0x1);
-		assert(box.left.x < kTileWidth);
-		const uint8_t left = static_cast<uint8_t>(box.left.x & 0x7);
-		assert(box.right.x < kTileWidth);
-		const uint8_t right = static_cast<uint8_t>(box.right.x & 0x7);
-		const int32_t left_right_diff = box.right.x - box.left.x;
-		assert(left_right_diff >= 0);
-		const double slope = left_right_diff == 0 ? 0 : (box.right.y - box.left.y) / left_right_diff;
-		assert(slope > -8.0 && slope < 8.0);
-		const int16_t slope_integral = static_cast<int16_t>(round(slope * 256.0));
-
-		uint8_t bytes[4];
-		bytes[0] = (height_high << 7) | (left << 4) | right;
-		bytes[1] = height_low;
-		bytes[2] = static_cast<uint8_t>(slope_integral & 0xFF);
-		bytes[3] = static_cast<uint8_t>((slope_integral >> 8) & 0xFF);
+		uint8_t bytes[kBoxByteSize];
+		bytes[0] = box.height >> 1;
+		bytes[1] = (box.offsets[1] << 4) | box.offsets[0];
+		bytes[2] = (box.offsets[3] << 4) | box.offsets[2];
+		bytes[3] = (box.offsets[5] << 4) | box.offsets[4];
+		bytes[4] = (box.offsets[7] << 4) | box.offsets[6];
 
 		fwrite(bytes, sizeof(bytes), 1, out_file);
 	}
