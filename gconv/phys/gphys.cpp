@@ -180,11 +180,11 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		assert(box.height % kTileHeight == 0);
 
 		uint8_t bytes[kBoxByteSize];
-		bytes[0] = box.height >> 1;
-		bytes[1] = (box.offsets[1] << 4) | box.offsets[0];
-		bytes[2] = (box.offsets[3] << 4) | box.offsets[2];
-		bytes[3] = (box.offsets[5] << 4) | box.offsets[4];
-		bytes[4] = (box.offsets[7] << 4) | box.offsets[6];
+		bytes[0] = (box.offsets[1] << 4) | box.offsets[0];
+		bytes[1] = (box.offsets[3] << 4) | box.offsets[2];
+		bytes[2] = (box.offsets[5] << 4) | box.offsets[4];
+		bytes[3] = (box.offsets[7] << 4) | box.offsets[6];
+		bytes[4] = box.height >> 1;
 
 		fwrite(bytes, sizeof(bytes), 1, out_file);
 	}
