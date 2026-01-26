@@ -7,6 +7,6 @@ project(clitools)
 
 add_subdirectory(lib)
 include_directories(${CONV_LIB_INCLUDE_DIR})
-add_subdirectory(conv)
+add_subdirectory(gfx)
 add_subdirectory(phys)
 
