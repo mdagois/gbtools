@@ -14,8 +14,7 @@ add_executable(
 
 target_compile_definitions(${GCONV_BIN_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
 target_compile_features(${GCONV_BIN_NAME} PRIVATE cxx_std_17)
-target_link_libraries(${GCONV_BIN_NAME} ${CLI_LIB_NAME})
-target_link_libraries(${GCONV_BIN_NAME} ${GFX_LIB_NAME})
+target_link_libraries(${GCONV_BIN_NAME} ${CONV_LIB_NAME})
 
 ############################################################
 # readinfo
@@ -29,5 +28,5 @@ add_executable(
 
 target_compile_definitions(${READINFO_BIN_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
 target_compile_features(${READINFO_BIN_NAME} PRIVATE cxx_std_17)
-target_link_libraries(${READINFO_BIN_NAME} ${GFX_LIB_NAME})
+target_link_libraries(${READINFO_BIN_NAME} ${CONV_LIB_NAME})
 

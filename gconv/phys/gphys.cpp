@@ -5,7 +5,6 @@
 #include <string>
 #include <vector>
 
-#include "gfx.h"
 #include "import/import.h"
 #include "options.h"
 

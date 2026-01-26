@@ -5,8 +5,8 @@ project(clitools)
 # libraries
 ############################################################
 
-add_subdirectory(gfx)
-include_directories(${CLI_INCLUDE_DIR} ${GFX_INCLUDE_DIR})
+add_subdirectory(lib)
+include_directories(${CONV_LIB_INCLUDE_DIR})
 add_subdirectory(conv)
 add_subdirectory(phys)
 

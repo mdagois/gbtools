@@ -14,6 +14,5 @@ add_executable(
 
 target_compile_definitions(${GPHYS_BIN_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
 target_compile_features(${GPHYS_BIN_NAME} PRIVATE cxx_std_17)
-target_link_libraries(${GPHYS_BIN_NAME} ${CLI_LIB_NAME})
-target_link_libraries(${GPHYS_BIN_NAME} ${GFX_LIB_NAME})
+target_link_libraries(${GPHYS_BIN_NAME} ${CONV_LIB_NAME})
 

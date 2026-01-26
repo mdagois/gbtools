@@ -49,8 +49,8 @@ list(TRANSFORM THIRD_PARTY_SRC PREPEND third_party/)
 # library
 ############################################################
 
-set(LIB_NAME gfx)
-set(GFX_LIB_NAME ${LIB_NAME} PARENT_SCOPE)
+set(LIB_NAME conv)
+set(CONV_LIB_NAME ${LIB_NAME} PARENT_SCOPE)
 
 add_library(
 	${LIB_NAME}
@@ -60,7 +60,7 @@ add_library(
 	${DATA_SRC}
 	${UTILS_SRC}
 	${THIRD_PARTY_SRC}
-	gfx.h gfx.cpp
+	lib.h lib.cpp
 )
 
 target_compile_definitions(${LIB_NAME} PUBLIC _CRT_SECURE_NO_WARNINGS)
@@ -71,5 +71,5 @@ target_compile_features(${LIB_NAME} PRIVATE cxx_std_17)
 ############################################################
 
 include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-set(GFX_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
+set(CONV_LIB_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR} PARENT_SCOPE)
 
