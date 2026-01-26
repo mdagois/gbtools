@@ -32,6 +32,7 @@ set(DATA_SRC
 list(TRANSFORM DATA_SRC PREPEND data/)
 
 set(UTILS_SRC
+	commandline.h commandline.cpp
 	utils.h
 	log.h log.cpp
 )
