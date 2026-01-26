@@ -6,7 +6,7 @@
 
 #include "third_party/stb_image_write.h"
 
-#include "gfx.h"
+#include "lib.h"
 
 namespace gfx {
 

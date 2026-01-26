@@ -13,9 +13,9 @@ Likewise, the [stb](https://github.com/nothings/stb) library, available [here](g
 
 [GBBS](gbbs) is a build system built over `make` and the RGBDS toolchain.
 
-## Graphics Converter
+## Data Converter
 
-[GCONV](gconv) is a tool to convert PNG files into Game Boy graphics.
+[CONV](conv) is a set of tools to convert PNG files into graphics and collision data.
 
 ## Third party
 
