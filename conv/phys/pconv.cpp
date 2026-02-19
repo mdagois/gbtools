@@ -25,9 +25,11 @@ enum : uint32_t
 	kBaseAddress = 0x4000U,
 	kBankByteSize = 16U * 1024U,
 	kTableEntryByteSize = 3,
-	kBoxByteSize = 5,
+	kBoxByteSize = 6,
 
 	kCollisionNone = 0x08,
+	kMaxSegmentCount = 256U,
+	kInvalidColorIndex = 0xFFFFFFFFU,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -43,6 +45,7 @@ struct Box
 {
 	uint32_t column;
 	uint32_t height;
+	uint32_t color_id;
 	uint8_t offsets[kColumnWidth];
 };
 
@@ -89,7 +92,9 @@ static bool read(Data& out_data, Options options)
 		}
 	};
 
-	int32_t last_column_num = 0;
+	uint32_t segment_count = 0;
+	ColorRGBA segment_colors[kMaxSegmentCount];
+
 	DivisionInfo division_info;
 	Rectangle rectangle;
 	if(!image.iterateTiles(
@@ -97,7 +102,7 @@ static bool read(Data& out_data, Options options)
 		options.input.divisions.data(),
 		static_cast<uint32_t>(options.input.divisions.size()),
 		rectangle,
-		[&out_data, &current_column, &addColumn](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			assert(tile.getWidth() == kTileWidth && tile.getHeight() == kTileHeight);
 			assert(tile.getWidth() % kTileWidth == 0);
@@ -119,7 +124,9 @@ static bool read(Data& out_data, Options options)
 			{
 				box.offsets[col] = kCollisionNone;
 			}
+
 			bool found = false;
+			ColorRGBA segment_color = kRGBA_Magenta;
 			for(uint32_t col = 0; col < kTileWidth; ++col)
 			{
 				for(uint32_t row = 0; row < kTileHeight; ++row)
@@ -130,14 +137,39 @@ static bool read(Data& out_data, Options options)
 					{
 						continue;
 					}
-					assert(color == kRGBA_Black);
-					found = true;
+
 					box.offsets[col] = row;
+					segment_color = color;
+					found = true;
 					break;
 				}
 			}
 			if(found)
 			{
+				assert(segment_color != kRGBA_Magenta);
+				uint32_t box_color_index = kInvalidColorIndex;
+				for(uint32_t i = 0; i < segment_count; ++i)
+				{
+					if(segment_colors[i] == segment_color)
+					{
+						box_color_index = i;
+						break;
+					}
+				}
+				if(box_color_index == kInvalidColorIndex)
+				{
+					if(segment_count >= kMaxSegmentCount)
+					{
+						std::cout << "Too many segment colors used" << std::endl;
+						return false;
+					}
+					segment_colors[segment_count] = segment_color;
+					box_color_index = segment_count;
+					++segment_count;
+				}
+				assert(box_color_index != kInvalidColorIndex);
+
+				box.color_id = box_color_index;
 				out_data.boxes.push_back(box);
 			}
 			return true;
@@ -179,11 +211,12 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		assert(box.height % kTileHeight == 0);
 
 		uint8_t bytes[kBoxByteSize];
-		bytes[0] = (box.offsets[1] << 4) | box.offsets[0];
-		bytes[1] = (box.offsets[3] << 4) | box.offsets[2];
-		bytes[2] = (box.offsets[5] << 4) | box.offsets[4];
-		bytes[3] = (box.offsets[7] << 4) | box.offsets[6];
-		bytes[4] = box.height >> 1;
+		bytes[0] = box.color_id;
+		bytes[1] = box.height >> 1;
+		bytes[2] = (box.offsets[1] << 4) | box.offsets[0];
+		bytes[3] = (box.offsets[3] << 4) | box.offsets[2];
+		bytes[4] = (box.offsets[5] << 4) | box.offsets[4];
+		bytes[5] = (box.offsets[7] << 4) | box.offsets[6];
 
 		fwrite(bytes, sizeof(bytes), 1, out_file);
 	}
