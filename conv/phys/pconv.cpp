@@ -47,6 +47,7 @@ struct Box
 	uint32_t height;
 	uint32_t color_id;
 	uint8_t offsets[kColumnWidth];
+	bool is_last_in_column;
 };
 
 struct Data
@@ -76,20 +77,24 @@ static bool read(Data& out_data, Options options)
 
 	auto addColumn = [&out_data, &current_column]()
 	{
-		if(current_column.num != kInvalidColumnNum)
+		if(current_column.num == kInvalidColumnNum)
 		{
-			uint32_t column_count = static_cast<uint32_t>(out_data.columns.size());
-			while(column_count < current_column.num)
-			{
-				Column column;
-				column.num = column_count;
-				out_data.columns.push_back(column);
-				++column_count;
-			}
-			assert(out_data.columns.size() == current_column.num);
-			current_column.box_count = static_cast<uint32_t>(out_data.boxes.size()) - current_column.start_box;
-			out_data.columns.push_back(current_column);
+			return;
 		}
+
+		uint32_t column_count = static_cast<uint32_t>(out_data.columns.size());
+		while(column_count < current_column.num)
+		{
+			Column column;
+			column.num = column_count;
+			out_data.columns.push_back(column);
+			++column_count;
+		}
+		assert(out_data.columns.size() == current_column.num);
+		Box& last_box = out_data.boxes.back();
+		last_box.is_last_in_column = true;
+		current_column.box_count = static_cast<uint32_t>(out_data.boxes.size()) - current_column.start_box;
+		out_data.columns.push_back(current_column);
 	};
 
 	uint32_t segment_count = 0;
@@ -120,6 +125,7 @@ static bool read(Data& out_data, Options options)
 			Box box;
 			box.column = column_num;
 			box.height = y;
+			box.is_last_in_column = false;
 			for(uint32_t col = 0; col < kTileWidth; ++col)
 			{
 				box.offsets[col] = kCollisionNone;
@@ -191,10 +197,11 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 	const uint32_t kTableSize = kTableEntryByteSize * static_cast<uint32_t>(data.columns.size());
 	for(const Column& column : data.columns)
 	{
-		assert(column.box_count < 256);
-		const uint8_t box_count = static_cast<uint8_t>(column.box_count);
-		fwrite(&box_count, sizeof(box_count), 1, out_file);
-		
+		if(column.box_count == 0)
+		{
+			std::cout << "No segment found in column " << column.num << std::endl;
+			return false;
+		}
 		const uint32_t relative_start_box_address = kTableSize + column.start_box * kBoxByteSize;
 		assert(relative_start_box_address < kBankByteSize);
 		const uint16_t absolute_start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_box_address);
@@ -209,14 +216,15 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 	{
 		assert(box.height < kMaxHeight);
 		assert(box.height % kTileHeight == 0);
+		assert(box.color_id < 128);
 
 		uint8_t bytes[kBoxByteSize];
-		bytes[0] = (box.offsets[1] << 4) | box.offsets[0];
-		bytes[1] = (box.offsets[3] << 4) | box.offsets[2];
-		bytes[2] = (box.offsets[5] << 4) | box.offsets[4];
-		bytes[3] = (box.offsets[7] << 4) | box.offsets[6];
-		bytes[4] = box.height >> 1;
-		bytes[5] = box.color_id;
+		bytes[0] = (box.height > 255) ? (box.height | 0x1) : box.height;
+		bytes[1] = box.is_last_in_column ? (box.color_id | 0x80) : box.color_id;
+		bytes[2] = (box.offsets[1] << 4) | box.offsets[0];
+		bytes[3] = (box.offsets[3] << 4) | box.offsets[2];
+		bytes[4] = (box.offsets[5] << 4) | box.offsets[4];
+		bytes[5] = (box.offsets[7] << 4) | box.offsets[6];
 
 		fwrite(bytes, sizeof(bytes), 1, out_file);
 	}
