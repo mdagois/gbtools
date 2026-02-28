@@ -219,7 +219,7 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		assert(box.color_id < 128);
 
 		uint8_t bytes[kBoxByteSize];
-		bytes[0] = (box.height > 255) ? (box.height | 0x1) : box.height;
+		bytes[0] = box.height >> 1;
 		bytes[1] = box.is_last_in_column ? (box.color_id | 0x80) : box.color_id;
 		bytes[2] = (box.offsets[1] << 4) | box.offsets[0];
 		bytes[3] = (box.offsets[3] << 4) | box.offsets[2];
