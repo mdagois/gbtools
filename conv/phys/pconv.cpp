@@ -24,7 +24,7 @@ enum : uint32_t
 
 	kBaseAddress = 0x4000U,
 	kBankByteSize = 16U * 1024U,
-	kTableEntryByteSize = 3,
+	kTableEntryByteSize = 2,
 	kBoxByteSize = 6,
 
 	kCollisionNone = 0x08,
