@@ -447,7 +447,7 @@ bool Image::iterateTiles(
 		return false;
 	}
 	ImageArea start_image(
-		m_pixels,
+		m_pixels + (start_rectangle.y * m_width) + start_rectangle.x,
 		start_rectangle.x, start_rectangle.y, start_rectangle.w, start_rectangle.h,
 		m_width);
 	return

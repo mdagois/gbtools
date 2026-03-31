@@ -24,10 +24,12 @@ enum : uint32_t
 
 	kBaseAddress = 0x4000U,
 	kBankByteSize = 16U * 1024U,
-	kTableEntryByteSize = 3,
-	kBoxByteSize = 5,
+	kTableEntryByteSize = 2,
+	kBoxByteSize = 6,
 
 	kCollisionNone = 0x08,
+	kMaxSegmentCount = 256U,
+	kInvalidColorIndex = 0xFFFFFFFFU,
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -43,7 +45,9 @@ struct Box
 {
 	uint32_t column;
 	uint32_t height;
+	uint32_t color_id;
 	uint8_t offsets[kColumnWidth];
+	bool is_last_in_column;
 };
 
 struct Data
@@ -73,23 +77,29 @@ static bool read(Data& out_data, Options options)
 
 	auto addColumn = [&out_data, &current_column]()
 	{
-		if(current_column.num != kInvalidColumnNum)
+		if(current_column.num == kInvalidColumnNum)
 		{
-			uint32_t column_count = static_cast<uint32_t>(out_data.columns.size());
-			while(column_count < current_column.num)
-			{
-				Column column;
-				column.num = column_count;
-				out_data.columns.push_back(column);
-				++column_count;
-			}
-			assert(out_data.columns.size() == current_column.num);
-			current_column.box_count = static_cast<uint32_t>(out_data.boxes.size()) - current_column.start_box;
-			out_data.columns.push_back(current_column);
+			return;
 		}
+
+		uint32_t column_count = static_cast<uint32_t>(out_data.columns.size());
+		while(column_count < current_column.num)
+		{
+			Column column;
+			column.num = column_count;
+			out_data.columns.push_back(column);
+			++column_count;
+		}
+		assert(out_data.columns.size() == current_column.num);
+		Box& last_box = out_data.boxes.back();
+		last_box.is_last_in_column = true;
+		current_column.box_count = static_cast<uint32_t>(out_data.boxes.size()) - current_column.start_box;
+		out_data.columns.push_back(current_column);
 	};
 
-	int32_t last_column_num = 0;
+	uint32_t segment_count = 0;
+	ColorRGBA segment_colors[kMaxSegmentCount];
+
 	DivisionInfo division_info;
 	Rectangle rectangle;
 	if(!image.iterateTiles(
@@ -97,7 +107,7 @@ static bool read(Data& out_data, Options options)
 		options.input.divisions.data(),
 		static_cast<uint32_t>(options.input.divisions.size()),
 		rectangle,
-		[&out_data, &current_column, &addColumn](const ImageTile& tile, uint32_t x, uint32_t y)
+		[&](const ImageTile& tile, uint32_t x, uint32_t y)
 		{
 			assert(tile.getWidth() == kTileWidth && tile.getHeight() == kTileHeight);
 			assert(tile.getWidth() % kTileWidth == 0);
@@ -115,11 +125,14 @@ static bool read(Data& out_data, Options options)
 			Box box;
 			box.column = column_num;
 			box.height = y;
+			box.is_last_in_column = false;
 			for(uint32_t col = 0; col < kTileWidth; ++col)
 			{
 				box.offsets[col] = kCollisionNone;
 			}
+
 			bool found = false;
+			ColorRGBA segment_color = kRGBA_Magenta;
 			for(uint32_t col = 0; col < kTileWidth; ++col)
 			{
 				for(uint32_t row = 0; row < kTileHeight; ++row)
@@ -130,14 +143,39 @@ static bool read(Data& out_data, Options options)
 					{
 						continue;
 					}
-					assert(color == kRGBA_Black);
-					found = true;
+
 					box.offsets[col] = row;
+					segment_color = color;
+					found = true;
 					break;
 				}
 			}
 			if(found)
 			{
+				assert(segment_color != kRGBA_Magenta);
+				uint32_t box_color_index = kInvalidColorIndex;
+				for(uint32_t i = 0; i < segment_count; ++i)
+				{
+					if(segment_colors[i] == segment_color)
+					{
+						box_color_index = i;
+						break;
+					}
+				}
+				if(box_color_index == kInvalidColorIndex)
+				{
+					if(segment_count >= kMaxSegmentCount)
+					{
+						std::cout << "Too many segment colors used" << std::endl;
+						return false;
+					}
+					segment_colors[segment_count] = segment_color;
+					box_color_index = segment_count;
+					++segment_count;
+				}
+				assert(box_color_index != kInvalidColorIndex);
+
+				box.color_id = box_color_index;
 				out_data.boxes.push_back(box);
 			}
 			return true;
@@ -159,10 +197,11 @@ static bool writeTable(FILE* out_file, const Data& data, const Options options)
 	const uint32_t kTableSize = kTableEntryByteSize * static_cast<uint32_t>(data.columns.size());
 	for(const Column& column : data.columns)
 	{
-		assert(column.box_count < 256);
-		const uint8_t box_count = static_cast<uint8_t>(column.box_count);
-		fwrite(&box_count, sizeof(box_count), 1, out_file);
-		
+		if(column.box_count == 0)
+		{
+			std::cout << "No segment found in column " << column.num << std::endl;
+			return false;
+		}
 		const uint32_t relative_start_box_address = kTableSize + column.start_box * kBoxByteSize;
 		assert(relative_start_box_address < kBankByteSize);
 		const uint16_t absolute_start_box_address = static_cast<uint16_t>(kBaseAddress + relative_start_box_address);
@@ -179,11 +218,12 @@ static bool writeBoxes(FILE* out_file, const Data& data, const Options options)
 		assert(box.height % kTileHeight == 0);
 
 		uint8_t bytes[kBoxByteSize];
-		bytes[0] = (box.offsets[1] << 4) | box.offsets[0];
-		bytes[1] = (box.offsets[3] << 4) | box.offsets[2];
-		bytes[2] = (box.offsets[5] << 4) | box.offsets[4];
-		bytes[3] = (box.offsets[7] << 4) | box.offsets[6];
-		bytes[4] = box.height >> 1;
+		bytes[0] = box.height >> 1;
+		bytes[1] = box.color_id;
+		bytes[2] = (box.offsets[1] << 4) | box.offsets[0];
+		bytes[3] = (box.offsets[3] << 4) | box.offsets[2];
+		bytes[4] = (box.offsets[5] << 4) | box.offsets[4];
+		bytes[5] = (box.offsets[7] << 4) | box.offsets[6];
 
 		fwrite(bytes, sizeof(bytes), 1, out_file);
 	}
