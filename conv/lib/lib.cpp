@@ -915,7 +915,7 @@ bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 	const int result = stbi_write_png(
 		filename,
 		color_max_count, palette_count, kChannelCount,
-		pixels, sizeof(ColorRGBA) * total_color_count);
+		pixels, sizeof(ColorRGBA) * color_max_count);
 
 	delete [] pixels;
 	if(result == 0)
