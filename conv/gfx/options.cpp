@@ -82,6 +82,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 
 	const char* tilemap_filename = nullptr;
 	const char* tilemap_disguise_filename = nullptr;
+	const char* metadata_filename = nullptr;
 	const char* tilemap_divisions = nullptr;
 	const char* tilemap_rectangle = nullptr;
 	bool tilemap_reset = false;
@@ -96,6 +97,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		kOptionInputPaletteSet,
 		kOptionTilemap,
 		kOptionTilemapDisguise,
+		kOptionTilemapMetadata,
 		kOptionTilemapDivisions,
 		kOptionTilemapRectangle,
 		kOptionTilemapResetParameters,
@@ -135,6 +137,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		// tilemap
 		OptionString("tilemap", "tm", "A tilemap image", false, kOptionTilemap, &tilemap_filename),
 		OptionString("tilemap-disguise", "tdf", "The tilemap disguise filename", false, kOptionTilemapDisguise, &tilemap_disguise_filename),
+		OptionString("tilemap-metadata", "tmm", "The tilemap metadata", false, kOptionTilemapMetadata, &metadata_filename),
 		OptionString("tilemap-divisions", "tmd", "The tilemap division", false, kOptionTilemapDivisions, &tilemap_divisions),
 		OptionString("tilemap-rectangle", "tmr", "The tilemap rectangle", false, kOptionTilemapRectangle, &tilemap_rectangle),
 		OptionFlag("tilemap-reset-parameters", "trp", "Reset the tilemap parameters", kOptionTilemapResetParameters, &tilemap_reset),
@@ -180,6 +183,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 				entry.image_disguise_filename =
 					tilemap_disguise_filename == nullptr || tilemap_disguise_filename == "" ?
 					tilemap_filename : tilemap_disguise_filename;
+				entry.metadata_filename = metadata_filename == nullptr ? "" : metadata_filename;
 				if( tilemap_divisions != nullptr &&
 					!parseDivisions(entry.divisions, tilemap_divisions))
 				{

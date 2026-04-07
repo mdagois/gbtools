@@ -1,0 +1,8 @@
+#pragma once
+
+enum
+{
+	METADATA_TYPE_NONE = 0,
+	METADATA_TYPE_FOREGROUND = 255,
+};
+

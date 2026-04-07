@@ -67,7 +67,7 @@ static bool importData(
 		if(!gfx::extractTilemap(
 			out_tilemaps[size], out_tilemap_division_infos[size],
 			out_tileset, out_palette_set,
-			entry.divisions, entry.rectangle, entry.image_filename.c_str()))
+			entry.divisions, entry.rectangle, entry.image_filename.c_str(), entry.metadata_filename.empty() ? nullptr : entry.metadata_filename.c_str()))
 		{
 			GFX_LOG_ERROR("Could not extract tilemap from [" << entry.image_filename << "]");
 			return false;
@@ -234,18 +234,17 @@ int main(int argc, const char** argv)
 		return 1;
 	}
 
-	gfx::Tileset tileset;
-	uint32_t tileset_column_count = 0;
 	gfx::PaletteSet palette_set;
-	std::vector<gfx::Tilemap> tilemaps;
-	gfx::DivisionInfo tileset_division_info;
-	std::vector<gfx::DivisionInfo> tilemap_division_infos;
-
 	if(!importPaletteSet(palette_set, options))
 	{
 		return 1;
 	}
 
+	gfx::Tileset tileset;
+	uint32_t tileset_column_count = 0;
+	std::vector<gfx::Tilemap> tilemaps;
+	gfx::DivisionInfo tileset_division_info;
+	std::vector<gfx::DivisionInfo> tilemap_division_infos;
 	if(!importData(
 		tileset, tileset_column_count, palette_set, tilemaps,
 		tileset_division_info, tilemap_division_infos,

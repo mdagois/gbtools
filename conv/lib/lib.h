@@ -36,12 +36,12 @@ bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
-	const char* image_filename);
+	const char* image_filename, const char* metadata_filename);
 bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
-	const Image& image);
+	const Image& image, const Image* metadata);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Export

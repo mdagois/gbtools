@@ -24,6 +24,7 @@ list(TRANSFORM IMPORT_SRC PREPEND import/)
 
 set(DATA_SRC
 	data.h
+	metadata.h
 	color.h color.cpp
 	palette.h palette.cpp
 	tilemap.h tilemap.cpp

@@ -399,6 +399,11 @@ const ColorRGBA* Image::getPixels() const
 	return m_pixels;
 }
 
+const ColorRGBA Image::getColor(uint32_t x, uint32_t y) const
+{
+	return m_pixels[y * m_width + x];
+}
+
 bool Image::iterateTiles(
 	DivisionInfo& out_division_info,
 	const Division* divisions, uint32_t division_count,

@@ -20,10 +20,10 @@ struct ColorRGBA
 
 enum
 {
-	kHighPriorityColorAlpha = 0,
+	kHighSortPriorityAlpha = 0,
 };
 
-static ColorRGBA kRGBA_Black = {0x00U, 0x00U, 0x00U, 0x00U};
+static ColorRGBA kRGBA_Black = {0x00U, 0x00U, 0x00U, 0xFFU};
 static ColorRGBA kRGBA_White = {0xFFU, 0xFFU, 0xFFU, 0xFFU};
 static ColorRGBA kRGBA_Magenta = {0xFFU, 0x00U, 0xFFU, 0xFFU};
 

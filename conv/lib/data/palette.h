@@ -31,11 +31,15 @@ public:
 
 	void loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count);
 
+	void touch() const;
+	bool isTouched() const;
+
 private:
 	void sort();
 
 private:
 	std::vector<ColorRGBA> m_colors;
+	mutable bool m_isUsed;
 };
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -57,6 +57,7 @@ static bool mergePalettes(Palette& out_palette, const Palette lhs, const Palette
 ////////////////////////////////////////////////////////////////////////////////
 
 Palette::Palette(bool insert_transparent_color)
+: m_isUsed(false)
 {
 	if(insert_transparent_color)
 	{
@@ -146,7 +147,7 @@ void Palette::makeFirstColor(ColorRGBA color)
 	{
 		if(color == m_colors[i])
 		{
-			m_colors[i].a = kHighPriorityColorAlpha;
+			m_colors[i].a = kHighSortPriorityAlpha;
 			sort();
 			return;
 		}
@@ -175,6 +176,16 @@ void Palette::loadRawPaletteData(const ColorRGBA* colors, uint32_t color_count)
 void Palette::sort()
 {
 	sortColorsRGBA(m_colors.data(), static_cast<uint32_t>(m_colors.size()));
+}
+
+void Palette::touch() const
+{
+	m_isUsed = true;
+}
+
+bool Palette::isTouched() const
+{
+	return m_isUsed;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -277,6 +277,7 @@ bool extractTileset(
 		[&out_tileset, &out_palette_set, &image, &tile_index, &tile_palette_index](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
 			const uint32_t palette_index = tile_palette_index[tile_index];
+			out_palette_set[palette_index].touch();
 			Tile tile;
 			tile.setPaletteIndex(palette_index);
 			if(!generateTile(tile, image_tile, out_palette_set[palette_index]))
@@ -348,7 +349,7 @@ bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
-	const char* image_filename)
+	const char* image_filename, const char* metadata_filename)
 {
 	assert(areCapabilitiesInitialized());
 	Image image;
@@ -356,14 +357,20 @@ bool extractTilemap(
 	{
 		return false;
 	}
-	return extractTilemap(out_tilemap, out_division_info, tileset, palette_set, divisions, rectangle, image);
+	const bool use_metadata = metadata_filename != nullptr;
+	Image metadata;
+	if(use_metadata && !metadata.read(metadata_filename))
+	{
+		return false;
+	}
+	return extractTilemap(out_tilemap, out_division_info, tileset, palette_set, divisions, rectangle, image, use_metadata ? &metadata : nullptr);
 }
 
 bool extractTilemap(
 	Tilemap& out_tilemap, DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
-	const Image& image)
+	const Image& image, const Image* metadata)
 {
 	assert(areCapabilitiesInitialized());
 
@@ -385,8 +392,34 @@ bool extractTilemap(
 		out_division_info,
 		final_divisions.data(), static_cast<uint32_t>(final_divisions.size()),
 		rectangle,
-		[&out_tilemap, &tileset, &palette_set, &image](const ImageTile& image_tile, uint32_t x, uint32_t y)
+		[&out_tilemap, &tileset, &palette_set, &image, metadata](const ImageTile& image_tile, uint32_t x, uint32_t y)
 		{
+			uint32_t priority = 0;
+			if(metadata != nullptr)
+			{
+				const ColorRGBA data = metadata->getColor(x, y);
+				const uint32_t type = data.r;
+				switch(type)
+				{
+					case METADATA_TYPE_FOREGROUND:
+					{
+						priority = 1;
+						break;
+					}
+					case METADATA_TYPE_NONE:
+					{
+						break;
+					}
+					default:
+					{
+						GFX_LOG_ERROR(
+							"Unknown metadata type [" << type << "] ("
+							<< x << "," << y << ") in [" << image.getFilename() << "]");
+						return false;
+					}
+				}
+			}
+
 			Palette tile_palette(CAPS.palette.insert_transparent_color);
 			if(!extractTilePalette(tile_palette, image_tile))
 			{
@@ -407,6 +440,7 @@ bool extractTilemap(
 
 			Tile tile;
 			tile.setPaletteIndex(palette_index);
+			palette_set[palette_index].touch();
 			if(!generateTile(tile, image_tile, palette_set[palette_index]))
 			{
 				GFX_LOG_ERROR(
@@ -451,7 +485,6 @@ bool extractTilemap(
 				return false;
 			}
 
-			constexpr uint32_t priority = 0;
 			out_tilemap.add(
 				tile_index % CAPS.tileset.tiles_per_bank, palette_index, bank,
 				flip_type == kTileFlipType_Horizontal || flip_type == kTileFlipType_Both,
@@ -901,9 +934,12 @@ bool writePaletteSetToPNG(const PaletteSet& palette_set, const char* filename)
 				<< color_max_count << " colors per palette");
 		}
 		uint32_t c = 0;
-		for(; c < palette.size(); ++c)
+		if(palette.isTouched())
 		{
-			pixels[p * color_max_count + c] = palette[c];
+			for(; c < palette.size(); ++c)
+			{
+				pixels[p * color_max_count + c] = palette[c];
+			}
 		}
 		for(; c < color_max_count; ++c)
 		{
