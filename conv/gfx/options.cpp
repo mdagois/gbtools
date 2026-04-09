@@ -110,6 +110,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		kOptionSkipExportTileset,
 		kOptionSkipExportIndices,
 		kOptionSkipExportParameter,
+		kOptionSkipExportMetadata,
 		kOptionSkipExportTilesetInfo,
 		kOptionSkipExportTilemapInfo,
 		kOptionGeneratePalette,
@@ -152,6 +153,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("skip-export-tileset", "stls", "Skip export of the tileset", kOptionSkipExportTileset, &out_options.output.skip_export_tileset),
 		OptionFlag("skip-export-indices", "sidx", "Skip export of the tilemap indices", kOptionSkipExportIndices, &out_options.output.skip_export_indices),
 		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemap parameters", kOptionSkipExportParameter, &out_options.output.skip_export_parameters),
+		OptionFlag("skip-export-metadata", "smet", "Skip export of the tilemap metadata", kOptionSkipExportMetadata, &out_options.output.skip_export_metadata),
 		OptionFlag("skip-export-tileset-info", "sti", "Skip export of the tileset info", kOptionSkipExportTilesetInfo, &out_options.output.skip_export_tileset_info),
 		OptionFlag("skip-export-tilemap-info", "smi", "Skip export of the tilemap info", kOptionSkipExportTilemapInfo, &out_options.output.skip_export_tilemap_info),
 

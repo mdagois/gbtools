@@ -33,12 +33,14 @@ bool extractTileset(
 	TileRemoval tile_removal, const Image& image);
 
 bool extractTilemap(
-	Tilemap& out_tilemap, DivisionInfo& out_division_info,
+	Tilemap& out_tilemap, TilemapMetadataContainer& out_tilemap_metadata,
+	DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	const char* image_filename, const char* metadata_filename);
 bool extractTilemap(
-	Tilemap& out_tilemap, DivisionInfo& out_division_info,
+	Tilemap& out_tilemap, TilemapMetadataContainer& out_tilemap_metadata,
+	DivisionInfo& out_division_info,
 	const Tileset& tileset, const PaletteSet& palette_set,
 	const std::vector<Division>& divisions, const gfx::Rectangle rectangle,
 	const Image& image, const Image* metadata);
@@ -55,9 +57,11 @@ bool exportTileset(
 	const char* output_filename);
 bool exportTilemap(
 	const Tilemap& tilemap,
+	const TilemapMetadataContainer& tilemap_metadata,
 	bool use_header, bool use_8800_addressing_mode,
 	uint8_t palette_index_offset, uint8_t tile_index_offset,
-	const char* indices_filename, const char* parameter_filename);
+	const char* indices_filename, const char* parameter_filename,
+	const char* metadata_filename);
 
 ////////////////////////////////////////////////////////////////////////////////
 // Info

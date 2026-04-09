@@ -37,6 +37,7 @@ static bool importPaletteSet(gfx::PaletteSet& out_palette_set, const Options& op
 static bool importData(
 	gfx::Tileset& out_tileset, uint32_t& out_tileset_column_count,
 	gfx::PaletteSet& out_palette_set, std::vector<gfx::Tilemap>& out_tilemaps,
+	std::vector<gfx::TilemapMetadataContainer>& out_tilemaps_metadata,
 	gfx::DivisionInfo& out_tileset_division_info, std::vector<gfx::DivisionInfo>& out_tilemap_division_infos,
 	const Options& options)
 {
@@ -63,9 +64,11 @@ static bool importData(
 		GFX_LOG_INFO("Extracting tilemap from [" << entry.image_filename << "]");
 		const size_t size = out_tilemaps.size();
 		out_tilemaps.resize(size + 1);
+		out_tilemaps_metadata.resize(size + 1);
 		out_tilemap_division_infos.resize(size + 1);
 		if(!gfx::extractTilemap(
-			out_tilemaps[size], out_tilemap_division_infos[size],
+			out_tilemaps[size], out_tilemaps_metadata[size],
+			out_tilemap_division_infos[size],
 			out_tileset, out_palette_set,
 			entry.divisions, entry.rectangle, entry.image_filename.c_str(), entry.metadata_filename.empty() ? nullptr : entry.metadata_filename.c_str()))
 		{
@@ -97,7 +100,9 @@ static const std::string getOutputFilename(
 
 static bool exportData(
 	const gfx::Tileset& tileset, const gfx::PaletteSet& palette_set,
-	const std::vector<gfx::Tilemap>& tilemaps, const Options& options)
+	const std::vector<gfx::Tilemap>& tilemaps,
+	const std::vector<gfx::TilemapMetadataContainer> tilemaps_metadata,
+	const Options& options)
 {
 	if(!options.output.skip_export_palette)
 	{
@@ -131,14 +136,17 @@ static bool exportData(
 			const char* image_filename = options.tilemap.entries[i].image_disguise_filename.c_str();
 			const std::string idx_filename = getOutputFilename(image_filename, ".idx", options);
 			const std::string prm_filename = getOutputFilename(image_filename, ".prm", options);
-			GFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "] and [" << prm_filename << "]");
+			const std::string met_filename = getOutputFilename(image_filename, ".met", options);
+			GFX_LOG_INFO("Exporting tilemap to [" << idx_filename << "], [" << prm_filename << "] and [" << met_filename << "]");
 			if(!gfx::exportTilemap(
 				tilemaps[i],
+				tilemaps_metadata[i],
 				options.output.add_binary_headers, options.output.use_8800_addressing_mode,
 				options.output.palette_index_offset, options.output.tile_index_offset,
 				options.output.skip_export_indices ? nullptr : idx_filename.c_str(),
-				options.output.skip_export_parameters ? nullptr : prm_filename.c_str()))
-			{
+				options.output.skip_export_parameters ? nullptr : prm_filename.c_str(),
+				options.output.skip_export_metadata ? nullptr : met_filename.c_str()))
+				{
 				GFX_LOG_ERROR("Could not export tilemap");
 				return false;
 			}
@@ -243,17 +251,19 @@ int main(int argc, const char** argv)
 	gfx::Tileset tileset;
 	uint32_t tileset_column_count = 0;
 	std::vector<gfx::Tilemap> tilemaps;
+	std::vector<gfx::TilemapMetadataContainer> tilemaps_metadata;
 	gfx::DivisionInfo tileset_division_info;
 	std::vector<gfx::DivisionInfo> tilemap_division_infos;
 	if(!importData(
-		tileset, tileset_column_count, palette_set, tilemaps,
+		tileset, tileset_column_count, palette_set,
+		tilemaps, tilemaps_metadata,
 		tileset_division_info, tilemap_division_infos,
 		options))
 	{
 		return 1;
 	}
 
-	if(!exportData(tileset, palette_set, tilemaps, options))
+	if(!exportData(tileset, palette_set, tilemaps, tilemaps_metadata, options))
 	{
 		return 1;
 	}

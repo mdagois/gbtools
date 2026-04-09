@@ -48,6 +48,7 @@ struct Options
 		bool skip_export_tileset = false;
 		bool skip_export_indices = false;
 		bool skip_export_parameters = false;
+		bool skip_export_metadata = false;
 		bool skip_export_tileset_info = false;
 		bool skip_export_tilemap_info = false;
 	}
