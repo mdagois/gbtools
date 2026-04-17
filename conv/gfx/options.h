@@ -29,6 +29,7 @@ struct Options
 		std::string image_disguise_filename;
 		std::vector<gfx::Division> divisions;
 		gfx::Rectangle rectangle;
+		bool skip_export_metadata = false;
 	};
 
 	struct
@@ -48,7 +49,6 @@ struct Options
 		bool skip_export_tileset = false;
 		bool skip_export_indices = false;
 		bool skip_export_parameters = false;
-		bool skip_export_metadata = false;
 		bool skip_export_tileset_info = false;
 		bool skip_export_tilemap_info = false;
 	}

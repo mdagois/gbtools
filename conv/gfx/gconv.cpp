@@ -145,7 +145,7 @@ static bool exportData(
 				options.output.palette_index_offset, options.output.tile_index_offset,
 				options.output.skip_export_indices ? nullptr : idx_filename.c_str(),
 				options.output.skip_export_parameters ? nullptr : prm_filename.c_str(),
-				options.output.skip_export_metadata ? nullptr : met_filename.c_str()))
+				options.tilemap.entries[i].skip_export_metadata ? nullptr : met_filename.c_str()))
 				{
 				GFX_LOG_ERROR("Could not export tilemap");
 				return false;

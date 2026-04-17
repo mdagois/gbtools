@@ -85,6 +85,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 	const char* metadata_filename = nullptr;
 	const char* tilemap_divisions = nullptr;
 	const char* tilemap_rectangle = nullptr;
+	bool tilemap_skip_export_metadata = false;
 	bool tilemap_reset = false;
 
 	enum : uint32_t
@@ -153,7 +154,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 		OptionFlag("skip-export-tileset", "stls", "Skip export of the tileset", kOptionSkipExportTileset, &out_options.output.skip_export_tileset),
 		OptionFlag("skip-export-indices", "sidx", "Skip export of the tilemap indices", kOptionSkipExportIndices, &out_options.output.skip_export_indices),
 		OptionFlag("skip-export-parameter", "sprm", "Skip export of the tilemap parameters", kOptionSkipExportParameter, &out_options.output.skip_export_parameters),
-		OptionFlag("skip-export-metadata", "smet", "Skip export of the tilemap metadata", kOptionSkipExportMetadata, &out_options.output.skip_export_metadata),
+		OptionFlag("skip-export-metadata", "smet", "Skip export of the tilemap metadata", kOptionSkipExportMetadata, &tilemap_skip_export_metadata),
 		OptionFlag("skip-export-tileset-info", "sti", "Skip export of the tileset info", kOptionSkipExportTilesetInfo, &out_options.output.skip_export_tileset_info),
 		OptionFlag("skip-export-tilemap-info", "smi", "Skip export of the tilemap info", kOptionSkipExportTilemapInfo, &out_options.output.skip_export_tilemap_info),
 
@@ -198,14 +199,18 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 					GFX_LOG_ERROR("Cannot parse tilemap rectangle");
 					return false;
 				}
+				entry.skip_export_metadata = tilemap_skip_export_metadata;
 				out_options.tilemap.entries.push_back(entry);
 				break;
 			}
 			case kOptionTilemapResetParameters:
 			{
 				tilemap_disguise_filename = nullptr;
+				metadata_filename = nullptr;
 				tilemap_divisions = nullptr;
 				tilemap_rectangle = nullptr;
+				tilemap_rectangle = nullptr;
+				tilemap_skip_export_metadata = false;
 				break;
 			}
 			case kRemainingCode:
