@@ -25,9 +25,11 @@ struct Options
 	struct TilemapEntry
 	{
 		std::string image_filename;
+		std::string metadata_filename;
 		std::string image_disguise_filename;
 		std::vector<gfx::Division> divisions;
 		gfx::Rectangle rectangle;
+		bool skip_export_metadata = false;
 	};
 
 	struct

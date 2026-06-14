@@ -35,11 +35,11 @@ void sortColorsRGBA(ColorRGBA* colors, uint32_t count)
 		colors, colors + count,
 		[](const ColorRGBA lhs, const ColorRGBA rhs)
 		{
-			if(lhs.a == kHighPriorityColorAlpha)
+			if(lhs.a == kHighSortPriorityAlpha)
 			{
 				return true;
 			}
-			if(rhs.a == kHighPriorityColorAlpha)
+			if(rhs.a == kHighSortPriorityAlpha)
 			{
 				return false;
 			}

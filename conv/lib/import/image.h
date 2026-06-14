@@ -56,6 +56,7 @@ public:
 	uint32_t getHeight() const;
 	const char* getFilename() const;
 	const ColorRGBA* getPixels() const;
+	const ColorRGBA getColor(uint32_t x, uint32_t y) const;
 
 	bool iterateTiles(
 		DivisionInfo& out_division_info,
