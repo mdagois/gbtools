@@ -629,7 +629,7 @@ bool exportTilemap(
 	if(metadata_filename != nullptr && !tilemap_metadata.empty())
 	{
 		if(!writeToFile(
-			tilemap_metadata.data(), tilemap_metadata.size() * sizeof(TilemapMetadata),
+			tilemap_metadata.data(), static_cast<uint32_t>(tilemap_metadata.size() * sizeof(TilemapMetadata)),
 			nullptr, 0,
 			metadata_filename))
 		{
