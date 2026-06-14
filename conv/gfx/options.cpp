@@ -178,7 +178,7 @@ bool parseCliOptions(Options& out_options, bool& out_is_help, int argc, const ch
 				Options::TilemapEntry entry;
 				entry.image_filename = tilemap_filename;
 				entry.image_disguise_filename =
-					tilemap_disguise_filename == nullptr || tilemap_disguise_filename == "" ?
+					tilemap_disguise_filename == nullptr || strlen(tilemap_disguise_filename) == 0 ?
 					tilemap_filename : tilemap_disguise_filename;
 				if( tilemap_divisions != nullptr &&
 					!parseDivisions(entry.divisions, tilemap_divisions))
