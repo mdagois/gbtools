@@ -57,13 +57,13 @@ Only the following executables are required.
 
 * [RGBDS](https://github.com/gbdev/rgbds) toolchain (`rgbasm`, `rgblink` and `rgbfix`)
 * GNU make 4.2 or later
-* `mkdir`, `rm` and `touch` shell commands (like those found in Bash)
+* Bash shell
 
-On Windows, the shell commands come with Git (by default, installed under `C:\Program Files\Git\usr\bin`).
+On Windows, `bash` comes with Git (by default, installed under `C:\Program Files\Git\usr\bin`).
 A copy of `make` is available [here](../third_party) for convenience.
 You can grab the RGBDS toolchain binaries from their GitHub repository.
 
-On other operating systems, the shells commands should be already available.
+On other operating systems, `bash` should be already available.
 Make sure you have the right version of `make`, and then, install the RGBDS toolchain.
 
 On all systems, GBBS should work without any additional setup if all the required executables are in the PATH.
