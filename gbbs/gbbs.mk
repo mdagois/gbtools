@@ -5,7 +5,7 @@
 # Requirements:
 # - RGBDS toolchain (`rgbasm`, `rgblink` and `rgbfix`)
 # - make 4.0 or later
-# - Shell commands (`mkdir`, `rm` and `touch`)
+# - bash (for commands such as `mkdir`, `rm`, and `touch`)
 #
 #################################################################################
 
@@ -15,6 +15,9 @@
 # include the user configuration (e.g. to override the shell command directory)
 -include user.mk
 
+# force bash shell
+SHELL := bash
+
 ########################################
 # Helper functions
 ########################################
@@ -22,6 +25,9 @@
 # define true and false
 true := TRUE
 false :=
+
+# an operation that does nothing in shell
+noop := true
 
 # turn the relative path $1 into an absolute path
 expand_path = $(abspath $(strip $1))
@@ -37,6 +43,26 @@ assert = $(if $2,$(if $1,,$(call report_assert,Assertion failed: $2)),$(warning 
 # string comparison functions
 string_equal = $(if $(subst x$1,,x$2)$(subst x$2,,x$1),$(false),$(true))
 string_not_equal = $(call not,$(call string_equal,$1,$2))
+
+# get the path of executable $1 or the empty string if not found
+define get_path
+$(shell command -v $(1) 2>/dev/null)
+endef
+
+# return true if executable $1 is in the path, otherwise return false
+define has_path
+$(if $(call get_path,$(1)),$(true),$(false))
+endef
+
+# get the path of executable $1 or the default value $2 if not found
+define get_path_or_default
+$(if $(call has_path,$(1)),"$(call get_path,$(1))","$(2)")
+endef
+
+# get the path of executable $1 or a noop command if not found
+define get_path_or_noop
+$(call get_path_or_default,$(1),$(noop))
+endef
 
 ########################################
 # Default target
