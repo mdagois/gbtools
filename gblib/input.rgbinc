@@ -1,0 +1,80 @@
+if !def(GB_INPUT_RGBINC)
+def GB_INPUT_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Data
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Struct to hold the pad input (dpad + buttons).
+rsreset
+def GB_INPUT_CURRENT    rb 1
+def GB_INPUT_PREVIOUS   rb 1
+def GB_INPUT_PRESSED    rb 1
+def GB_INPUT_RELEASED   rb 1
+def sizeof_GB_INPUT     rb 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Initialize the input system.
+macro gbInputInitialize
+    call _gbInputInitialize
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Update
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Update the keypad input.
+; Expected to be used only once in the main loop.
+; Example: gbInputUpdate
+macro gbInputUpdate
+    call _gbInputUpdate
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Polling
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Raise the zero flag if all keys in \1 are held.
+; Example: gbInputTestHeld PAD_LEFT | PAD_DOWN
+macro gbInputTestHeld
+    ld a, [vGbInput + GB_INPUT_CURRENT]
+    and a, \1
+endm
+
+; Raise the zero flag if input \1 is pressed.
+; Example: gbInputTestPressed PAD_LEFT
+macro gbInputTestPressed
+    ld a, [vGbInput + GB_INPUT_PRESSED]
+    and a, \1
+endm
+
+; Raise the zero flag if input \1 is released.
+; Example: gbInputTestReleased PAD_A
+macro gbInputTestReleased
+    ld a, [vGbInput + GB_INPUT_RELEASED]
+    and a, \1
+endm
+
+; Raise the zero flag if none of the flags in input \1 are pressed.
+; Example: gbInputTestPressedAny PAD_LEFT | PAD_RIGHT
+macro gbInputTestPressedAny
+    ld a, [vGbInput + GB_INPUT_PRESSED]
+    and a, \1
+    xor a, \1
+endm
+
+; Raise the zero flag if none of the flags in input \1 are released.
+; Example: gbInputTestReleasedAny PAD_LEFT | PAD_RIGHT
+macro gbInputTestReleasedAny
+    ld a, [vGbInput + GB_INPUT_RELEASED]
+    and a, \1
+    xor a, \1
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+

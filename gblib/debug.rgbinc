@@ -1,0 +1,272 @@
+if !def(GB_DEBUG_RGBINC)
+def GB_DEBUG_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Inferences
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+if def(BUILD_DEBUG)
+def GB_DEBUG_STACK        equ 1
+def GB_DEBUG_BREAKPOINT   equ 1
+def GB_DEBUG_MESSAGES     equ 1
+def GB_DEBUG_CHECKS       equ 1
+def GB_DEBUG_ASSERTS      equ 1
+def GB_VBLANK_WATCHDOG    equ 1
+endc
+
+; Message support is required by checks and asserts
+if !def(GB_DEBUG_MESSAGES) && (def(GB_DEBUG_CHECKS) || def(GB_DEBUG_ASSERTS))
+def GB_DEBUG_MESSAGES     equ 1
+endc
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Breakpoints
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Add a code breakpoint.
+macro gbBreak
+if def(GB_DEBUG_BREAKPOINT)
+    ld b, b
+endc
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Messages
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Output debug message \1.
+macro gbMessage
+if def(GB_DEBUG_MESSAGES)
+    ld d, d
+    jr .message\@
+    db $64, $64, $00, $00, \1
+    .message\@
+endc
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Checks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Output debug message \3 when bit \2 in byte \1 is raised.
+macro gbCheckZ
+if def(GB_DEBUG_CHECKS)
+    push af
+    push hl
+
+    ld hl, \1
+    bit \2, [hl]
+    jr z, .test\@
+        gbMessage \3
+    .test\@
+
+    pop hl
+    pop af
+endc
+endm
+
+; Output debug message \3 when bit \2 in byte \1 is raised.
+macro gbCheckNZ
+if def(GB_DEBUG_CHECKS)
+    push af
+    push hl
+
+    ld hl, \1
+    bit \2, [hl]
+    jr nz, .test\@
+        gbMessage \3
+    .test\@
+
+    pop hl
+    pop af
+endc
+endm
+
+; Output debug message \3 when \1 >= \2.
+macro gbCheckLT
+if def(GB_DEBUG_CHECKS)
+    push af
+    push bc
+
+    ld a, \2
+    ld b, a
+    ld a, \1
+    cp a, b
+    jr c, .test\@
+        gbMessage \3
+    .test\@
+
+    pop bc
+    pop af
+endc
+endm
+
+; Output debug message \3 when \1 > \2.
+macro gbCheckLE
+if def(GB_DEBUG_CHECKS)
+    push af
+    push bc
+
+    ld a, \2
+    ld b, a
+    ld a, \1
+    cp a, b
+    jr c, .test\@
+    jr z, .test\@
+        gbMessage \3
+    .test\@
+
+    pop bc
+    pop af
+endc
+endm
+
+; Output debug message \3 when \1 != \2.
+macro gbCheckEQ
+if def(GB_DEBUG_CHECKS)
+    push af
+    push bc
+
+    ld a, \2
+    ld b, a
+    ld a, \1
+    cp a, b
+    jr z, .test\@
+        gbMessage \3
+    .test\@
+
+    pop bc
+    pop af
+endc
+endm
+
+; Output debug message \3 when \1 <= \2.
+macro gbCheckGT
+    gbCheckLT \2, \1
+endm
+
+; Output debug message \3 when \1 < \2.
+macro gbCheckGE
+    gbCheckLE \2, \1
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Asserts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Output debug message \3 and block when bit \2 in byte \1 is raised.
+macro gbForceZ
+if def(GB_DEBUG_ASSERTS)
+    push af
+    push hl
+
+    ld hl, \1
+    bit \2, [hl]
+    jr z, .test\@
+        gbMessage \3
+        .wait\@
+            jr .wait\@
+    .test\@
+
+    pop hl
+    pop af
+endc
+endm
+
+; Output debug message \3 and block when bit \2 in byte \1 is raised.
+macro gbForceNZ
+if def(GB_DEBUG_ASSERTS)
+    push af
+    push hl
+
+    ld hl, \1
+    bit \2, [hl]
+    jr nz, .test\@
+        gbMessage \3
+        .wait\@
+            jr .wait\@
+    .test\@
+
+    pop hl
+    pop af
+endc
+endm
+
+; Output debug message \3 and block when \1 >= \2.
+macro gbForceLT
+if def(GB_DEBUG_ASSERTS)
+    push af
+    push bc
+
+    ld a, \2
+    ld b, a
+    ld a, \1
+    cp a, b
+    jr c, .test\@
+        gbMessage \3
+        .wait\@
+            jr .wait\@
+    .test\@
+
+    pop bc
+    pop af
+endc
+endm
+
+; Output debug message \3 and block when \1 > \2.
+macro gbForceLE
+if def(GB_DEBUG_ASSERTS)
+    push af
+    push bc
+
+    ld a, \2
+    ld b, a
+    ld a, \1
+    cp a, b
+    jr c, .test\@
+    jr z, .test\@
+        gbMessage \3
+        .wait\@
+            jr .wait\@
+    .test\@
+
+    pop bc
+    pop af
+endc
+endm
+
+; Output debug message \3 and block when \1 != \2.
+macro gbForceEQ
+if def(GB_DEBUG_ASSERTS)
+    push af
+    push bc
+
+    ld a, \2
+    ld b, a
+    ld a, \1
+    cp a, b
+    jr z, .test\@
+        gbMessage \3
+        .wait\@
+            jr .wait\@
+    .test\@
+
+    pop bc
+    pop af
+endc
+endm
+
+; Output debug message \3 and block when \1 <= \2.
+macro gbForceGT
+    gbForceLT \2, \1
+endm
+
+; Output debug message \3 and block when \1 < \2.
+macro gbForceGE
+    gbForceLE \2, \1
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+

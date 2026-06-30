@@ -1,0 +1,30 @@
+section "math", rom0
+
+; Raise the carry flag if the fixed in de is strictly less than the one in hl.
+; This is a signed comparison.
+_lt_gb_fixed::
+    ld a, [hld]
+    xor a, $80
+    ld b, a
+    ld a, [de]
+    xor a, $80
+    cp a, b
+    ret nz
+
+    dec de
+    ld a, [de]
+    cp a, [hl]
+    ret nz
+
+    dec de
+    dec hl
+    ld a, [de]
+    cp a, [hl]
+    ret nz
+
+    dec de
+    dec hl
+    ld a, [de]
+    cp a, [hl]
+    ret
+

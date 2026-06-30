@@ -1,0 +1,54 @@
+if !def(GB_RNG_RGBINC)
+def GB_RNG_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; LFSR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Pick a seed for LFSR and put it in (a).
+macro gbLfsr8PickSeed
+    ; Get a semi-random value from the div timer.
+    ldh a, [rDIV]
+
+    ; Make sure the value is not zero.
+    or a
+    jr nz, .not_zero\@
+        inc a
+    .not_zero\@
+endm
+
+; Produce the next LFSR value from the value in (a).
+; (a) should not be zero, otherwise zero will be returned.
+; This macro will never produce zero if (a) is not zero.
+macro gbLfsr8GetNextValue
+    ld d, a ; Save the value.
+    ld e, a ; Used to perform the taps.
+    
+    ; Bits 7, 5, 4 and 3 are used as taps; the new bit will be in the highest bit of (a).
+        ; Bit 7 is already at the right place in (a).
+
+        ; Bit 5
+        sla e
+        sla e
+        xor a, e
+
+        ; Bit 4
+        sla e
+        xor a, e
+
+        ; Bit 3
+        sla e
+        xor a, e
+
+    ; Bring the new bit into the carry.
+    rla
+    ; Transfer the new bit into the original value.
+    rl d
+    ; Save the result in (a).
+    ld a, d
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+
