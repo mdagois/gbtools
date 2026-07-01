@@ -51,7 +51,6 @@ def generate_rgbasm():
         'src/interrupts.rgbasm',
         'src/main.rgbasm',
         'src/math.rgbasm',
-        'src/memory.rgbasm',
         ]
     output_file = 'prebuilt/gblib.rgbasm'
     header = '\n'

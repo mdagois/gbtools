@@ -60,6 +60,6 @@ _gbDmaOamClear::
 ; Sanity checks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-static_assert low(vGbOamClear) == 0, "OAM DMA clear data not aligned to 256 bytes"
+assert low(vGbOamClear) == 0, "OAM DMA clear data not aligned to 256 bytes"
 static_assert GB_OAM_FUNC_SIZE == _gbDmaOamCopyFunc_End - _gbDmaOamCopyFunc, "OAM DMA function size mismatch"
 

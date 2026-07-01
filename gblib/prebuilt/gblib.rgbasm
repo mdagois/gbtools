@@ -2648,7 +2648,7 @@ _gbDmaOamClear::
 ; Sanity checks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-static_assert low(vGbOamClear) == 0, "OAM DMA clear data not aligned to 256 bytes"
+assert low(vGbOamClear) == 0, "OAM DMA clear data not aligned to 256 bytes"
 static_assert GB_OAM_FUNC_SIZE == _gbDmaOamCopyFunc_End - _gbDmaOamCopyFunc, "OAM DMA function size mismatch"
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2951,19 +2951,5 @@ _lt_gb_fixed::
     ld a, [de]
     cp a, [hl]
     ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Sanity checks, exports, and statistics.
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-println "GB WRAM usage: {d:GB_WRAM_BANK0_USAGE} bytes"
-export vGbOamClear
-export vGbInput
-export vGbStack
-static_assert GB_WRAM_BANK0_USAGE <= WRAM_BANK_SIZE, "Too many bytes used in WRAM by gblib"
-
-println "GB HRAM usage: {d:GB_HRAM_USAGE} bytes"
-export vGbOamFunc
-static_assert GB_HRAM_USAGE <= HRAM_SIZE, "Too many byte used in HRAM by gblib"
 
 
