@@ -1,37 +1,25 @@
 include "gblib.rgbinc"
 
-def TILES_COUNT						equ (384)
-def BYTES_PER_TILE					equ (16)
-def TILES_BYTE_SIZE					equ (TILES_COUNT * BYTES_PER_TILE)
-def TILEMAP_BYTE_SIZE				equ (1024)
-def GRAPHICS_DATA_SIZE				equ (TILES_BYTE_SIZE + TILEMAP_BYTE_SIZE)
-def GRAPHICS_DATA_ADDRESS_END		equ ($8000)
-def GRAPHICS_DATA_ADDRESS_START		equ (GRAPHICS_DATA_ADDRESS_END - GRAPHICS_DATA_SIZE)
+def TILES_COUNT                        equ (384)
+def BYTES_PER_TILE                     equ (16)
+def TILES_BYTE_SIZE                    equ (TILES_COUNT * BYTES_PER_TILE)
+def TILEMAP_BYTE_SIZE                  equ (1024)
+def GRAPHICS_DATA_SIZE                 equ (TILES_BYTE_SIZE + TILEMAP_BYTE_SIZE)
+def GRAPHICS_DATA_ADDRESS_END          equ ($8000)
+def GRAPHICS_DATA_ADDRESS_START        equ (GRAPHICS_DATA_ADDRESS_END - GRAPHICS_DATA_SIZE)
 
 ; load the graphics data from ROM to VRAM
-macro LoadGraphicsDataIntoVRAM
-	ld de, GRAPHICS_DATA_ADDRESS_START
-	ld hl, _VRAM8000
-	.load_tile\@
-		ld a, [de]
-		inc de
-		ld [hli], a
-		ld a, d
-		cp a, high(GRAPHICS_DATA_ADDRESS_END)
-		jr nz, .load_tile\@
-endm
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 rsset WRAM_START
 
-def WRAM_IS_VBLANK					rb 1
-def WRAM_BG_SCROLL_X				rb 3
+def WRAM_IS_VBLANK                    rb 1
+def WRAM_BG_SCROLL_X                rb 3
 
-def WRAM_END						rb 0
+def WRAM_END                        rb 0
 
 ; sanity checks
-def WRAM_USAGE						equ (WRAM_END - WRAM_START)
+def WRAM_USAGE                        equ (WRAM_END - WRAM_START)
 println "WRAM usage: {d:WRAM_USAGE} bytes"
 assert WRAM_USAGE <= $2000, "Too many bytes used in WRAM"
 
@@ -43,121 +31,123 @@ _wram_reservation: ds WRAM_USAGE
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-section "vblank_interrupt", rom0[$0040]
-	push af
-	ld a, 1
-	ld [WRAM_IS_VBLANK], a
-	pop af
-	reti
+section "vblank_interrupt", rom0[INT_HANDLER_VBLANK]
+    jp VblankInterrupt
 
-section "lcd_interrupt", rom0[$0048]
-	push af
-	call LcdInterrupt
-	pop af
-	reti
+section "lcd_interrupt", rom0[INT_HANDLER_STAT]
+    push af
+    call LcdInterrupt
+    pop af
+    reti
 
-section "interrupts", rom0
+section "interrupt_handlers", rom0
+
+VblankInterrupt:
+    gbVblankWatchdog
+    gbFlagVblank
+    reti
 
 LcdInterrupt:
-	; check whether we are on the target line
-	ld a, [rSTAT]
-	bit 2, a
-	ret z
+    ; check whether we are on the target line
+    ld a, [rSTAT]
+    bit 2, a
+    ret z
 
-	; enable the hblank interrupt (as we are on the target line)
-	; and check if we are in hblank
-	ld b, a
-	ld a, STATF_MODE00
-	ld [rSTAT], a
-	ld a, b
-	and a, %00000011
-	ret nz
+    ; enable the hblank interrupt (as we are on the target line)
+    ; and check if we are in hblank
+    ld b, a
+    ld a, STAT_MODE_0
+    ld [rSTAT], a
+    ld a, b
+    and a, %00000011
+    ret nz
 
-	; sand scrolling setup
-	ld a, [rLY]
-	cp a, 47
-	jr nz, .middle_section
-		ld a, [WRAM_BG_SCROLL_X + 1]
-		ld [rSCX], a
-		ld a, 111
-		ld [rLYC], a
-		ld a, STATF_LYC
-		ld [rSTAT], a
-		ret
-	.middle_section
+    ; sand scrolling setup
+    ld a, [rLY]
+    cp a, 47
+    jr nz, .middle_section
+        ld a, [WRAM_BG_SCROLL_X + 1]
+        ld [rSCX], a
+        ld a, 111
+        ld [rLYC], a
+        ld a, STAT_LYC
+        ld [rSTAT], a
+        ret
+    .middle_section
 
-	; wall scrolling setup
-	ld a, [WRAM_BG_SCROLL_X + 2]
-	ld [rSCX], a
-	ld a, 255
-	ld [rLYC], a
-	xor a
-	ld [rSTAT], a
-	ret
+    ; wall scrolling setup
+    ld a, [WRAM_BG_SCROLL_X + 2]
+    ld [rSCX], a
+    ld a, 255
+    ld [rLYC], a
+    xor a
+    ld [rSTAT], a
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 section "sample", rom0
 
 gameInitialize::
-	; init the WRAM state
-	xor a
-	ld [WRAM_IS_VBLANK], a
-	ld [WRAM_BG_SCROLL_X + 0], a
-	ld [WRAM_BG_SCROLL_X + 1], a
-	ld [WRAM_BG_SCROLL_X + 2], a
+    gbInterruptsInitialize
 
-	; init the palette
-	ld a, %11100100
-	ld [rBGP], a
+    ; Clear the WRAM.
+    gbClearMemory WRAM_START, WRAM_END - WRAM_START
 
-	LoadGraphicsDataIntoVRAM
+    ; init the palette
+    ld a, %11100100
+    ld [rBGP], a
 
-	; setup interrupts
-	ld a, 255
-	ld [rLYC], a
-	xor a
-	ld [rSTAT], a
-	ld a, IEF_VBLANK | IEF_LCDC
-	ld [rIE], a
-	ei
+    gbCopyMemory VRAM_START, GRAPHICS_DATA_ADDRESS_START, GRAPHICS_DATA_SIZE
 
-	; set the graphics parameters and turn back LCD on
-	ld a, LCDCF_ON | LCDCF_BG8800 | LCDCF_BG9800 | LCDCF_BGON
-	ld [rLCDC], a
+    ; setup interrupts
+    ld a, 255
+    ld [rLYC], a
+    xor a
+    ld [rSTAT], a
+    ld a, IE_VBLANK | IE_STAT
+    ld [rIE], a
+    ei
 
-	ret
+    ; set the graphics parameters and turn back LCD on
+    ld a, LCDC_ENABLE | LCDC_BLOCK21 | LCDC_BG_9800 | LCDC_BG_ON
+    ld [rLCDC], a
+
+    ret
 
 gameUpdate::
-	ld hl, WRAM_IS_VBLANK
-	xor a
-	.wait_vblank
-		halt
-		cp a, [hl]
-		jr z, .wait_vblank
-		ld [hl], a
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Logic
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-	; update the 3 scrolling values
-	ld a, [WRAM_BG_SCROLL_X + 0]
+    ; update the 3 scrolling values
+    ld a, [WRAM_BG_SCROLL_X + 0]
 
-	inc a
-	ld [rSCX], a ; set the scrolling to the sky value
-	ld [WRAM_BG_SCROLL_X + 0], a
+    inc a
+    ld [rSCX], a ; set the scrolling to the sky value
+    ld [WRAM_BG_SCROLL_X + 0], a
 
-	ld b, a
-	sla a
-	ld [WRAM_BG_SCROLL_X + 1], a
+    ld b, a
+    sla a
+    ld [WRAM_BG_SCROLL_X + 1], a
 
-	add a, b
-	ld [WRAM_BG_SCROLL_X + 2], a
+    add a, b
+    ld [WRAM_BG_SCROLL_X + 2], a
 
-	; set up the first target line interrupt
-	ld a, 47
-	ld [rLYC], a
-	ld a, STATF_LYC
-	ld [rSTAT], a
+    ; set up the first target line interrupt
+    ld a, 47
+    ld [rLYC], a
+    ld a, STAT_LYC
+    ld [rSTAT], a
 
-	ret
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Vblank
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    gbWaitVblank
+    gbCheckVblankOverflow
+
+    ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
