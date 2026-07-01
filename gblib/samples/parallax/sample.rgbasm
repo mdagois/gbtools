@@ -1,3 +1,5 @@
+include "gblib.rgbinc"
+
 def TILES_COUNT						equ (384)
 def BYTES_PER_TILE					equ (16)
 def TILES_BYTE_SIZE					equ (TILES_COUNT * BYTES_PER_TILE)
@@ -21,7 +23,7 @@ endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-rsset _RAM
+rsset WRAM_START
 
 def WRAM_IS_VBLANK					rb 1
 def WRAM_BG_SCROLL_X				rb 3
@@ -29,9 +31,15 @@ def WRAM_BG_SCROLL_X				rb 3
 def WRAM_END						rb 0
 
 ; sanity checks
-def WRAM_USAGE						equ (WRAM_END - _RAM)
+def WRAM_USAGE						equ (WRAM_END - WRAM_START)
 println "WRAM usage: {d:WRAM_USAGE} bytes"
 assert WRAM_USAGE <= $2000, "Too many bytes used in WRAM"
+
+; Reserve space in WRAM 0 for all the variables in the game.
+; This is necessary to play nicely with libraries.
+SECTION "sample_wram", WRAM0[WRAM_START]
+
+_wram_reservation: ds WRAM_USAGE
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -59,7 +67,8 @@ LcdInterrupt:
 	; enable the hblank interrupt (as we are on the target line)
 	; and check if we are in hblank
 	ld b, a
-	copy [rSTAT], STATF_MODE00
+	ld a, STATF_MODE00
+	ld [rSTAT], a
 	ld a, b
 	and a, %00000011
 	ret nz
@@ -68,15 +77,20 @@ LcdInterrupt:
 	ld a, [rLY]
 	cp a, 47
 	jr nz, .middle_section
-		copy [rSCX], [WRAM_BG_SCROLL_X + 1]
-		copy [rLYC], 111
-		copy [rSTAT], STATF_LYC
+		ld a, [WRAM_BG_SCROLL_X + 1]
+		ld [rSCX], a
+		ld a, 111
+		ld [rLYC], a
+		ld a, STATF_LYC
+		ld [rSTAT], a
 		ret
 	.middle_section
 
 	; wall scrolling setup
-	copy [rSCX], [WRAM_BG_SCROLL_X + 2]
-	copy [rLYC], 255
+	ld a, [WRAM_BG_SCROLL_X + 2]
+	ld [rSCX], a
+	ld a, 255
+	ld [rLYC], a
 	xor a
 	ld [rSTAT], a
 	ret
@@ -100,7 +114,8 @@ gameInitialize::
 	LoadGraphicsDataIntoVRAM
 
 	; setup interrupts
-	copy [rLYC], 255
+	ld a, 255
+	ld [rLYC], a
 	xor a
 	ld [rSTAT], a
 	ld a, IEF_VBLANK | IEF_LCDC
@@ -137,8 +152,10 @@ gameUpdate::
 	ld [WRAM_BG_SCROLL_X + 2], a
 
 	; set up the first target line interrupt
-	copy [rLYC], 47
-	copy [rSTAT], STATF_LYC
+	ld a, 47
+	ld [rLYC], a
+	ld a, STATF_LYC
+	ld [rSTAT], a
 
 	ret
 
