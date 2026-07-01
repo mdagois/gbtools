@@ -1,0 +1,65 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Memory
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def GB_OAM_FUNC_SIZE        equ 8
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "dma_wram", wram0, align[8]
+
+vGbOamClear:                ds OAM_SIZE
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "dma_hram", hram
+
+vGbOamFunc:                 ds GB_OAM_FUNC_SIZE
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_dma_initialization", romx, bank[INIT_BANK]
+
+; Initialize the DMA system.
+_gbDmaInitialize:
+    ; Clear the memory used for fast OAM clears.
+    gbClearMemory vGbOamClear, OAM_SIZE
+    ; Copy the OAM DMA function in hram.
+    gbCopyMemory vGbOamFunc, _gbDmaOamCopyFunc, _gbDmaOamCopyFunc_End - _gbDmaOamCopyFunc
+    ret
+
+; Starts the DMA transfer and waits for it to finish.
+; (a) = high byte of the source address
+_gbDmaOamCopyFunc:
+    ldh [rDMA], a
+    ld c, 40
+    .wait_dma_oam
+        dec c
+        jr nz, .wait_dma_oam
+    ret
+_gbDmaOamCopyFunc_End:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; OAM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_dma_update", rom0
+
+; Starts an OAM DMA copy using the function in hram.
+; (a) = high byte of the source address
+_gbDmaOamCopy::
+    jp vGbOamFunc
+
+_gbDmaOamClear::
+    ld a, high(vGbOamClear)
+    jp vGbOamFunc
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Sanity checks
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+assert low(vGbOamClear) == 0, "OAM DMA clear data not aligned to 256 bytes"
+static_assert GB_OAM_FUNC_SIZE == _gbDmaOamCopyFunc_End - _gbDmaOamCopyFunc, "OAM DMA function size mismatch"
+

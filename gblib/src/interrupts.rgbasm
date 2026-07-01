@@ -1,0 +1,81 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Memory
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "interrupt_wram", wram0
+
+vIsVblank:                      ds 1
+if def(GB_VBLANK_WATCHDOG)
+vGbVblankWatchdog:              ds 1
+endc
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_interrupts_initialization", romx, bank[INIT_BANK]
+
+_gbInterruptsInitialize::
+    xor a
+    ld [vIsVblank], a
+
+if def(GB_VBLANK_WATCHDOG)
+    ; Reset the vblank watchdog.
+    ld hl, vGbVblankWatchdog
+    set 0, [hl]
+endc
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_interrupts_update", rom0
+
+_gbWaitVblank::
+if def(GB_VBLANK_WATCHDOG)
+    ld hl, vGbVblankWatchdog
+    set 0, [hl]
+endc
+    ld hl, vIsVblank
+    xor a
+    .wait_vblank
+        halt
+        nop
+        cp a, [hl]
+        jr z, .wait_vblank
+        ld [hl], a
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+_gbFlagVblank::
+    push af
+    ld a, 1
+    ld [vIsVblank], a
+    pop af
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+if def(GB_VBLANK_WATCHDOG)
+_gbVblankWatchdog::
+    push af
+    push hl
+
+    ; Check the watchdog.
+    ld hl, vGbVblankWatchdog
+    bit 0, [hl]
+    jr nz, .watchdog
+        ; The frame went over the vblank.
+        gbMessage "[VBLANK] watchdog triggered"
+        rst $00
+    .watchdog
+
+    ; Reset the watchdog.
+    res 0, [hl]
+
+    pop hl
+    pop af
+    ret
+endc

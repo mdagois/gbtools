@@ -1,0 +1,109 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Memory
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+if def(GB_DEBUG_STACK)
+def GB_STACK_SAFETY_BAND    equ 16
+else
+def GB_STACK_SAFETY_BAND    equ 0
+endc
+def GB_STACK_SIZE           equ 128 + GB_STACK_SAFETY_BAND
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "stack_wram", wram0
+
+vGbStack:                ds GB_STACK_SIZE
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Catch
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_catch", rom0[$0000]
+gb_catch:
+    gbMessage "[ERROR] an unused area of the ROM was accessed"
+    gbBreak
+gb_catch_loop:
+    jr gb_catch_loop
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Header
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def GB_CARTRIDGE_HEADER_START equ ($0100)
+def GB_CARTRIDGE_HEADER_END   equ ($0150)
+
+section "gb_header", rom0[GB_CARTRIDGE_HEADER_START]
+gb_entrypoint:
+    di
+    jp gb_main
+    ds (GB_CARTRIDGE_HEADER_END - @), 0
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_initialization", romx, bank[INIT_BANK]
+_gbInitialize:
+    ; Disable the LCD.
+    .wait_vblank
+        ldh a, [rLY]
+        cp a, SCREEN_HEIGHT_PX
+        jr nz, .wait_vblank
+    xor a
+    ldh [rLCDC], a
+
+if def(GB_DEBUG_STACK)
+    ; Set the bottom of the stack to zero for the watchdog.
+    gbClearMemory vGbStack, GB_STACK_SAFETY_BAND
+endc
+
+    ; Initialize the modules.
+    gbInterruptsInitialize
+    gbDmaInitialize
+    gbInputInitialize
+
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Main
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+macro gbStackWatchdog
+if def(GB_DEBUG_STACK)
+    ld c, GB_STACK_SAFETY_BAND
+    ld hl, vGbStack
+    .watchdog\@
+        ld a, [hli]
+        cp a, 0
+        jr z, .safe\@
+            gbMessage "[ERROR] stack watchdog failed"
+            gbBreak
+            .watchdog_loop\@
+                jr .watchdog_loop\@
+        .safe\@
+        dec c
+        jr nz, .watchdog\@
+endc
+endm
+
+section "gb_main", rom0
+gb_main:
+    gbMessage "[INFO] program started"
+
+    ; Set the stack pointer to the top of the stack.
+    ld sp, vGbStack + GB_STACK_SIZE
+
+    ; Mount bank 1 as all initialization code is in that bank.
+    gbSetRomBank INIT_BANK
+
+    ; Initialize the library and the game.
+    call _gbInitialize
+    call gameInitialize
+
+    ; Start the game loop.
+    .game_loop
+        call gameUpdate
+        gbStackWatchdog
+        jr .game_loop
+

@@ -1,0 +1,31 @@
+if !def(GB_INSTRUCTIONS_RGBINC)
+def GB_INSTRUCTIONS_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Macro-instructions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Reset the carry flag.
+macro rcf
+    scf
+    ccf
+endm
+
+; Copy \2 into \1 through (a).
+; Example: copy [$1234], 10
+macro copy
+    ld a, \2
+    ld \1, a
+endm
+
+; Copy \2 into \1 through (a) using ldh.
+; Example: copyh [$FF84], 10
+macro copyh
+    ld a, \2
+    ldh \1, a
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+

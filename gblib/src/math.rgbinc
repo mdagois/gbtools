@@ -1,0 +1,637 @@
+if !def(GB_MATH_RGBINC)
+def GB_MATH_RGBINC equ 1
+
+; TODO Optimize to use ldh whenever possible.
+; TODO Optimize by combining operations.
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def GB_INT16_SIZE                   equ 2
+
+def GB_FIXED_SIZE                   equ 4
+def GB_FIXED_MSB_OFFSET             equ 3
+def GB_FIXED_INTEGRAL_OFFSET        equ 2
+def GB_FIXED_FRACTIONAL_OFFSET      equ 0
+def GB_FIXED_EPSILON                equ DIV(1.0, 65535.0)
+
+def GB_VECTOR_SIZE                  equ GB_FIXED_SIZE * 2
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Signed 8-bit integer operations
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Compute the absolute of register a.
+macro gbInt8_AbsA
+    bit 7, a
+    jr z, .negative\@
+        cpl a
+        inc a
+    .negative\@
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Signed 16-bit integer operations
+; All operations are done on 16-bit registers or 16-bit literals.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Load the value of a 16-bit register from memory.
+; \1: destination register
+; \2: source address
+macro gbInt16_Load
+.gbint16_load\@
+if high(\2) == $FF
+    ldh a, [\2 + 0]
+    ld low(\1), a
+    ldh a, [\2 + 1]
+    ld high(\1), a
+else
+    ld a, [\2 + 0]
+    ld low(\1), a
+    ld a, [\2 + 1]
+    ld high(\1), a
+endc
+endm
+
+; Store the value of a 16-bit integer or literal into memory.
+; \1: destination address
+; \2: source register or literal
+macro gbInt16_Store
+.gbint16_store\@
+if high(\1) == $FF
+    ld a, low(\2)
+    ldh [\1 + 0], a
+    ld a, high(\2)
+    ldh [\1 + 1], a
+else
+    ld a, low(\2)
+    ld [\1 + 0], a
+    ld a, high(\2)
+    ld [\1 + 1], a
+endc
+endm
+
+; Copy the value of a 16-bit register.
+; \1: destination register
+; \2: source register
+macro gbInt16_Copy
+.gbint16_copy\@
+    ld low(\1), low(\2)
+    ld high(\1), high(\2)
+endm
+
+; Convert an 8-bit register to a 16-bit register.
+; \1: 16-bit destination register
+; \2: 8-bit source register
+macro gbInt16_Conv8
+.gbint16_conv8\@
+    ld low(\1), \2
+    ld high(\1), $00
+    bit 7, \2
+    jr z, .negative\@
+        ld high(\1), $FF
+    .negative\@
+endm
+
+; Inverse a 16-bit integer.
+; \1: register
+macro gbInt16_Inverse
+.gbint16_inverse\@
+    ld a, low(\1)
+    cpl
+    add a, 1
+    ld low(\1), a
+
+    ld a, high(\1)
+    cpl
+    adc a, 0
+    ld high(\1), a
+endm
+
+; Raise the zero flag if a 16-bit integer is positive or zero.
+; \1: register
+macro gbInt16_Sign
+.gbint16_sign\@
+    bit 7, high(\1)
+endm
+
+; Compute the absolute value of a 16-bit integer.
+; \1: register
+macro gbInt16_Abs
+.gbint16_abs\@
+    ld a, high(\1)
+    bit 7, a
+    jr z, .negative\@
+        gbInt16_Inverse \1
+    .negative\@
+endm
+
+; Add a 16-bit integer to another 16-bit integer or literal.
+; \1: register
+; \2: register or literal
+macro gbInt16_Add
+.gbint16_add\@
+    ld a, low(\1)
+    add a, low(\2)
+    ld low(\1), a
+    ld a, high(\1)
+    adc a, high(\2)
+    ld high(\1), a
+endm
+
+; Subtract a 16-bit integer or a literal from a 16-bit integer.
+; \1: register
+; \2: register or literal
+macro gbInt16_Sub
+.gbint16_sub\@
+    ld a, low(\1)
+    sub a, low(\2)
+    ld low(\1), a
+    ld a, high(\1)
+    sbc a, high(\2)
+    ld high(\1), a
+endm
+
+; Shift left a 16-bit integer.
+; \1: register
+macro gbInt16_ShiftLeft
+.gbint16_shiftleft\@
+	sla low(\1)
+	rl high(\1)
+endm
+
+; Divide a 16-bit integer by 2.
+; \1: register
+macro gbInt16_Div2
+.gbint16_div2\@
+	sra high(\1)
+	rr low(\1)
+endm
+
+; Compare a 16-bit integer to another 16-bit integer or literal.
+; The carry is raised if the first 16-bit integer is stricly less than the second 16-bit integer or literal.
+; This is a signed comparison.
+; \1: register
+; \2: register or literal
+macro gbInt16_Comp
+.gbint16_comp\@
+    ld a, high(\1)
+    xor a, high(\2)
+    and a, $80
+    jr z, .comp_same_sign\@
+
+    .comp_diff_sign\@
+        ld a, high(\1)
+        rlca
+        jr .gb_int16_comp_done\@
+
+    .comp_same_sign\@
+        ld a, high(\1)
+        cp a, high(\2)
+        jr nz, .gb_int16_comp_done\@
+        ld a, low(\1)
+        cp a, low(\2)
+    .gb_int16_comp_done\@
+endm
+
+; Return the minimun of a 16-bit integer and another 16-bit integer or a literal.
+; The result is stored in LHS.
+; \1: LHS (register)
+; \2: RHS (register or literal)
+macro gbInt16_Min
+.gbint16_min\@
+    gbInt16_Comp \1, \2
+    jr c, .gb_int16_min_done\@
+    gbInt16_Copy \1, \2
+    .gb_int16_min_done\@
+endm
+
+; Return the maximum of a 16-bit integer and another 16-bit integer or a literal.
+; The result is stored in LHS.
+; \1: LHS (register)
+; \2: RHS (register or literal)
+macro gbInt16_Max
+.gbint16_max\@
+    gbInt16_Comp \1, \2
+    jr nc, .gb_int16_max_done\@
+    gbInt16_Copy \1, \2
+    .gb_int16_max_done\@
+endm
+
+; Clamp a 16-bit integer.
+; \1: value to clamp (register)
+; \2: minimum (register or literal)
+; \3: maximum (register or literal)
+macro gbInt16_Clamp
+.gbint16_clamp\@
+    gbInt16_Min \1, \3
+    gbInt16_Max \1, \2
+endm
+
+; Compute \1 % \2.
+; This is an iterative algorithm, expected to be used with
+; relatively small divisors.
+; \1: dividend (register)
+; \2: divisor (register or literal)
+macro gbInt16_Modulo
+.gbint16_modulo\@
+    gbInt16_Comp \1, \2
+    jr c, .gbint16_modulo_done\@
+        gbInt16_Sub \1, \2
+        jr .gbint16_modulo\@
+    .gbint16_modulo_done\@
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Fixed operations
+; A fixed is a 32-bit number, with 16 bits reserved for the integral part, and
+; 16 bits dedicated to the fractional part.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Set the value of a fixed from an RGBASM 32-bit fixed.
+; \1: result address
+; \2: an RGBASM 32-bit value
+macro gbFixed_Set
+.gbfixed_set\@
+    ld hl, \1
+    ld a, \2 & $FF
+    ld [hli], a
+    ld a, (\2 / 2**8) & $FF
+    ld [hli], a
+    ld a, (\2 / 2**16) & $FF
+    ld [hli], a
+    ld a, (\2 / 2**24) & $FF
+    ld [hl], a
+endm
+
+; Set the value of a fixed to zero.
+; \1: result address
+macro gbFixed_Zero
+.gbfixed_zero\@
+    ld hl, \1
+    xor a
+rept GB_FIXED_SIZE
+    ld [hli], a
+endr
+endm
+
+; Raise the zero flag if a fixed is positive or zero.
+; \1: the fixed to check
+macro gbFixed_Sign
+.gbfixed_sign\@
+    ld a, [\1 + GB_FIXED_MSB_OFFSET]
+    bit 7, a
+endm
+
+; Inverse a fixed.
+; \1: destination address
+; \2: source address
+macro gbFixed_Inverse
+.gbfixed_inverse\@
+    ld hl, \1
+
+    ld b, 0
+def BYTE_NUM = 0
+rept GB_FIXED_SIZE
+    ld a, [\2 + BYTE_NUM]
+    cpl
+if BYTE_NUM == 0
+    add a, 1
+else
+    adc a, b
+endc
+    ld [hli], a
+def BYTE_NUM += 1
+endr
+endm
+
+; Compute the absolute value of a fixed.
+; \1: destination address
+; \2: source address
+macro gbFixed_Abs
+.gbfixed_abs\@
+    ld a, [\2 + GB_FIXED_MSB_OFFSET]
+    bit 7, a
+    jr nz, .negative\@
+        gbFixed_Copy \1, \2
+        jr .abs_done\@
+    .negative\@
+        gbFixed_Inverse \1, \2
+    .abs_done\@
+endm
+
+; Copy a fixed into another one.
+; \1: destination address
+; \2: source address
+macro gbFixed_Copy
+.gbfixed_copy\@
+    ld hl, \1
+def BYTE_NUM = 0
+rept GB_FIXED_SIZE
+    ld a, [\2 + BYTE_NUM]
+    ld [hli], a
+def BYTE_NUM += 1
+endr
+endm
+
+; Copy a int16 into a fixed.
+; \1: destination address
+; \2: source address
+macro gbFixed_CopyInt16
+.gbfixed_copyint16\@
+    xor a
+    ld [\1 + GB_FIXED_FRACTIONAL_OFFSET + 0], a
+    ld [\1 + GB_FIXED_FRACTIONAL_OFFSET + 1], a
+    ld a, low(\2)
+    ld [\1 + GB_FIXED_INTEGRAL_OFFSET + 0], a
+    ld a, high(\2)
+    ld [\1 + GB_FIXED_INTEGRAL_OFFSET + 1], a
+endm
+
+; Add two fixed.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+macro gbFixed_Add
+.gbfixed_add\@
+    ld hl, \1
+
+def BYTE_NUM = 0
+rept GB_FIXED_SIZE
+    ld a, [\3 + BYTE_NUM]
+    ld b, a
+    ld a, [\2 + BYTE_NUM]
+if BYTE_NUM == 0
+    add a, b
+else
+    adc a, b
+endc
+    ld [hli], a
+def BYTE_NUM += 1
+endr
+endm
+
+; Add a 16-bit integer to a fixed.
+; \1: result address (can be the input fixed)
+; \2: address of the input fixed
+; \3: 16-bit register
+macro gbFixed_Add16
+.gbfixed_add16\@
+    ld a, [\2 + GB_FIXED_INTEGRAL_OFFSET + 0]
+    add a, low(\3)
+    ld [\1  + GB_FIXED_INTEGRAL_OFFSET + 0], a
+    ld a, [\2 + GB_FIXED_INTEGRAL_OFFSET + 1]
+    adc a, high(\3)
+    ld [\1  + GB_FIXED_INTEGRAL_OFFSET + 1], a
+endm
+
+; Subtract two fixed.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+macro gbFixed_Sub
+.gbfixed_sub\@
+    ld hl, \1
+
+def BYTE_NUM = 0
+rept GB_FIXED_SIZE
+    ld a, [\3 + BYTE_NUM]
+    ld b, a
+    ld a, [\2 + BYTE_NUM]
+if BYTE_NUM == 0
+    sub a, b
+else
+    sbc a, b
+endc
+    ld [hli], a
+def BYTE_NUM += 1
+endr
+endm
+
+; Divide a fixed by 2.
+; The sign is conserved.
+; \1: result address (can be one of the operand)
+; \2: the value to shift
+macro gbFixed_Div2
+.gbfixed_div2\@
+    ld hl, \2
+    ld a, [hli]
+    ld e, a
+    ld a, [hli]
+    ld d, a
+    ld a, [hli]
+    ld c, a
+    ld b, [hl]
+
+    sra b
+    rr c
+    rr d
+    rr e
+
+    ld hl, \1
+    ld a, e
+    ld [hli], a
+    ld a, d
+    ld [hli], a
+    ld a, c
+    ld [hli], a
+    ld [hl], b
+endm
+
+; Compare two fixed.
+; The carry is raised if the first fixed is stricly less than the second fixed.
+; This is a signed comparison.
+; \1: address of LHS
+; \2: address of RHS
+macro gbFixed_Comp
+.gbfixed_comp\@
+    ld de, \1 + GB_FIXED_MSB_OFFSET
+    ld hl, \2 + GB_FIXED_MSB_OFFSET
+    call _lt_gb_fixed
+endm
+
+; Return the minimun of two fixed.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+macro gbFixed_Min
+.gbfixed_min\@
+    ld de, \2 + GB_FIXED_MSB_OFFSET
+    ld hl, \3 + GB_FIXED_MSB_OFFSET
+    call _lt_gb_fixed
+    jr c, .gb_fixed_copy_lhs\@
+    .gb_fixed_copy_rhs\@
+        gbFixed_Copy \1, \3
+        jr .gb_fixed_min_done\@
+    .gb_fixed_copy_lhs\@
+        gbFixed_Copy \1, \2
+    .gb_fixed_min_done\@
+endm
+
+; Return the maximum of two fixed.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+macro gbFixed_Max
+.gbfixed_max\@
+    ld de, \2 + GB_FIXED_MSB_OFFSET
+    ld hl, \3 + GB_FIXED_MSB_OFFSET
+    call _lt_gb_fixed
+    jr nc, .gb_fixed_copy_lhs\@
+    .gb_fixed_copy_rhs\@
+        gbFixed_Copy \1, \3
+        jr .gb_fixed_max_done\@
+    .gb_fixed_copy_lhs\@
+        gbFixed_Copy \1, \2
+    .gb_fixed_max_done\@
+endm
+
+; Clamp a fixed.
+; \1: result address
+; \2: address of the value to clamp
+; \3: address of the minimum value
+; \4: address of the maximum value
+macro gbFixed_Clamp
+.gbfixed_clamp\@
+    gbFixed_Min \1, \2, \4
+    gbFixed_Max \1, \1, \3
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Vector operations
+; A vector consists of two fixed.
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Set the value of a vector from two RGBASM 32-bit fixed.
+; \1: result address
+; \2: an RGBASM 32-bit value
+; \3: an RGBASM 32-bit value
+macro gbVector_Set
+.gbvector_set\@
+    gbFixed_Set \1, \2
+    gbFixed_Set \1 + GB_FIXED_SIZE, \3
+endm
+
+; Set the value of a vector to zero.
+; \1: result address
+macro gbVector_Zero
+.gbvector_zero\@
+    gbFixed_Zero \1
+    gbFixed_Zero \1 + GB_FIXED_SIZE
+endm
+
+; Copy a vector into another one.
+; \1: destination address
+; \2: source address
+macro gbVector_Copy
+.gbvector_copy\@
+    ld hl, \1
+def BYTE_NUM = 0
+rept GB_VECTOR_SIZE
+    ld a, [\2 + BYTE_NUM]
+    ld [hli], a
+def BYTE_NUM += 1
+endr
+endm
+
+; Compute the absolute value of a vector.
+; \1: destination address
+; \2: source address
+macro gbVector_Abs
+.gbvector_abs\@
+    gbFixed_Abs \1, \2
+    gbFixed_Abs \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE
+endm
+
+; Add two vectors.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+macro gbVector_Add
+.gbvector_add\@
+    gbFixed_Add \1, \2, \3
+    gbFixed_Add \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE, \3 + GB_FIXED_SIZE
+endm
+
+; Add two 16-bit integer to a vector.
+; \1: result address (can be the input vector)
+; \2: address of the input vector
+; \3: the 16-bit register to add to the abscissa
+; \4: the 16-bit register to add to the ordinate
+macro gbVector_Add16
+.gbvector_add16\@
+    gbFixed_Add16 \1, \2, \3
+    gbFixed_Add16 \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE, \4
+endm
+
+; Subtract two vectors.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+macro gbVector_Sub
+.gbvector_sub\@
+    gbFixed_Sub \1, \2, \3
+    gbFixed_Sub \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE, \3 + GB_FIXED_SIZE
+endm
+
+; Shift right a vector, component-wise.
+; \1: result address (can be one of the operand)
+; \2: the value to shift
+macro gbVector_Div2
+.gbvector_div2\@
+    gbFixed_Div2 \1, \2
+    gbFixed_Div2 \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE
+endm
+
+; Compare two vectors.
+; The carry is raised if all components of the first vector are stricly less
+; than all the component in the the second vector.
+; This is a signed comparison.
+; \1: address of LHS
+; \2: address of RHS
+macro gbVector_Comp
+.gbvector_comp\@
+    gbFixed_Comp \1, \2
+    jr nc, .check_second_component\@
+        gbFixed_Comp \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE
+    .check_second_component\@
+endm
+
+; Return the minimun of two vectors, component-wise.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+macro gbVector_Min
+.gbvector_min\@
+    gbFixed_Min \1, \2, \3
+    gbFixed_Min \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE, \3 + GB_FIXED_SIZE
+endm
+
+; Return the maximum of two vectors, component-wise.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+macro gbVector_Max
+.gbvector_max\@
+    gbFixed_Max \1, \2, \3
+    gbFixed_Max \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE, \3 + GB_FIXED_SIZE
+endm
+
+; Clamp a vector,
+; \1: result address
+; \2: address of the value to clamp
+; \3: address of the minimum value
+; \4: address of the maximum value
+macro gbVector_Clamp
+.gbvector_clamp\@
+    gbFixed_Min \1, \2, \4
+    gbFixed_Max \1, \1, \3
+    gbFixed_Min \1 + GB_FIXED_SIZE, \2 + GB_FIXED_SIZE, \4 + GB_FIXED_SIZE
+    gbFixed_Max \1 + GB_FIXED_SIZE, \1 + GB_FIXED_SIZE, \3 + GB_FIXED_SIZE
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+
