@@ -1,34 +1,25 @@
 include "gblib.rgbinc"
 
-def TILES_COUNT                        equ (384)
-def BYTES_PER_TILE                     equ (16)
-def TILES_BYTE_SIZE                    equ (TILES_COUNT * BYTES_PER_TILE)
-def TILEMAP_BYTE_SIZE                  equ (1024)
-def GRAPHICS_DATA_SIZE                 equ (TILES_BYTE_SIZE + TILEMAP_BYTE_SIZE)
-def GRAPHICS_DATA_ADDRESS_END          equ ($8000)
-def GRAPHICS_DATA_ADDRESS_START        equ (GRAPHICS_DATA_ADDRESS_END - GRAPHICS_DATA_SIZE)
-
-; load the graphics data from ROM to VRAM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; WRAM
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-rsset WRAM_START
+SECTION "sample_wram", WRAM0
 
-def WRAM_IS_VBLANK                    rb 1
-def WRAM_BG_SCROLL_X                rb 3
+WRAM_BG_SCROLL_X:       ds 3
 
-def WRAM_END                        rb 0
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Graphics
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; sanity checks
-def WRAM_USAGE                        equ (WRAM_END - WRAM_START)
-println "WRAM usage: {d:WRAM_USAGE} bytes"
-assert WRAM_USAGE <= $2000, "Too many bytes used in WRAM"
+section "graphics_data", rom0
+graphics_data_start:
+incbin "parallax.chr"
+incbin "parallax.tlm"
+graphics_data_end:
 
-; Reserve space in WRAM 0 for all the variables in the game.
-; This is necessary to play nicely with libraries.
-SECTION "sample_wram", WRAM0[WRAM_START]
-
-_wram_reservation: ds WRAM_USAGE
-
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Interrupts
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 section "vblank_interrupt", rom0[INT_HANDLER_VBLANK]
@@ -85,20 +76,19 @@ LcdInterrupt:
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Sample
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 section "sample", rom0
 
 gameInitialize::
     gbInterruptsInitialize
 
-    ; Clear the WRAM.
-    gbClearMemory WRAM_START, WRAM_END - WRAM_START
-
     ; init the palette
     ld a, %11100100
     ld [rBGP], a
 
-    gbCopyMemory VRAM_START, GRAPHICS_DATA_ADDRESS_START, GRAPHICS_DATA_SIZE
+    gbCopyMemory VRAM_START, graphics_data_start, graphics_data_end - graphics_data_start
 
     ; setup interrupts
     ld a, 255
@@ -148,10 +138,4 @@ gameUpdate::
     gbCheckVblankOverflow
 
     ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-section "graphics_data", rom0[GRAPHICS_DATA_ADDRESS_START]
-incbin "parallax.chr"
-incbin "parallax.tlm"
 
