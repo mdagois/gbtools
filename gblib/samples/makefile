@@ -14,7 +14,7 @@ release_compile_options = -DBUILD_RELEASE
 padding_value = 199
 link_options = --pad $(padding_value)
 
-fix_options = --pad-value $(padding_value) --validate
+fix_options = --pad-value $(padding_value) --validate --color-only --mbc-type 0x1B --ram-size 0x02
 
 launch_options = --watch
 
@@ -24,7 +24,6 @@ launch_options = --watch
 
 parallax_description = a sample to demonstrate a parallax effect
 parallax_sources = $(wildcard parallax/*.rgbasm ../prebuilt/gblib.rgbasm)
-parallax_link_options = --dmg --tiny
 
 ########################################
 # template
@@ -32,7 +31,6 @@ parallax_link_options = --dmg --tiny
 
 template_description = a template from which to build applications
 template_sources = $(wildcard template/*.rgbasm ../prebuilt/gblib.rgbasm)
-template_link_options = --dmg --tiny
 
 ########################################
 
