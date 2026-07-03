@@ -1,0 +1,57 @@
+include "gblib.rgbinc"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; WRAM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SECTION "sample_wram", WRAM0, align[8]
+_GameWramStart:
+
+vOam:                   ds OAM_SIZE
+
+vUpdateEndLine:         ds 1
+vVblankEndLine:         ds 1
+
+_GameWramEnd:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "game_initialization", rom0
+
+gameInitialize::
+    gbToggleCpuSpeed
+    gbDmaOamClear
+
+    ; Clear the WRAM.
+    gbClearMemory _GameWramStart, _GameWramEnd - _GameWramStart
+
+    ; Enable the interrupts and the LCD.
+    copyh [rLCDC],\
+        LCDC_ON | LCDC_OBJ_ON | LCDC_BG_ON |\
+        LCDC_BLOCK21 | LCDC_BG_9800 | LCDC_OBJ_16
+    copyh [rIE], IE_VBLANK
+    ei
+
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Update
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "game_update", rom0
+
+gameUpdate::
+    ; Logic
+    gbInputUpdate
+    gbRecordHighestLine vUpdateEndLine
+
+    ; Vblank
+    gbWaitVblank
+    gbDmaOamCopy high(vOam)
+    gbCheckVblankOverflow
+    gbRecordHighestLine vVblankEndLine
+
+    ret
+

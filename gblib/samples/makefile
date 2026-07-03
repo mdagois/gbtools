@@ -1,6 +1,6 @@
-projects = parallax
+projects = parallax template
 configurations = debug release
-default_target = help
+default_target = all
 
 build_directory = build
 
@@ -25,6 +25,14 @@ launch_options = --watch
 parallax_description = a sample to demonstrate a parallax effect
 parallax_sources = $(wildcard parallax/*.rgbasm ../prebuilt/gblib.rgbasm)
 parallax_link_options = --dmg --tiny
+
+########################################
+# template
+########################################
+
+template_description = a template from which to build applications
+template_sources = $(wildcard template/*.rgbasm ../prebuilt/gblib.rgbasm)
+template_link_options = --dmg --tiny
 
 ########################################
 
