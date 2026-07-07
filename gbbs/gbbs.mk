@@ -233,11 +233,9 @@ $1_$2_sources_list = $$($1_sources) $$($2_sources) $$($1_$2_sources)
 
 $1_$2_prerequisites_list = $$($1_prerequisites) $$($1_$2_prerequisites)
 
-$1_$2_detect_sgb := $$(if $$(filter --sgb-compatible -s,$$($1_$2_fix_options_list)),-DDETECT_SGB,)
-$1_$2_detect_cgb := $$(if $$(filter --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_CGB,)
-$1_$2_detect_dmg := $$(if $$(filter --sgb-compatible -s --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_DMG,)
+$1_$2_detect_hardware := $$(if $$(filter --sgb-compatible -s --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_HARDWARE,)
 
-$1_$2_compile_options_list = -I$(root_directory) $(compile_options) $$($1_compile_options) $$($2_compile_options) $$($1_$2_compile_options) $$($1_$2_detect_sgb) $$($1_$2_detect_cgb) $$($1_$2_detect_dmg)
+$1_$2_compile_options_list = -I$(root_directory) $(compile_options) $$($1_compile_options) $$($2_compile_options) $$($1_$2_compile_options) $$($1_$2_detect_hardware)
 $1_$2_link_options_list = $(link_options) $$($1_link_options) $$($2_link_options) $$($1_$2_link_options)
 $1_$2_fix_options_list = $(fix_options) $$($1_fix_options) $$($2_fix_options) $$($1_$2_fix_options)
 

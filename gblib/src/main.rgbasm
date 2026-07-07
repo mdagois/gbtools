@@ -89,6 +89,42 @@ endm
 
 section "gb_main", rom0
 gb_main:
+if def(DETECT_HARDWARE)
+    cp a, $11
+    jr nz, .sgb_or_dmg
+    .cgb_or_gba
+        ; The hardware is either a CGB or GBA.
+        bit 0, b
+        jr z, .cgb
+        .gba
+            ld a, HARDWARE_MODEL_GBA
+            jr .hardware_detection_done
+        .cgb
+            ld a, HARDWARE_MODEL_CGB
+            jr .hardware_detection_done
+    .sgb_or_dmg
+        ; The hardware is either a SGB1, SGB2, or DMG.
+        ld b, a
+        ld a, c
+        cp a, $14
+        jr nz, .dmg
+        .sgb1_or_sgb2
+            ; The hardware is either a SGB1 or SGB2.
+            ld a, b
+            inc a
+            jr nz, .sgb2
+                ld a, HARDWARE_MODEL_SGB2
+                jr .hardware_detection_done
+            .sgb2
+				ld a, HARDWARE_MODEL_SGB1
+				jr .hardware_detection_done
+        .dmg
+            ld a, HARDWARE_MODEL_DMG
+    .hardware_detection_done
+    ; Save the hardware model.
+    ld [HARDWARE_MODEL_REGISTER], a
+endc
+
     gbMessage "[INFO] program started"
 
     ; Set the stack pointer to the top of the stack.
