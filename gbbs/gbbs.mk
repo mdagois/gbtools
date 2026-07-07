@@ -153,7 +153,7 @@ link_command = $$(rgblink_command) $$($1_$2_link_options_list) --map $$($1_$2_ma
 
 # fix
 # $1 = project, $2 = configuration, $3 = rom file
-fix_command = $$(rgbfix_command) $$($1_$2_fix_options_list) --title $1 $3
+fix_command = $$(rgbfix_command) $$($1_$2_fix_options_list) $$($1_$2_old_licensee) --title $1 $3
 
 ########################################
 # Generation templates
@@ -234,6 +234,7 @@ $1_$2_sources_list = $$($1_sources) $$($2_sources) $$($1_$2_sources)
 $1_$2_prerequisites_list = $$($1_prerequisites) $$($1_$2_prerequisites)
 
 $1_$2_detect_hardware := $$(if $$(filter --sgb-compatible -s --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_HARDWARE,)
+$1_$2_old_licensee := $$(if $$(filter --sgb-compatible -s,$$($1_$2_fix_options_list)),--old-licensee 0x33,)
 
 $1_$2_compile_options_list = -I$(root_directory) $(compile_options) $$($1_compile_options) $$($2_compile_options) $$($1_$2_compile_options) $$($1_$2_detect_hardware)
 $1_$2_link_options_list = $(link_options) $$($1_link_options) $$($2_link_options) $$($1_$2_link_options)
