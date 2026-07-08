@@ -1,0 +1,9 @@
+if !def(GB_MAIN_RGBINC)
+def GB_MAIN_RGBINC equ 1
+
+macro gbGetHardware
+	ld a, [vGbHardware]
+endm
+
+endc
+

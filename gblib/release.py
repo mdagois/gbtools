@@ -6,6 +6,7 @@ RGBINC_LIST = [
     'src/input.rgbinc',
     'src/instructions.rgbinc',
     'src/interrupts.rgbinc',
+    'src/main.rgbinc',
     'src/math.rgbinc',
     'src/rng.rgbinc',
     'src/utils.rgbinc',

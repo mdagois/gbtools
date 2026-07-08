@@ -233,8 +233,8 @@ $1_$2_sources_list = $$($1_sources) $$($2_sources) $$($1_$2_sources)
 
 $1_$2_prerequisites_list = $$($1_prerequisites) $$($1_$2_prerequisites)
 
-$1_$2_detect_hardware := $$(if $$(filter --sgb-compatible -s --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_HARDWARE,)
-$1_$2_old_licensee := $$(if $$(filter --sgb-compatible -s,$$($1_$2_fix_options_list)),--old-licensee 0x33,)
+$1_$2_detect_hardware = $$(if $$(filter --sgb-compatible -s --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_HARDWARE,)
+$1_$2_old_licensee = $$(if $$(filter --sgb-compatible -s,$$($1_$2_fix_options_list)),--old-licensee 0x33,)
 
 $1_$2_compile_options_list = -I$(root_directory) $(compile_options) $$($1_compile_options) $$($2_compile_options) $$($1_$2_compile_options) $$($1_$2_detect_hardware)
 $1_$2_link_options_list = $(link_options) $$($1_link_options) $$($2_link_options) $$($1_$2_link_options)
@@ -243,7 +243,7 @@ $1_$2_fix_options_list = $(fix_options) $$($1_fix_options) $$($2_fix_options) $$
 $1_$2_launch_options_list = $$(strip $(launch_options) $$($1_launch_options) $$($2_launch_options) $$($1_$2_launch_options))
 $1_$2_launch_options_list2 = $$(strip $(launch_options2) $$($1_launch_options2) $$($2_launch_options2) $$($1_$2_launch_options2))
 
-$1_$2_rom_extension := $$(if $$(filter --color-only --color-compatible -C -c,$$($1_$2_fix_options_list)),.gbc,.gb)
+$1_$2_rom_extension = $$(if $$(filter --color-only --color-compatible -C -c,$$($1_$2_fix_options_list)),.gbc,.gb)
 
 $1_$2_build_directory := $$($1_build_directory)/$2
 $1_$2_binary_directory := $$($2_binary_directory)/$1
