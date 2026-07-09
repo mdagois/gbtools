@@ -82,8 +82,6 @@ LcdInterrupt:
 section "sample", rom0
 
 gameInitialize::
-    gbInterruptsInitialize
-
     ; init the palette
     ld a, %11100100
     ld [rBGP], a

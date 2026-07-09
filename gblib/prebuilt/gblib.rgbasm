@@ -349,16 +349,7 @@ if !def(GB_DMA_RGBINC)
 def GB_DMA_RGBINC equ 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Initialize the DMA system.
-macro gbDmaInitialize
-    call _gbDmaInitialize
-endm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; OAM
+; OAM DMA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Hides all sprites using DMA.
@@ -1562,15 +1553,6 @@ def GB_INPUT_RELEASED   rb 1
 def sizeof_GB_INPUT     rb 0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Initialize the input system.
-macro gbInputInitialize
-    call _gbInputInitialize
-endm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Update
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1659,14 +1641,6 @@ endc
 
 if !def(GB_INTERRUPTS_RGBINC)
 def GB_INTERRUPTS_RGBINC equ 1
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-macro gbInterruptsInitialize
-    call _gbInterruptsInitialize
-endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Vblank
@@ -2917,9 +2891,9 @@ if def(GB_DEBUG_STACK)
 endc
 
     ; Initialize the modules.
-    gbInterruptsInitialize
-    gbDmaInitialize
-    gbInputInitialize
+    call _gbInterruptsInitialize
+    call _gbDmaInitialize
+    call _gbInputInitialize
 
     ret
 
