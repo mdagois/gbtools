@@ -59,9 +59,9 @@ if def(GB_DEBUG_STACK)
 endc
 
     ; Initialize the modules.
-    gbInterruptsInitialize
-    gbDmaInitialize
-    gbInputInitialize
+    call _gbInterruptsInitialize
+    call _gbDmaInitialize
+    call _gbInputInitialize
 
     ret
 

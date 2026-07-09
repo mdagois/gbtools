@@ -36,15 +36,6 @@ def LCD_LINE_COUNT          equ 154
 def SPRITE_PALETTE_COUNT    equ 8
 def BG_PALETTE_COUNT        equ 8
 
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-rsreset
-def HARDWARE_MODEL_DMG      rb 1
-def HARDWARE_MODEL_CGB      rb 1
-def HARDWARE_MODEL_SGB1     rb 1
-def HARDWARE_MODEL_SGB2     rb 1
-def HARDWARE_MODEL_GBA      rb 1
-
 endc
 
 if !def(GB_DEBUG_RGBINC)
@@ -350,16 +341,7 @@ if !def(GB_DMA_RGBINC)
 def GB_DMA_RGBINC equ 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Initialize the DMA system.
-macro gbDmaInitialize
-    call _gbDmaInitialize
-endm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; OAM
+; OAM DMA
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 ; Hides all sprites using DMA.
@@ -1563,15 +1545,6 @@ def GB_INPUT_RELEASED   rb 1
 def sizeof_GB_INPUT     rb 0
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Initialize the input system.
-macro gbInputInitialize
-    call _gbInputInitialize
-endm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Update
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1662,14 +1635,6 @@ if !def(GB_INTERRUPTS_RGBINC)
 def GB_INTERRUPTS_RGBINC equ 1
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-macro gbInterruptsInitialize
-    call _gbInterruptsInitialize
-endm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Vblank
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1710,6 +1675,18 @@ endc
 if !def(GB_MAIN_RGBINC)
 def GB_MAIN_RGBINC equ 1
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+rsreset
+def HARDWARE_MODEL_DMG      rb 1
+def HARDWARE_MODEL_CGB      rb 1
+def HARDWARE_MODEL_SGB1     rb 1
+def HARDWARE_MODEL_SGB2     rb 1
+def HARDWARE_MODEL_GBA      rb 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Get the hardware type in register a.
 macro gbGetHardware
 	ld a, [vGbHardware]
 endm

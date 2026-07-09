@@ -1,6 +1,18 @@
 if !def(GB_MAIN_RGBINC)
 def GB_MAIN_RGBINC equ 1
 
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+rsreset
+def HARDWARE_MODEL_DMG      rb 1
+def HARDWARE_MODEL_CGB      rb 1
+def HARDWARE_MODEL_SGB1     rb 1
+def HARDWARE_MODEL_SGB2     rb 1
+def HARDWARE_MODEL_GBA      rb 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Get the hardware type in register a.
 macro gbGetHardware
 	ld a, [vGbHardware]
 endm

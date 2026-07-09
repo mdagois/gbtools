@@ -1,0 +1,447 @@
+; Add a code breakpoint.
+gbBreak
+
+; Output debug message \1.
+gbMessage
+
+; Record the current line into \1 if the line is bigger than the current stored
+; one.
+gbRecordHighestLine
+
+; Output debug message \3 when bit \2 in byte \1 is raised.
+gbCheckZ
+
+; Output debug message \3 when bit \2 in byte \1 is raised.
+gbCheckNZ
+
+; Output debug message \3 when \1 >= \2.
+gbCheckLT
+
+; Output debug message \3 when \1 > \2.
+gbCheckLE
+
+; Output debug message \3 when \1 != \2.
+gbCheckEQ
+
+; Output debug message \3 when \1 <= \2.
+gbCheckGT
+
+; Output debug message \3 when \1 < \2.
+gbCheckGE
+
+; Output debug message \3 and block when bit \2 in byte \1 is raised.
+gbForceZ
+
+; Output debug message \3 and block when bit \2 in byte \1 is raised.
+gbForceNZ
+
+; Output debug message \3 and block when \1 >= \2.
+gbForceLT
+
+; Output debug message \3 and block when \1 > \2.
+gbForceLE
+
+; Output debug message \3 and block when \1 != \2.
+gbForceEQ
+
+; Output debug message \3 and block when \1 <= \2.
+gbForceGT
+
+; Output debug message \3 and block when \1 < \2.
+gbForceGE
+
+; Hides all sprites using DMA.
+gbDmaOamClear
+
+; Copy sprites data using DMA.
+; \1 = high byte of the source address
+gbDmaOamCopy
+
+; Start a general DMA copy.
+; \1 = high byte of the destination address (higher 3 bits always %100)
+; \2 = low byte of the destination address (lower 4 bits always %0000)
+; \3 = high byte of the source address
+; \4 = low byte of the source address (lower 4 bits always %0000)
+; \5 = size (data byte size / 16 - 1)
+gbDmaCopyGeneral
+
+; Start a general DMA copy.
+; \1 = the destination address (higher 3 bits always %100, lower 4 bits always %0000))
+; \2 = the source address (lower 4 bits always %0000)
+; \3 = size (data byte size / 16 - 1)
+gbDmaCopyGeneral16
+
+; Start a hblank DMA copy.
+; \1 = high byte of the destination address (higher 3 bits always %100)
+; \2 = low byte of the destination address (lower 4 bits always %0000)
+; \3 = high byte of the source address
+; \4 = low byte of the source address (lower 4 bits always %0000)
+; \5 = size (data byte size / 16 - 1)
+gbDmaCopyHblank
+
+; Start a hblank DMA copy.
+; \1 = the destination address (higher 3 bits always %100, lower 4 bits always %0000))
+; \2 = the source address (lower 4 bits always %0000)
+; \3 = size (data byte size / 16 - 1)
+gbDmaCopyHblank16
+
+; Update the keypad input.
+; Expected to be used only once in the main loop.
+; Example: gbInputUpdate
+gbInputUpdate
+
+; Raise the zero flag if all keys in \1 are held.
+; Example: gbInputTestHeld PAD_LEFT | PAD_DOWN
+gbInputTestHeld
+
+; Raise the zero flag if input \1 is pressed.
+; Example: gbInputTestPressed PAD_LEFT
+gbInputTestPressed
+
+; Raise the zero flag if input \1 is released.
+; Example: gbInputTestReleased PAD_A
+gbInputTestReleased
+
+; Raise the zero flag if none of the flags in input \1 are pressed.
+; Example: gbInputTestPressedAny PAD_LEFT | PAD_RIGHT
+gbInputTestPressedAny
+
+; Raise the zero flag if none of the flags in input \1 are released.
+; Example: gbInputTestReleasedAny PAD_LEFT | PAD_RIGHT
+gbInputTestReleasedAny
+
+; Reset the carry flag.
+rcf
+
+; Copy \2 into \1 through (a).
+; Example: copy [$1234], 10
+copy
+
+; Copy \2 into \1 through (a) using ldh.
+; Example: copyh [$FF84], 10
+copyh
+
+; Wait for the vblank.
+gbWaitVblank
+
+; Must be used when entering the vblank.
+gbFlagVblank
+
+; Run the vblank watchdog.
+gbVblankWatchdog
+
+; Check whether the vblank overflowed.
+gbCheckVblankOverflow
+
+; Get the hardware type in register a.
+gbGetHardware
+
+; Compute the absolute of register a.
+gbInt8_AbsA
+
+; Load the value of a 16-bit register from memory.
+; \1: destination register
+; \2: source address
+gbInt16_Load
+
+; Store the value of a 16-bit integer or literal into memory.
+; \1: destination address
+; \2: source register or literal
+gbInt16_Store
+
+; Copy the value of a 16-bit register.
+; \1: destination register
+; \2: source register
+gbInt16_Copy
+
+; Convert an 8-bit register to a 16-bit register.
+; \1: 16-bit destination register
+; \2: 8-bit source register
+gbInt16_Conv8
+
+; Inverse a 16-bit integer.
+; \1: register
+gbInt16_Inverse
+
+; Raise the zero flag if a 16-bit integer is positive or zero.
+; \1: register
+gbInt16_Sign
+
+; Compute the absolute value of a 16-bit integer.
+; \1: register
+gbInt16_Abs
+
+; Add a 16-bit integer to another 16-bit integer or literal.
+; \1: register
+; \2: register or literal
+gbInt16_Add
+
+; Subtract a 16-bit integer or a literal from a 16-bit integer.
+; \1: register
+; \2: register or literal
+gbInt16_Sub
+
+; Shift left a 16-bit integer.
+; \1: register
+gbInt16_ShiftLeft
+
+; Divide a 16-bit integer by 2.
+; \1: register
+gbInt16_Div2
+
+; Compare a 16-bit integer to another 16-bit integer or literal.
+; The carry is raised if the first 16-bit integer is stricly less than the second 16-bit integer or literal.
+; This is a signed comparison.
+; \1: register
+; \2: register or literal
+gbInt16_Comp
+
+; Return the minimun of a 16-bit integer and another 16-bit integer or a literal.
+; The result is stored in LHS.
+; \1: LHS (register)
+; \2: RHS (register or literal)
+gbInt16_Min
+
+; Return the maximum of a 16-bit integer and another 16-bit integer or a literal.
+; The result is stored in LHS.
+; \1: LHS (register)
+; \2: RHS (register or literal)
+gbInt16_Max
+
+; Clamp a 16-bit integer.
+; \1: value to clamp (register)
+; \2: minimum (register or literal)
+; \3: maximum (register or literal)
+gbInt16_Clamp
+
+; Compute \1 % \2.
+; This is an iterative algorithm, expected to be used with
+; relatively small divisors.
+; \1: dividend (register)
+; \2: divisor (register or literal)
+gbInt16_Modulo
+
+; Set the value of a fixed from an RGBASM 32-bit fixed.
+; \1: result address
+; \2: an RGBASM 32-bit value
+gbFixed_Set
+
+; Set the value of a fixed to zero.
+; \1: result address
+gbFixed_Zero
+
+; Raise the zero flag if a fixed is positive or zero.
+; \1: the fixed to check
+gbFixed_Sign
+
+; Inverse a fixed.
+; \1: destination address
+; \2: source address
+gbFixed_Inverse
+
+; Compute the absolute value of a fixed.
+; \1: destination address
+; \2: source address
+gbFixed_Abs
+
+; Copy a fixed into another one.
+; \1: destination address
+; \2: source address
+gbFixed_Copy
+
+; Copy a int16 into a fixed.
+; \1: destination address
+; \2: source address
+gbFixed_CopyInt16
+
+; Add two fixed.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+gbFixed_Add
+
+; Add a 16-bit integer to a fixed.
+; \1: result address (can be the input fixed)
+; \2: address of the input fixed
+; \3: 16-bit register
+gbFixed_Add16
+
+; Subtract two fixed.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+gbFixed_Sub
+
+; Divide a fixed by 2.
+; The sign is conserved.
+; \1: result address (can be one of the operand)
+; \2: the value to shift
+gbFixed_Div2
+
+; Compare two fixed.
+; The carry is raised if the first fixed is stricly less than the second fixed.
+; This is a signed comparison.
+; \1: address of LHS
+; \2: address of RHS
+gbFixed_Comp
+
+; Return the minimun of two fixed.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+gbFixed_Min
+
+; Return the maximum of two fixed.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+gbFixed_Max
+
+; Clamp a fixed.
+; \1: result address
+; \2: address of the value to clamp
+; \3: address of the minimum value
+; \4: address of the maximum value
+gbFixed_Clamp
+
+; Set the value of a vector from two RGBASM 32-bit fixed.
+; \1: result address
+; \2: an RGBASM 32-bit value
+; \3: an RGBASM 32-bit value
+gbVector_Set
+
+; Set the value of a vector to zero.
+; \1: result address
+gbVector_Zero
+
+; Copy a vector into another one.
+; \1: destination address
+; \2: source address
+gbVector_Copy
+
+; Compute the absolute value of a vector.
+; \1: destination address
+; \2: source address
+gbVector_Abs
+
+; Add two vectors.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+gbVector_Add
+
+; Add two 16-bit integer to a vector.
+; \1: result address (can be the input vector)
+; \2: address of the input vector
+; \3: the 16-bit register to add to the abscissa
+; \4: the 16-bit register to add to the ordinate
+gbVector_Add16
+
+; Subtract two vectors.
+; \1: result address (can be one of the operand)
+; \2: address of LHS
+; \3: address of RHS
+gbVector_Sub
+
+; Shift right a vector, component-wise.
+; \1: result address (can be one of the operand)
+; \2: the value to shift
+gbVector_Div2
+
+; Compare two vectors.
+; The carry is raised if all components of the first vector are stricly less
+; than all the component in the the second vector.
+; This is a signed comparison.
+; \1: address of LHS
+; \2: address of RHS
+gbVector_Comp
+
+; Return the minimun of two vectors, component-wise.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+gbVector_Min
+
+; Return the maximum of two vectors, component-wise.
+; \1: result address
+; \2: address of LHS
+; \3: address of RHS
+gbVector_Max
+
+; Clamp a vector,
+; \1: result address
+; \2: address of the value to clamp
+; \3: address of the minimum value
+; \4: address of the maximum value
+gbVector_Clamp
+
+; Pick a seed for LFSR and put it in (a).
+gbLfsr8PickSeed
+
+; Produce the next LFSR value from the value in (a).
+; (a) should not be zero, otherwise zero will be returned.
+; This macro will never produce zero if (a) is not zero.
+gbLfsr8GetNextValue
+
+; Clear a memory region to zero.
+; \1 = start address
+; \2 = size
+gbClearMemory
+
+; Set a memory region to a given value.
+; \1 = start address
+; \2 = size
+; \3 = value
+gbSetMemory
+
+; Copy memory from one address to another.
+; \1 = destination
+; \2 = source
+; \3 = size
+gbCopyMemory
+
+; Set the ROM bank.
+; \1 = bank number
+gbSetRomBank
+
+; Set the VRAM bank.
+; \1 = bank number
+gbSetVramBank
+
+; Set the WRAM bank.
+; \1 = bank number
+gbSetWramBank
+
+; Load 2 bytes at address \2 into 16-bit register \1.
+; Example: glLoad16 de, $FF82
+gbLoad16
+
+; Load the content of 16-bit register \2 into two bytes at address \1.
+; Example: gbStore16 $FF82, hl
+gbStore16
+
+; Push all the registers onto the stack.
+gbPushAllRegisters
+
+; Pop all the registers from the stack.
+gbPopAllRegisters
+
+; Call the function pointed by (hl).
+gbCallHL
+
+; Extract an address from a table.
+; \1 = table, \2 = index memory location
+gbExtractAddressFromTableIntoHL
+
+; Call a function from a function table.
+; \1 = table, \2 = index memory location
+gbCallFunctionFromTable
+
+; Jump to a function from a function table.
+; \1 = table, \2 = index memory location
+gbJumpToFunctionFromTable
+
+; Toggle the CPU between single and double speed.
+; CGB only.
+gbToggleCpuSpeed
+
