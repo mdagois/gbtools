@@ -14,7 +14,11 @@ def HARDWARE_MODEL_GBA      rb 1
 
 ; Get the hardware type in register a.
 macro gbGetHardware
+if def(DETECT_HARDWARE)
 	ld a, [vGbHardware]
+else
+	ld a, HARDWARE_MODEL_UNKNOWN
+endc
 endm
 
 endc

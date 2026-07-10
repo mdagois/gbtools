@@ -34,5 +34,13 @@ def LCD_LINE_COUNT          equ 154
 def SPRITE_PALETTE_COUNT    equ 8
 def BG_PALETTE_COUNT        equ 8
 
+rsreset
+def HARDWARE_MODEL_UNKNOWN  rb 1
+def HARDWARE_MODEL_DMG      rb 1
+def HARDWARE_MODEL_CGB      rb 1
+def HARDWARE_MODEL_SGB1     rb 1
+def HARDWARE_MODEL_SGB2     rb 1
+def HARDWARE_MODEL_GBA      rb 1
+
 endc
 
