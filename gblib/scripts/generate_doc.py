@@ -15,16 +15,19 @@ def extract_macros_with_comments(input_file_path, output_file_path):
                 stripped_line = line.strip()
 
                 if stripped_line.startswith(';'):
-                    current_comments.append(line)
+                    current_comments.append(line.replace('; ', '', 1))
                 elif stripped_line.startswith('macro'):
+                    extracted_lines.append("| " + line.replace('macro ', '', 1) + " | ")
                     extracted_lines.extend(current_comments)
-                    extracted_lines.append(line.replace('macro ', '', 1))
+                    extracted_lines.append(" |")
                     extracted_lines.append('\n')
                     current_comments = []
                 else:
                     current_comments = []
 
         with open(output_file_path, 'w', encoding='utf-8') as outfile:
+            outfile.write("| Function Name | Description |\n")
+            outfile.write("| :--- | :--- |\n")
             outfile.writelines(extracted_lines)
             
         print(f"Success: Exported matched lines to '{output_file_path}'")

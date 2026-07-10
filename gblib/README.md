@@ -1,7 +1,23 @@
+# Game Boy Libary
+
+A library to write Game Boy games in assembly using the  [RGBDS](https://github.com/gbdev/rgbds) toolchain.
+
+## Features
+
+TODO
+
+## Documentation
+
+The library exposes the following macros to help you makes games.
+
 | Function Name | Description |
 | :--- | :--- |
-| gbBreak | Add a code breakpoint. |
-| gbMessage | Output debug message \1. |
+| gbBreak
+ | Add a code breakpoint.
+ |
+| gbMessage
+ | Output debug message \1.
+ |
 | gbRecordHighestLine
  | Record the current line into \1 if the line is bigger than the current stored
 one.
