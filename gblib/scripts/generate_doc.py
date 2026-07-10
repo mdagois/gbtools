@@ -17,10 +17,8 @@ def extract_macros_with_comments(input_file_path, output_file_path):
                 if stripped_line.startswith(';'):
                     current_comments.append(line.replace('; ', '', 1))
                 elif stripped_line.startswith('macro'):
-                    extracted_lines.append("| " + line.replace('macro ', '', 1) + " | ")
-                    extracted_lines.extend(current_comments)
-                    extracted_lines.append(" |")
-                    extracted_lines.append('\n')
+                    cell_content = "<br>".join(line.lstrip(";").strip() for line in current_comments)
+                    extracted_lines.append("| " + line.replace('macro ', '', 1).strip() + " | " + cell_content + " |\n")
                     current_comments = []
                 else:
                     current_comments = []
