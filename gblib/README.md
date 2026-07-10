@@ -12,19 +12,10 @@ The library exposes the following macros to help you makes games.
 
 | Function Name | Description |
 | :--- | :--- |
-| gbBreak
- | Add a code breakpoint.
- |
-| gbMessage
- | Output debug message \1.
- |
-| gbRecordHighestLine
- | Record the current line into \1 if the line is bigger than the current stored
-one.
- |
-| gbCheckZ
- | Output debug message \3 when bit \2 in byte \1 is raised.
- |
+| gbBreak | Add a code breakpoint. |
+| gbMessage | Output debug message \1. |
+| gbRecordHighestLine | Record the current line into \1 if the line is bigger than the current stored one. |
+| gbCheckZ | Output debug message \3 when bit \2 in byte \1 is raised. |
 | gbCheckNZ
  | Output debug message \3 when bit \2 in byte \1 is raised.
  |
