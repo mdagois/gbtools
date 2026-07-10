@@ -12,7 +12,7 @@
 # secondary expansion is heavily used in rule generation
 .SECONDEXPANSION:
 
-# include the user configuration (e.g. to override the shell command directory)
+# include the user configuration (e.g. to override the RGBDS directory)
 -include user.mk
 
 # force bash shell
@@ -108,10 +108,9 @@ signature_extension := .s
 force_extension := .f
 
 # file commands
-shell_command_directory_with_slash := $(if $(shell_command_directory),$(shell_command_directory)/,)
-mkdir_command=$(shell_command_directory_with_slash)mkdir -p
-rmdir_command=$(shell_command_directory_with_slash)rm -rf
-touch_command=$(shell_command_directory_with_slash)touch
+mkdir_command=mkdir -p
+rmdir_command=rm -rf
+touch_command=touch
 
 # toolchain commands
 rgbds_directory_with_slash := $(if $(rgbds_directory),$(rgbds_directory)/,)

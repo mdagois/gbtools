@@ -67,7 +67,7 @@ On other operating systems, `bash` should be already available.
 Make sure you have the right version of `make`, and then, install the RGBDS toolchain.
 
 On all systems, GBBS should work without any additional setup if all the required executables are in the PATH.
-However, if the executables are not in the PATH, it is possible to define the `shell_command_directory` and `rgbds_directory` variables to point to directories containing the shell command executables and the RGBDS toolchain respectively.
+However, if the executables are not in the PATH, it is possible to define the `rgbds_directory` variable to point to directories containing the RGBDS toolchain respectively.
 There are three ways to define those variables: on the command line, in the makefile itself and in the special file `user.mk` (more on this one below).
 
 Assuming that Windows is the operating system and that the RGBDS toolchain is in `c:\src\bin`, below is how the `rgbds_directory` variable would be specified on the command line.
@@ -124,7 +124,6 @@ Here is a list of the variables available at the solution level.
 |link_options						|A list of options passed to `rgblink` during compilation of any target in the solution.
 |fix_options						|A list of options passed to `rgbfix` during compilation of any target in the solution.
 |default_target						|The default target executed when running the `make` command without any target specified. It defaults to `help` when not specified.
-|shell_command_directory			|The path to a directory containing the shell command executables required by GBBS (e.g. C:/Program Files/Git/usr/bin). Optional if compatible versions of `mkdir`, `rm` and `touch` are already in the PATH.
 |emulator_command					|The command used to launch the emulator. Defaults to `bgb`.
 |rgbds_directory					|The path to the RGBDS directory. Optional if `rgbasm`, `rgblink` and `rgbfix` are already in the PATH.
 
