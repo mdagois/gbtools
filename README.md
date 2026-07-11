@@ -21,6 +21,10 @@ Likewise, the [stb](https://github.com/nothings/stb) library, available [here](g
 
 [CONV](conv) is a set of tools to convert PNG files into graphics and collision data.
 
+## Game Boy Printer Simulator
+
+The [Game Boy Printer Simulator](printer) is a Game Boy Color ROM that acts as a Game Boy Printer.
+
 ## Third party
 
 The [third_party](third_party) directory contains useful binaries from external sources.
