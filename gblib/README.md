@@ -105,6 +105,9 @@ The library exposes macros to help you makes games covering the following aspect
 | gbVector_Clamp | Clamp a vector,<br>\1: result address<br>\2: address of the value to clamp<br>\3: address of the minimum value<br>\4: address of the maximum value |
 | gbLfsr8PickSeed | Pick a seed for LFSR and put it in (a). |
 | gbLfsr8GetNextValue | Produce the next LFSR value from the value in (a).<br>(a) should not be zero, otherwise zero will be returned.<br>This macro will never produce zero if (a) is not zero. |
+| gbSgbInitializeDevice | Initialize the SGB device. |
+| gbSgbSendCommand | Send the SGB command at address \1. |
+| SgbPacket_MaskEn | Declare a MASK_EN command of type \1. |
 | gbClearMemory | Clear a memory region to zero.<br>\1 = start address<br>\2 = size |
 | gbSetMemory | Set a memory region to a given value.<br>\1 = start address<br>\2 = size<br>\3 = value |
 | gbCopyMemory | Copy memory from one address to another.<br>\1 = destination<br>\2 = source<br>\3 = size |

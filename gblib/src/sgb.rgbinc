@@ -1,0 +1,119 @@
+if !def(GB_SGB_RGBINC)
+def GB_SGB_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Command types
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def SGB_COMMAND_PAL01           equ ($00)
+def SGB_COMMAND_PAL23           equ ($01)
+def SGB_COMMAND_PAL03           equ ($02)
+def SGB_COMMAND_PAL12           equ ($03)
+def SGB_COMMAND_ATTR_BLK        equ ($04)
+def SGB_COMMAND_ATTR_LIN        equ ($05)
+def SGB_COMMAND_ATTR_DIV        equ ($06)
+def SGB_COMMAND_ATTR_CHR        equ ($07)
+def SGB_COMMAND_SOUND           equ ($08)
+def SGB_COMMAND_SOU_TRN         equ ($09)
+def SGB_COMMAND_PAL_SET         equ ($0A)
+def SGB_COMMAND_PAL_TRN         equ ($0B)
+def SGB_COMMAND_ATRC_EN         equ ($0C)
+def SGB_COMMAND_ICON_EN         equ ($0E)
+def SGB_COMMAND_DATA_SND        equ ($0F)
+def SGB_COMMAND_DATA_TRN        equ ($10)
+def SGB_COMMAND_MLT_REQ         equ ($11)
+def SGB_COMMAND_JUMP            equ ($12)
+def SGB_COMMAND_CHR_TRN         equ ($13)
+def SGB_COMMAND_PCT_TRN         equ ($14)
+def SGB_COMMAND_ATTR_TRN        equ ($15)
+def SGB_COMMAND_ATTR_SET        equ ($16)
+def SGB_COMMAND_MASK_EN         equ ($17)
+def SGB_COMMAND_PAL_PRI         equ ($19)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Command headers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def SGB_HEADER_PAL01            equ ((SGB_COMMAND_PAL01 << 3) | 1)
+def SGB_HEADER_PAL23            equ ((SGB_COMMAND_PAL23 << 3) | 1)
+def SGB_HEADER_PAL03            equ ((SGB_COMMAND_PAL03 << 3) | 1)
+def SGB_HEADER_PAL12            equ ((SGB_COMMAND_PAL12 << 3) | 1)
+def SGB_HEADER_ATTR_BLK_1       equ ((SGB_COMMAND_ATTR_BLK << 3) | 1)
+def SGB_HEADER_ATTR_BLK_2       equ ((SGB_COMMAND_ATTR_BLK << 3) | 2)
+def SGB_HEADER_ATTR_BLK_3       equ ((SGB_COMMAND_ATTR_BLK << 3) | 3)
+def SGB_HEADER_ATTR_BLK_4       equ ((SGB_COMMAND_ATTR_BLK << 3) | 4)
+def SGB_HEADER_ATTR_BLK_5       equ ((SGB_COMMAND_ATTR_BLK << 3) | 5)
+def SGB_HEADER_ATTR_BLK_6       equ ((SGB_COMMAND_ATTR_BLK << 3) | 6)
+def SGB_HEADER_ATTR_BLK_7       equ ((SGB_COMMAND_ATTR_BLK << 3) | 7)
+def SGB_HEADER_ATTR_LIN_1       equ ((SGB_COMMAND_ATTR_LIN << 3) | 1)
+def SGB_HEADER_ATTR_LIN_2       equ ((SGB_COMMAND_ATTR_LIN << 3) | 2)
+def SGB_HEADER_ATTR_LIN_3       equ ((SGB_COMMAND_ATTR_LIN << 3) | 3)
+def SGB_HEADER_ATTR_LIN_4       equ ((SGB_COMMAND_ATTR_LIN << 3) | 4)
+def SGB_HEADER_ATTR_LIN_5       equ ((SGB_COMMAND_ATTR_LIN << 3) | 5)
+def SGB_HEADER_ATTR_LIN_6       equ ((SGB_COMMAND_ATTR_LIN << 3) | 6)
+def SGB_HEADER_ATTR_LIN_7       equ ((SGB_COMMAND_ATTR_LIN << 3) | 7)
+def SGB_HEADER_ATTR_DIV         equ ((SGB_COMMAND_ATTR_DIV << 3) | 1)
+def SGB_HEADER_ATTR_CHR_1       equ ((SGB_COMMAND_ATTR_CHR << 3) | 1)
+def SGB_HEADER_ATTR_CHR_2       equ ((SGB_COMMAND_ATTR_CHR << 3) | 2)
+def SGB_HEADER_ATTR_CHR_3       equ ((SGB_COMMAND_ATTR_CHR << 3) | 3)
+def SGB_HEADER_ATTR_CHR_4       equ ((SGB_COMMAND_ATTR_CHR << 3) | 4)
+def SGB_HEADER_ATTR_CHR_5       equ ((SGB_COMMAND_ATTR_CHR << 3) | 5)
+def SGB_HEADER_ATTR_CHR_6       equ ((SGB_COMMAND_ATTR_CHR << 3) | 6)
+def SGB_HEADER_SOUND            equ ((SGB_COMMAND_SOUND << 3) | 1)
+def SGB_HEADER_SOU_TRN          equ ((SGB_COMMAND_SOU_TRN << 3) | 1)
+def SGB_HEADER_PAL_SET          equ ((SGB_COMMAND_PAL_SET << 3) | 1)
+def SGB_HEADER_PAL_TRN          equ ((SGB_COMMAND_PAL_TRN << 3) | 1)
+def SGB_HEADER_ATRC_EN          equ ((SGB_COMMAND_ATRC_EN << 3) | 1)
+def SGB_HEADER_ICON_EN          equ ((SGB_COMMAND_ICON_EN << 3) | 1)
+def SGB_HEADER_DATA_SND         equ ((SGB_COMMAND_DATA_SND << 3) | 1)
+def SGB_HEADER_DATA_TRN         equ ((SGB_COMMAND_DATA_TRN << 3) | 1)
+def SGB_HEADER_MLT_REQ          equ ((SGB_COMMAND_MLT_REQ << 3) | 1)
+def SGB_HEADER_JUMP             equ ((SGB_COMMAND_JUMP << 3) | 1)
+def SGB_HEADER_CHR_TRN          equ ((SGB_COMMAND_CHR_TRN << 3) | 1)
+def SGB_HEADER_PCT_TRN          equ ((SGB_COMMAND_PCT_TRN << 3) | 1)
+def SGB_HEADER_ATTR_TRN         equ ((SGB_COMMAND_ATTR_TRN << 3) | 1)
+def SGB_HEADER_ATTR_SET         equ ((SGB_COMMAND_ATTR_SET << 3) | 1)
+def SGB_HEADER_MASK_EN          equ ((SGB_COMMAND_MASK_EN << 3) | 1)
+def SGB_HEADER_PAL_PRI          equ ((SGB_COMMAND_PAL_PRI << 3) | 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def SGB_BYTES_PER_PACKET            equ (16)
+
+def PADDING                         equ ($00)
+
+; Mask types
+def MASK_EN_CANCEL                  equ ($00)
+def MASK_EN_FREEZE                  equ ($01)
+def MASK_EN_BLACK                   equ ($02)
+def MASK_EN_COLOR0                  equ ($03)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Initialize the SGB device.
+macro gbSgbInitializeDevice
+    call _gbSgbInitializeDevice
+endm
+
+; Send the SGB command at address \1.
+macro gbSgbSendCommand
+    ld hl, \1
+    call _gbSgbSendCommand
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Command macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a MASK_EN command of type \1.
+macro SgbPacket_MaskEn
+db SGB_HEADER_MASK_EN, \1
+ds 14, PADDING
+endm
+
+endc
+
