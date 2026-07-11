@@ -126,6 +126,8 @@ Here is a list of the variables available at the solution level.
 |default_target						|The default target executed when running the `make` command without any target specified. It defaults to `help` when not specified.
 |emulator_command					|The command used to launch the emulator. Defaults to `bgb`.
 |rgbds_directory					|The path to the RGBDS directory. Optional if `rgbasm`, `rgblink` and `rgbfix` are already in the PATH.
+|sources							|A list of the source files added to every project. Source files paths are expressed relative to the makefile directory.
+|prerequisites						|A list of the prerequisites files added to every project. Prerequisites files paths are expressed relative to the makefile directory.
 
 ### Project variables
 
@@ -133,8 +135,8 @@ Here is a list of the variables available for each project.
 
 |Variable							|Description
 |:---								|:---
-|\<project\>_sources				|A list of the source files added to the project. Source files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_<configuration>_sources` is specified.
-|\<project\>_prerequisites			|A list of the prerequisites files added to the project. Prerequisites files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_<configuration>_prerequisites` is specified.
+|\<project\>_sources				|A list of the source files added to the project. Source files paths are expressed relative to the makefile directory.
+|\<project\>_prerequisites			|A list of the prerequisites files added to the project. Prerequisites files paths are expressed relative to the makefile directory.
 |\<project\>_description			|The description displayed by the `help` rule for the project.
 |\<project\>_compile_options		|A list of options passed to `rgbasm` during the compilation of any target in the project.
 |\<project\>_link_options			|A list of options passed to `rgblink` during compilation of any target in the project.
@@ -149,6 +151,8 @@ Here is a list of the variables available for each configuration.
 |Variable							|Description
 |:---								|:---
 |\<configuration\>_description		|The description displayed by the `help` rule.
+|\<configuration\>_sources			|A list of the source files added to the configuration. Source files paths are expressed relative to the makefile directory.
+|\<configuration\>_prerequisites	|A list of the prerequisites files added to the project. Prerequisites files paths are expressed relative to the makefile directory.
 |\<configuration\>_compile_options	|A list of options passed to `rgbasm` during the compilation of any target in the configuration.
 |\<configuration\>_link_options		|A list of options passed to `rgblink` during compilation of any target in the configuration.
 |\<configuration\>_fix_options		|A list of options passed to `rgbfix` during compilation of any target in the configuration.
@@ -159,8 +163,8 @@ Here is a list of the variables available for each target.
 
 |Variable										|Description
 |:---											|:---
-|\<project\>_\<configuration\>_sources			|A list of the source files added to the target. Source files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_sources` is specified.
-|\<project\>_\<configuration\>_prerequisites	|A list of the prerequisites files added to the target. Prerequisites files paths are expressed relative to the makefile directory. Mandatory, unless `<project>_prerequisites` is specified.
+|\<project\>_\<configuration\>_sources			|A list of the source files added to the target. Source files paths are expressed relative to the makefile directory
+|\<project\>_\<configuration\>_prerequisites	|A list of the prerequisites files added to the target. Prerequisites files paths are expressed relative to the makefile directory.
 |\<project\>_\<configuration\>_compile_options	|A list of options passed to `rgbasm` during the compilation of the target.
 |\<project\>_\<configuration\>_link_options		|A list of options passed to `rgblink` during compilation of the target.
 |\<project\>_\<configuration\>_fix_options		|A list of options passed to `rgbfix` during compilation of the target.

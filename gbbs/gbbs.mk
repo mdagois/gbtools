@@ -228,9 +228,9 @@ define target_variable_definitions_template
 # Variables for '$1_$2'
 ########################################
 
-$1_$2_sources_list = $$($1_sources) $$($2_sources) $$($1_$2_sources)
+$1_$2_sources_list = $(sources) $$($1_sources) $$($2_sources) $$($1_$2_sources)
 
-$1_$2_prerequisites_list = $$($1_prerequisites) $$($1_$2_prerequisites)
+$1_$2_prerequisites_list = $(prerequisites) $$($1_prerequisites) $$($2_prerequisites) $$($1_$2_prerequisites)
 
 $1_$2_detect_hardware = $$(if $$(filter --sgb-compatible -s --color-compatible -c,$$($1_$2_fix_options_list)),-DDETECT_HARDWARE,)
 $1_$2_old_licensee = $$(if $$(filter --sgb-compatible -s,$$($1_$2_fix_options_list)),--old-licensee 0x33,)

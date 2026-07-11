@@ -1,7 +1,7 @@
 projects = parallax template
 configurations = debug release
-default_target = all
 
+default_target = all
 build_directory = build
 
 debug_description = build with debug features and extra checks enabled
@@ -12,25 +12,29 @@ debug_compile_options = -DBUILD_DEBUG
 release_compile_options = -DBUILD_RELEASE
 
 padding_value = 199
-link_options = --pad $(padding_value) --dmg
+link_options = --pad $(padding_value)
 
 fix_options = --pad-value $(padding_value) --validate --mbc-type 0x1B --ram-size 0x02
 
 launch_options = --watch
+
+sources = ../prebuilt/gblib.rgbasm
 
 ########################################
 # parallax
 ########################################
 
 parallax_description = a sample to demonstrate a parallax effect
-parallax_sources = $(wildcard parallax/*.rgbasm ../prebuilt/gblib.rgbasm)
+parallax_sources = $(wildcard parallax/*.rgbasm)
+parallax_link_options = --dmg
 
 ########################################
 # template
 ########################################
 
 template_description = a template from which to build applications
-template_sources = $(wildcard template/*.rgbasm ../prebuilt/gblib.rgbasm)
+template_sources = $(wildcard template/*.rgbasm)
+template_fix_options = --color-only
 
 ########################################
 
