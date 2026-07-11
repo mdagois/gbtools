@@ -12,9 +12,9 @@ debug_compile_options = -DBUILD_DEBUG
 release_compile_options = -DBUILD_RELEASE
 
 padding_value = 199
-link_options = --pad $(padding_value)
+link_options = --pad $(padding_value) --dmg
 
-fix_options = --pad-value $(padding_value) --validate --color-only --mbc-type 0x1B --ram-size 0x02
+fix_options = --pad-value $(padding_value) --validate --mbc-type 0x1B --ram-size 0x02
 
 launch_options = --watch
 
