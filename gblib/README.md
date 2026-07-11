@@ -120,3 +120,4 @@ The library exposes macros to help you makes games covering the following aspect
 | gbCallFunctionFromTable | Call a function from a function table.<br>\1 = table, \2 = index memory location |
 | gbJumpToFunctionFromTable | Jump to a function from a function table.<br>\1 = table, \2 = index memory location |
 | gbToggleCpuSpeed | Toggle the CPU between single and double speed.<br>CGB only. |
+
