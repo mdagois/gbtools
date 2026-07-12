@@ -2473,12 +2473,6 @@ def SGB_BYTES_PER_PACKET            equ (16)
 
 def PADDING                         equ ($00)
 
-; Mask types
-def MASK_EN_CANCEL                  equ ($00)
-def MASK_EN_FREEZE                  equ ($01)
-def MASK_EN_BLACK                   equ ($02)
-def MASK_EN_COLOR0                  equ ($03)
-
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Functions
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2537,6 +2531,114 @@ db PADDING
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; MASK_EN macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def ATTR_BLK_CONTROL_NONE           equ ($00)
+def ATTR_BLK_CONTROL_INSIDE         equ ($01)
+def ATTR_BLK_CONTROL_BORDER         equ ($02)
+def ATTR_BLK_CONTROL_OUTSIDE        equ ($04)
+def ATTR_BLK_CONTROL_ALL            equ (ATTR_BLK_CONTROL_INSIDE | ATTR_BLK_CONTROL_BORDER | ATTR_BLK_CONTROL_OUTSIDE)
+def ATTR_BLK_OUTSIDE_PALETTE_0      equ (0 << 4)
+def ATTR_BLK_OUTSIDE_PALETTE_1      equ (1 << 4)
+def ATTR_BLK_OUTSIDE_PALETTE_2      equ (2 << 4)
+def ATTR_BLK_OUTSIDE_PALETTE_3      equ (3 << 4)
+def ATTR_BLK_BORDER_PALETTE_0       equ (0 << 2)
+def ATTR_BLK_BORDER_PALETTE_1       equ (1 << 2)
+def ATTR_BLK_BORDER_PALETTE_2       equ (2 << 2)
+def ATTR_BLK_BORDER_PALETTE_3       equ (3 << 2)
+def ATTR_BLK_INSIDE_PALETTE_0       equ (0 << 0)
+def ATTR_BLK_INSIDE_PALETTE_1       equ (1 << 0)
+def ATTR_BLK_INSIDE_PALETTE_2       equ (2 << 0)
+def ATTR_BLK_INSIDE_PALETTE_3       equ (3 << 0)
+
+def ATTR_LIN_VERTICAL               equ ($00)
+def ATTR_LIN_HORIZONTAL             equ ($80)
+def ATTR_LIN_PALETTE_0              equ (0 << 5)
+def ATTR_LIN_PALETTE_1              equ (1 << 5)
+def ATTR_LIN_PALETTE_2              equ (2 << 5)
+def ATTR_LIN_PALETTE_3              equ (3 << 5)
+
+def ATTR_DIV_VERTICAL               equ ($00)
+def ATTR_DIV_HORIZONTAL             equ ($40)
+def ATTR_DIV_BORDER_PALETTE_0       equ (0 << 4)
+def ATTR_DIV_BORDER_PALETTE_1       equ (1 << 4)
+def ATTR_DIV_BORDER_PALETTE_2       equ (2 << 4)
+def ATTR_DIV_BORDER_PALETTE_3       equ (3 << 4)
+def ATTR_DIV_TOP_LEFT_PALETTE_0     equ (0 << 2)
+def ATTR_DIV_TOP_LEFT_PALETTE_1     equ (1 << 2)
+def ATTR_DIV_TOP_LEFT_PALETTE_2     equ (2 << 2)
+def ATTR_DIV_TOP_LEFT_PALETTE_3     equ (3 << 2)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_0 equ (0 << 0)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_1 equ (1 << 0)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_2 equ (2 << 0)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_3 equ (3 << 0)
+
+def ATTR_CHR_WRITE_HORIZONTAL       equ ($00)
+def ATTR_CHR_WRITE_VERTICAL         equ ($01)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; SOUND macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Special ID.
+def SGB_EFFECT_RETRIGGER            equ ($00)
+def SGB_EFFECT_STOP                 equ ($80)
+def SGB_BGM_OFF                     equ ($00)
+
+; ID limits
+def SGB_EFFECT_A_MAX_ID             equ ($30)
+def SGB_EFFECT_B_MAX_ID             equ ($19)
+def SGB_EFFECT_BGM_MAX_ID           equ ($02)
+
+; Base parameters
+def SGB_FREQUENCY_SCALE_0           equ ($00)
+def SGB_FREQUENCY_SCALE_1           equ ($01)
+def SGB_FREQUENCY_SCALE_2           equ ($02)
+def SGB_FREQUENCY_SCALE_3           equ ($03)
+def SGB_FREQUENCY_VOLUME_0          equ ($00)
+def SGB_FREQUENCY_VOLUME_1          equ ($01)
+def SGB_FREQUENCY_VOLUME_2          equ ($02)
+def SGB_FREQUENCY_VOLUME_OFF        equ ($03)
+
+; Port A parameters
+def SGB_PORT_A_FREQUENCY_SCALE_0    equ (SGB_FREQUENCY_SCALE_0 << 0)
+def SGB_PORT_A_FREQUENCY_SCALE_1    equ (SGB_FREQUENCY_SCALE_1 << 0)
+def SGB_PORT_A_FREQUENCY_SCALE_2    equ (SGB_FREQUENCY_SCALE_2 << 0)
+def SGB_PORT_A_FREQUENCY_SCALE_3    equ (SGB_FREQUENCY_SCALE_3 << 0)
+def SGB_PORT_A_FREQUENCY_VOLUME_0   equ (SGB_FREQUENCY_VOLUME_0 << 2)
+def SGB_PORT_A_FREQUENCY_VOLUME_1   equ (SGB_FREQUENCY_VOLUME_1 << 2)
+def SGB_PORT_A_FREQUENCY_VOLUME_2   equ (SGB_FREQUENCY_VOLUME_2 << 2)
+def SGB_PORT_A_FREQUENCY_VOLUME_OFF equ (SGB_FREQUENCY_VOLUME_OFF << 2)
+
+; Port B parameters
+def SGB_PORT_B_FREQUENCY_SCALE_0    equ (SGB_FREQUENCY_SCALE_0 << 4)
+def SGB_PORT_B_FREQUENCY_SCALE_1    equ (SGB_FREQUENCY_SCALE_1 << 4)
+def SGB_PORT_B_FREQUENCY_SCALE_2    equ (SGB_FREQUENCY_SCALE_2 << 4)
+def SGB_PORT_B_FREQUENCY_SCALE_3    equ (SGB_FREQUENCY_SCALE_3 << 4)
+def SGB_PORT_B_FREQUENCY_VOLUME_0   equ (SGB_FREQUENCY_VOLUME_0 << 6)
+def SGB_PORT_B_FREQUENCY_VOLUME_1   equ (SGB_FREQUENCY_VOLUME_1 << 6)
+def SGB_PORT_B_FREQUENCY_VOLUME_2   equ (SGB_FREQUENCY_VOLUME_2 << 6)
+def SGB_PORT_B_FREQUENCY_VOLUME_OFF equ (SGB_FREQUENCY_VOLUME_OFF << 6)
+
+; Declare a SOUND command.
+; \1 = port A effect
+; \2 = port B effect
+; \3 = parameters
+; \4 = BGM
+macro SgbPacket_Sound
+db SGB_HEADER_SOUND
+db \1, \2, \3, \4
+ds 11, PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; MASK_EN macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Mask types
+def MASK_EN_CANCEL                  equ ($00)
+def MASK_EN_FREEZE                  equ ($01)
+def MASK_EN_BLACK                   equ ($02)
+def MASK_EN_COLOR0                  equ ($03)
 
 ; Declare a MASK_EN command of type \1.
 macro SgbPacket_MaskEn
