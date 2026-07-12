@@ -89,6 +89,9 @@
 | SgbPacket_Pal23 | Declare a PAL23 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
 | SgbPacket_Pal03 | Declare a PAL03 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
 | SgbPacket_Pal12 | Declare a PAL12 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_PalTrn | Declare a PAL_TRN command. |
+| SgbPacket_AttrTrn | Declare a ATTR_TRN command. |
+| SgbPacket_PalSet | Declare a PAL_SET command.<br>\1 = palette 0 index (0-511)<br>\2 = palette 1 index (0-511)<br>\3 = palette 2 index (0-511)<br>\4 = palette 3 index (0-511)<br>\5 = flags<br>\6 = attribute file number (0-44) (PAL_SET_FLAG_SET_ATTR must be in \5) |
 | SgbPacket_Sound | Declare a SOUND command.<br>\1 = port A effect<br>\2 = port B effect<br>\3 = parameters<br>\4 = BGM |
 | SgbPacket_MaskEn | Declare a MASK_EN command of type \1. |
 | SgbPacket_MaskEn_Cancel | Declare a MASK_EN command of type CANCEL. |

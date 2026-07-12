@@ -2471,7 +2471,7 @@ def SGB_HEADER_PAL_PRI          equ ((SGB_COMMAND_PAL_PRI << 3) | 1)
 
 def SGB_BYTES_PER_PACKET            equ (16)
 
-def PADDING                         equ ($00)
+def SGB_PADDING                     equ ($00)
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Functions
@@ -2499,7 +2499,7 @@ macro SgbPacket_Pal01
 db SGB_HEADER_PAL01
 incbin "\1", \2, 8
 incbin "\1", \3, 6
-db PADDING
+db SGB_PADDING
 
 ; Declare a PAL23 command loading from a .pal file \1 with
 ; byte offset \2 for the first palette and byte offset \3
@@ -2508,7 +2508,7 @@ macro SgbPacket_Pal23
 db SGB_HEADER_PAL23
 incbin "\1", \2, 8
 incbin "\1", \3, 6
-db PADDING
+db SGB_PADDING
 
 ; Declare a PAL03 command loading from a .pal file \1 with
 ; byte offset \2 for the first palette and byte offset \3
@@ -2517,7 +2517,7 @@ macro SgbPacket_Pal03
 db SGB_HEADER_PAL03
 incbin "\1", \2, 8
 incbin "\1", \3, 6
-db PADDING
+db SGB_PADDING
 
 ; Declare a PAL12 command loading from a .pal file \1 with
 ; byte offset \2 for the first palette and byte offset \3
@@ -2526,10 +2526,40 @@ macro SgbPacket_Pal12
 db SGB_HEADER_PAL12
 incbin "\1", \2, 8
 incbin "\1", \3, 6
-db PADDING
+db SGB_PADDING
+
+; Declare a PAL_TRN command.
+macro SgbPacket_PalTrn
+db SGB_HEADER_PAL_TRN
+ds 15, SGB_PADDING
+endm
+
+; Declare a ATTR_TRN command.
+macro SgbPacket_AttrTrn
+db SGB_HEADER_ATTR_TRN
+ds 15, SGB_PADDING
+endm
+
+def PAL_SET_FLAG_NONE               equ ($00)
+def PAL_SET_FLAG_CANCEL_MASK        equ (1 << 6)
+def PAL_SET_FLAG_SET_ATTR           equ (1 << 7)
+
+; Declare a PAL_SET command.
+; \1 = palette 0 index (0-511)
+; \2 = palette 1 index (0-511)
+; \3 = palette 2 index (0-511)
+; \4 = palette 3 index (0-511)
+; \5 = flags
+; \6 = attribute file number (0-44) (PAL_SET_FLAG_SET_ATTR must be in \5)
+macro SgbPacket_PalSet
+db SGB_HEADER_PAL_SET
+dw \1, \2, \3, \4 
+db \5 | \6
+ds 6, SGB_PADDING
+endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; MASK_EN macros
+; ATTR macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 def ATTR_BLK_CONTROL_NONE           equ ($00)
@@ -2627,7 +2657,7 @@ def SGB_PORT_B_FREQUENCY_VOLUME_OFF equ (SGB_FREQUENCY_VOLUME_OFF << 6)
 macro SgbPacket_Sound
 db SGB_HEADER_SOUND
 db \1, \2, \3, \4
-ds 11, PADDING
+ds 11, SGB_PADDING
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2643,7 +2673,7 @@ def MASK_EN_COLOR0                  equ ($03)
 ; Declare a MASK_EN command of type \1.
 macro SgbPacket_MaskEn
 db SGB_HEADER_MASK_EN, \1
-ds 14, PADDING
+ds 14, SGB_PADDING
 endm
 
 ; Declare a MASK_EN command of type CANCEL.
@@ -2673,7 +2703,7 @@ endm
 ; Declare a MLT_REQ command with joypad count \1.
 macro SgbPacket_MltReq
 db SGB_HEADER_MLT_REQ, \1
-ds 14, PADDING
+ds 14, SGB_PADDING
 endm
 
 ; Declare a MLT_REQ command with one joypad.
