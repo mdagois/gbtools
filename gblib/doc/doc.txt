@@ -85,6 +85,10 @@
 | gbLfsr8GetNextValue | Produce the next LFSR value from the value in (a).<br>(a) should not be zero, otherwise zero will be returned.<br>This macro will never produce zero if (a) is not zero. |
 | gbSgbInitializeDevice | Initialize the SGB device. |
 | gbSgbSendCommand | Send the SGB command at address \1. |
+| SgbPacket_Pal01 | Declare a PAL01 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_Pal23 | Declare a PAL23 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_Pal03 | Declare a PAL03 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_Pal12 | Declare a PAL12 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
 | SgbPacket_MaskEn | Declare a MASK_EN command of type \1. |
 | SgbPacket_MaskEn_Cancel | Declare a MASK_EN command of type CANCEL. |
 | SgbPacket_MaskEn_Freeze | Declare a MASK_EN command of type FREEZE. |

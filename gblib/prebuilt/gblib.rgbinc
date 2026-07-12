@@ -2496,6 +2496,46 @@ macro gbSgbSendCommand
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; PALXX macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a PAL01 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal01
+db SGB_HEADER_PAL01
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db PADDING
+
+; Declare a PAL23 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal23
+db SGB_HEADER_PAL23
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db PADDING
+
+; Declare a PAL03 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal03
+db SGB_HEADER_PAL03
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db PADDING
+
+; Declare a PAL12 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal12
+db SGB_HEADER_PAL12
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db PADDING
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; MASK_EN macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
