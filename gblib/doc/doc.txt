@@ -86,6 +86,14 @@
 | gbSgbInitializeDevice | Initialize the SGB device. |
 | gbSgbSendCommand | Send the SGB command at address \1. |
 | SgbPacket_MaskEn | Declare a MASK_EN command of type \1. |
+| SgbPacket_MaskEn_Cancel | Declare a MASK_EN command of type CANCEL. |
+| SgbPacket_MaskEn_Freeze | Declare a MASK_EN command of type FREEZE. |
+| SgbPacket_MaskEn_Black | Declare a MASK_EN command of type BLACK. |
+| SgbPacket_MaskEn_Color0 | Declare a MASK_EN command of type COLOR0 |
+| SgbPacket_MltReq | Declare a MLT_REQ command with joypad count \1. |
+| SgbPacket_MltReq_OneJoypad | Declare a MLT_REQ command with one joypad. |
+| SgbPacket_MltReq_TwoJoypad | Declare a MLT_REQ command with two joypads. |
+| SgbPacket_MltReq_FourJoypad | Declare a MLT_REQ command with four joypads. |
 | gbClearMemory | Clear a memory region to zero.<br>\1 = start address<br>\2 = size |
 | gbSetMemory | Set a memory region to a given value.<br>\1 = start address<br>\2 = size<br>\3 = value |
 | gbCopyMemory | Copy memory from one address to another.<br>\1 = destination<br>\2 = source<br>\3 = size |

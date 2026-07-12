@@ -39,10 +39,10 @@ sgb_packets_core_init_end:
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 sgb_packet_freeze:
-    SgbPacket_MaskEn MASK_EN_FREEZE
+    SgbPacket_MaskEn_Freeze
 
 sgb_packet_cancel:
-    SgbPacket_MaskEn MASK_EN_CANCEL
+    SgbPacket_MaskEn_Cancel
 
 _gbSgbInitializeDevice::
     WaitFrames 60
