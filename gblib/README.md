@@ -16,6 +16,8 @@ The library exposes macros to help you makes games covering the following aspect
 * 16-bit integer and 32-bit fixed math
 * Memory and bank management
 * Jump tables facilities
+* Serial functions
+* SGB functions
 * Debug facilities
 
 ## Documentation
