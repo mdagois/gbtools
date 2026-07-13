@@ -3625,17 +3625,17 @@ _gbSgbSendCommand:
     srl a
 
     ; Check whether the command is using a 4KB payload.
-    cp a, SGB_COMMAND_SOU_TRN
-    jr z, .4KB_command
     cp a, SGB_COMMAND_PAL_TRN
-    jr z, .4KB_command
-    cp a, SGB_COMMAND_DATA_TRN
     jr z, .4KB_command
     cp a, SGB_COMMAND_CHR_TRN
     jr z, .4KB_command
     cp a, SGB_COMMAND_PCT_TRN
     jr z, .4KB_command
     cp a, SGB_COMMAND_ATTR_TRN
+    jr z, .4KB_command
+    cp a, SGB_COMMAND_SOU_TRN
+    jr z, .4KB_command
+    cp a, SGB_COMMAND_DATA_TRN
     jr z, .4KB_command
 
     ; Return if not a 4KB command.
