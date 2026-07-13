@@ -1,26 +1,18 @@
 # Game Boy Libary
 
-A library to write Game Boy games in assembly using the  [RGBDS](https://github.com/gbdev/rgbds) toolchain.
+A library to write Game Boy games in assembly using the [RGBDS](https://github.com/gbdev/rgbds) toolchain.
 
 ## Usage
 
-* Include `gblib.rgbinc` in any file using the library.
-* Compile and link `gblib.rgbasm` into your ROM.
-
-## Features
-
-The library exposes macros to help you makes games covering the following aspects.
-
-* Input
-* DMA transfers
-* 16-bit integer and 32-bit fixed math
-* Memory and bank management
-* Jump tables facilities
-* Serial functions
-* SGB functions
-* Debug facilities
+The library consists of two files: `gblib.rgbinc` and `gblib.rgbasm`.
+The `gblib.rgbinc` file is a header containing macros and definitions.
+It must be included in any file using library.
+The `gblib.rgbasm` file is an implementation file that must be compiled and linked into your ROM.
 
 ## Documentation
+
+The library exposes macros covering many development aspects, such as input, DMA, 16-integers, 32-bit fixed math, memory, banks, serial communication, hardware models, or debug.
+Below is a list of the available macros.
 
 | Function Name | Description |
 | :--- | :--- |
