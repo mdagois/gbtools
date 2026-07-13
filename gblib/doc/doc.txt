@@ -90,8 +90,11 @@
 | SgbPacket_Pal03 | Declare a PAL03 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
 | SgbPacket_Pal12 | Declare a PAL12 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
 | SgbPacket_PalTrn | Declare a PAL_TRN command. |
-| SgbPacket_AttrTrn | Declare a ATTR_TRN command. |
 | SgbPacket_PalSet | Declare a PAL_SET command.<br>\1 = palette 0 index (0-511)<br>\2 = palette 1 index (0-511)<br>\3 = palette 2 index (0-511)<br>\4 = palette 3 index (0-511)<br>\5 = flags<br>\6 = attribute file number (0-44) (PAL_SET_FLAG_SET_ATTR must be in \5) |
+| SgbPacket_AttrTrn | Declare a ATTR_TRN command. |
+| SgbPacket_AttrSet | Declare a ATTR_SET command.<br>\1 = flags |
+| SgbPacket_ChrTrn | Declare a CHR_TRN command.<br>\1 = SNES VRAM tile block number (0 for tiles $00 to $7F, or 1 for tiles $80 to $FF) |
+| SgbPacket_PctTrn | Declare a PCT_TRN command. |
 | SgbPacket_Sound | Declare a SOUND command.<br>\1 = port A effect<br>\2 = port B effect<br>\3 = parameters<br>\4 = BGM |
 | SgbPacket_MltReq | Declare a MLT_REQ command with joypad count \1. |
 | SgbPacket_MltReq_OneJoypad | Declare a MLT_REQ command with one joypad. |

@@ -2539,12 +2539,6 @@ db SGB_HEADER_PAL_TRN
 ds 15, SGB_PADDING
 endm
 
-; Declare a ATTR_TRN command.
-macro SgbPacket_AttrTrn
-db SGB_HEADER_ATTR_TRN
-ds 15, SGB_PADDING
-endm
-
 ; PAL_SET flags.
 def PAL_SET_FLAG_NONE               equ ($00)
 def PAL_SET_FLAG_CANCEL_MASK        equ (1 << 6)
@@ -2565,7 +2559,7 @@ ds 6, SGB_PADDING
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; ATTR flags
+; ATTR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 def ATTR_BLK_CONTROL_NONE           equ ($00)
@@ -2610,6 +2604,40 @@ def ATTR_DIV_BOTTOM_RIGHT_PALETTE_3 equ (3 << 0)
 
 def ATTR_CHR_WRITE_HORIZONTAL       equ ($00)
 def ATTR_CHR_WRITE_VERTICAL         equ ($01)
+
+; Declare a ATTR_TRN command.
+macro SgbPacket_AttrTrn
+db SGB_HEADER_ATTR_TRN
+ds 15, SGB_PADDING
+endm
+
+; ATTR_SET flags.
+def ATTR_SET_FLAG_NONE              equ ($00)
+def ATTR_SET_FLAG_CANCEL_MASK       equ (1 << 6)
+
+; Declare a ATTR_SET command.
+; \1 = flags
+macro SgbPacket_AttrSet
+db ATTR_SET, \1
+ds 14, SGB_PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Borders
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a CHR_TRN command.
+; \1 = SNES VRAM tile block number (0 for tiles $00 to $7F, or 1 for tiles $80 to $FF)
+macro SgbPacket_ChrTrn
+db SGB_HEADER_CHR_TRN, \1
+ds 14, SGB_PADDING
+endm
+
+; Declare a PCT_TRN command.
+macro SgbPacket_PctTrn
+db SGB_HEADER_PCT_TRN
+ds 15, SGB_PADDING
+endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; SOUND macros
@@ -2678,17 +2706,17 @@ endm
 
 ; Declare a MLT_REQ command with one joypad.
 macro SgbPacket_MltReq_OneJoypad
-	SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
+    SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
 endm
 
 ; Declare a MLT_REQ command with two joypads.
 macro SgbPacket_MltReq_TwoJoypad
-	SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
+    SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
 endm
 
 ; Declare a MLT_REQ command with four joypads.
 macro SgbPacket_MltReq_FourJoypad
-	SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
+    SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -2743,22 +2771,22 @@ endm
 
 ; Declare a MASK_EN command of type CANCEL.
 macro SgbPacket_MaskEn_Cancel
-	SgbPacket_MaskEn MASK_EN_CANCEL
+    SgbPacket_MaskEn MASK_EN_CANCEL
 endm
 
 ; Declare a MASK_EN command of type FREEZE.
 macro SgbPacket_MaskEn_Freeze
-	SgbPacket_MaskEn MASK_EN_FREEZE
+    SgbPacket_MaskEn MASK_EN_FREEZE
 endm
 
 ; Declare a MASK_EN command of type BLACK.
 macro SgbPacket_MaskEn_Black
-	SgbPacket_MaskEn MASK_EN_BLACK
+    SgbPacket_MaskEn MASK_EN_BLACK
 endm
 
 ; Declare a MASK_EN command of type COLOR0.
 macro SgbPacket_MaskEn_Color0
-	SgbPacket_MaskEn MASK_EN_COLOR0
+    SgbPacket_MaskEn MASK_EN_COLOR0
 endm
 
 endc

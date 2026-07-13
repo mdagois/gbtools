@@ -107,7 +107,29 @@ The library exposes macros to help you makes games covering the following aspect
 | gbLfsr8GetNextValue | Produce the next LFSR value from the value in (a).<br>(a) should not be zero, otherwise zero will be returned.<br>This macro will never produce zero if (a) is not zero. |
 | gbSgbInitializeDevice | Initialize the SGB device. |
 | gbSgbSendCommand | Send the SGB command at address \1. |
+| SgbPacket_Pal01 | Declare a PAL01 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_Pal23 | Declare a PAL23 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_Pal03 | Declare a PAL03 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_Pal12 | Declare a PAL12 command loading from a .pal file \1 with<br>byte offset \2 for the first palette and byte offset \3<br>for the second palette. |
+| SgbPacket_PalTrn | Declare a PAL_TRN command. |
+| SgbPacket_PalSet | Declare a PAL_SET command.<br>\1 = palette 0 index (0-511)<br>\2 = palette 1 index (0-511)<br>\3 = palette 2 index (0-511)<br>\4 = palette 3 index (0-511)<br>\5 = flags<br>\6 = attribute file number (0-44) (PAL_SET_FLAG_SET_ATTR must be in \5) |
+| SgbPacket_AttrTrn | Declare a ATTR_TRN command. |
+| SgbPacket_AttrSet | Declare a ATTR_SET command.<br>\1 = flags |
+| SgbPacket_ChrTrn | Declare a CHR_TRN command.<br>\1 = SNES VRAM tile block number (0 for tiles $00 to $7F, or 1 for tiles $80 to $FF) |
+| SgbPacket_PctTrn | Declare a PCT_TRN command. |
+| SgbPacket_Sound | Declare a SOUND command.<br>\1 = port A effect<br>\2 = port B effect<br>\3 = parameters<br>\4 = BGM |
+| SgbPacket_MltReq | Declare a MLT_REQ command with joypad count \1. |
+| SgbPacket_MltReq_OneJoypad | Declare a MLT_REQ command with one joypad. |
+| SgbPacket_MltReq_TwoJoypad | Declare a MLT_REQ command with two joypads. |
+| SgbPacket_MltReq_FourJoypad | Declare a MLT_REQ command with four joypads. |
+| SgbPacket_AtrcEn | Declare a ATRC_EN command.<br>\1 = flags |
+| SgbPacket_IconEn | Declare a ICON_EN command.<br>\1 = flags |
+| SgbPacket_PalPri | Declare a PAL_PRI command.<br>\1 = flags |
 | SgbPacket_MaskEn | Declare a MASK_EN command of type \1. |
+| SgbPacket_MaskEn_Cancel | Declare a MASK_EN command of type CANCEL. |
+| SgbPacket_MaskEn_Freeze | Declare a MASK_EN command of type FREEZE. |
+| SgbPacket_MaskEn_Black | Declare a MASK_EN command of type BLACK. |
+| SgbPacket_MaskEn_Color0 | Declare a MASK_EN command of type COLOR0. |
 | gbClearMemory | Clear a memory region to zero.<br>\1 = start address<br>\2 = size |
 | gbSetMemory | Set a memory region to a given value.<br>\1 = start address<br>\2 = size<br>\3 = value |
 | gbCopyMemory | Copy memory from one address to another.<br>\1 = destination<br>\2 = source<br>\3 = size |

@@ -149,12 +149,6 @@ db SGB_HEADER_PAL_TRN
 ds 15, SGB_PADDING
 endm
 
-; Declare a ATTR_TRN command.
-macro SgbPacket_AttrTrn
-db SGB_HEADER_ATTR_TRN
-ds 15, SGB_PADDING
-endm
-
 ; PAL_SET flags.
 def PAL_SET_FLAG_NONE               equ ($00)
 def PAL_SET_FLAG_CANCEL_MASK        equ (1 << 6)
@@ -175,7 +169,7 @@ ds 6, SGB_PADDING
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; ATTR flags
+; ATTR
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 def ATTR_BLK_CONTROL_NONE           equ ($00)
@@ -220,6 +214,40 @@ def ATTR_DIV_BOTTOM_RIGHT_PALETTE_3 equ (3 << 0)
 
 def ATTR_CHR_WRITE_HORIZONTAL       equ ($00)
 def ATTR_CHR_WRITE_VERTICAL         equ ($01)
+
+; Declare a ATTR_TRN command.
+macro SgbPacket_AttrTrn
+db SGB_HEADER_ATTR_TRN
+ds 15, SGB_PADDING
+endm
+
+; ATTR_SET flags.
+def ATTR_SET_FLAG_NONE              equ ($00)
+def ATTR_SET_FLAG_CANCEL_MASK       equ (1 << 6)
+
+; Declare a ATTR_SET command.
+; \1 = flags
+macro SgbPacket_AttrSet
+db ATTR_SET, \1
+ds 14, SGB_PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Borders
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a CHR_TRN command.
+; \1 = SNES VRAM tile block number (0 for tiles $00 to $7F, or 1 for tiles $80 to $FF)
+macro SgbPacket_ChrTrn
+db SGB_HEADER_CHR_TRN, \1
+ds 14, SGB_PADDING
+endm
+
+; Declare a PCT_TRN command.
+macro SgbPacket_PctTrn
+db SGB_HEADER_PCT_TRN
+ds 15, SGB_PADDING
+endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; SOUND macros
