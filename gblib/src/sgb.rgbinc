@@ -151,6 +151,7 @@ db SGB_HEADER_ATTR_TRN
 ds 15, SGB_PADDING
 endm
 
+; PAL_SET flags.
 def PAL_SET_FLAG_NONE               equ ($00)
 def PAL_SET_FLAG_CANCEL_MASK        equ (1 << 6)
 def PAL_SET_FLAG_SET_ATTR           equ (1 << 7)
@@ -170,7 +171,7 @@ ds 6, SGB_PADDING
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; ATTR macros
+; ATTR flags
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 def ATTR_BLK_CONTROL_NONE           equ ($00)
@@ -225,12 +226,12 @@ def SGB_EFFECT_RETRIGGER            equ ($00)
 def SGB_EFFECT_STOP                 equ ($80)
 def SGB_BGM_OFF                     equ ($00)
 
-; ID limits
+; ID limits.
 def SGB_EFFECT_A_MAX_ID             equ ($30)
 def SGB_EFFECT_B_MAX_ID             equ ($19)
 def SGB_EFFECT_BGM_MAX_ID           equ ($02)
 
-; Base parameters
+; Base parameters.
 def SGB_FREQUENCY_SCALE_0           equ ($00)
 def SGB_FREQUENCY_SCALE_1           equ ($01)
 def SGB_FREQUENCY_SCALE_2           equ ($02)
@@ -240,7 +241,7 @@ def SGB_FREQUENCY_VOLUME_1          equ ($01)
 def SGB_FREQUENCY_VOLUME_2          equ ($02)
 def SGB_FREQUENCY_VOLUME_OFF        equ ($03)
 
-; Port A parameters
+; Port A parameters.
 def SGB_PORT_A_FREQUENCY_SCALE_0    equ (SGB_FREQUENCY_SCALE_0 << 0)
 def SGB_PORT_A_FREQUENCY_SCALE_1    equ (SGB_FREQUENCY_SCALE_1 << 0)
 def SGB_PORT_A_FREQUENCY_SCALE_2    equ (SGB_FREQUENCY_SCALE_2 << 0)
@@ -250,7 +251,7 @@ def SGB_PORT_A_FREQUENCY_VOLUME_1   equ (SGB_FREQUENCY_VOLUME_1 << 2)
 def SGB_PORT_A_FREQUENCY_VOLUME_2   equ (SGB_FREQUENCY_VOLUME_2 << 2)
 def SGB_PORT_A_FREQUENCY_VOLUME_OFF equ (SGB_FREQUENCY_VOLUME_OFF << 2)
 
-; Port B parameters
+; Port B parameters.
 def SGB_PORT_B_FREQUENCY_SCALE_0    equ (SGB_FREQUENCY_SCALE_0 << 4)
 def SGB_PORT_B_FREQUENCY_SCALE_1    equ (SGB_FREQUENCY_SCALE_1 << 4)
 def SGB_PORT_B_FREQUENCY_SCALE_2    equ (SGB_FREQUENCY_SCALE_2 << 4)
@@ -272,10 +273,58 @@ ds 11, SGB_PADDING
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; MASK_EN macros
+; MLT_REQ macros
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-; Mask types
+; Declare a MLT_REQ command with joypad count \1.
+macro SgbPacket_MltReq
+db SGB_HEADER_MLT_REQ, \1
+ds 14, SGB_PADDING
+endm
+
+; Declare a MLT_REQ command with one joypad.
+macro SgbPacket_MltReq_OneJoypad
+SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
+endm
+
+; Declare a MLT_REQ command with two joypads.
+macro SgbPacket_MltReq_TwoJoypad
+SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
+endm
+
+; Declare a MLT_REQ command with four joypads.
+macro SgbPacket_MltReq_FourJoypad
+SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Miscellaneous macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; ATRC_EN flags.
+def ATRC_EN_ENABLE                  equ ($00)
+def ATRC_EN_DISABLE                 equ ($01)
+
+; Declare a ATRC_EN command.
+; \1 = flags
+macro SgbPacket_AtrcEn
+db SGB_HEADER_ATRC_EN, \1
+ds 14, SGB_PADDING
+endm
+
+; ICON_EN flags.
+def ICON_EN_DISABLE_PALETTE_MENU    equ ($01)
+def ICON_EN_DISABLE_CONTROLLER_MENU equ ($02)
+def ICON_EN_DISABLE_COMMANDS        equ ($04)
+
+; Declare a ICON_EN command.
+; \1 = flags
+macro SgbPacket_IconEn
+db SGB_HEADER_ICON_EN, \1
+ds 14, SGB_PADDING
+endm
+
+; Mask types.
 def MASK_EN_CANCEL                  equ ($00)
 def MASK_EN_FREEZE                  equ ($01)
 def MASK_EN_BLACK                   equ ($02)
@@ -302,34 +351,9 @@ macro SgbPacket_MaskEn_Black
 SgbPacket_MaskEn MASK_EN_BLACK
 endm
 
-; Declare a MASK_EN command of type COLOR0
+; Declare a MASK_EN command of type COLOR0.
 macro SgbPacket_MaskEn_Color0
 SgbPacket_MaskEn MASK_EN_COLOR0
-endm
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; MLT_REQ macros
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Declare a MLT_REQ command with joypad count \1.
-macro SgbPacket_MltReq
-db SGB_HEADER_MLT_REQ, \1
-ds 14, SGB_PADDING
-endm
-
-; Declare a MLT_REQ command with one joypad.
-macro SgbPacket_MltReq_OneJoypad
-SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
-endm
-
-; Declare a MLT_REQ command with two joypads.
-macro SgbPacket_MltReq_TwoJoypad
-SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
-endm
-
-; Declare a MLT_REQ command with four joypads.
-macro SgbPacket_MltReq_FourJoypad
-SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
 endm
 
 endc
