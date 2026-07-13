@@ -13,9 +13,17 @@ Likewise, the [stb](https://github.com/nothings/stb) library, available [here](g
 
 [GBBS](gbbs) is a build system built over `make` and the RGBDS toolchain.
 
+## Game Boy Library
+
+[GBLIB](gblib) is a library that serve as a base to build games for Game Boy.
+
 ## Data Converter
 
 [CONV](conv) is a set of tools to convert PNG files into graphics and collision data.
+
+## Game Boy Printer Simulator
+
+The [Game Boy Printer Simulator](printer) is a Game Boy Color ROM that acts as a Game Boy Printer.
 
 ## Third party
 

@@ -1,0 +1,403 @@
+if !def(GB_SGB_RGBINC)
+def GB_SGB_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Command types
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def SGB_COMMAND_PAL01           equ ($00)
+def SGB_COMMAND_PAL23           equ ($01)
+def SGB_COMMAND_PAL03           equ ($02)
+def SGB_COMMAND_PAL12           equ ($03)
+def SGB_COMMAND_ATTR_BLK        equ ($04)
+def SGB_COMMAND_ATTR_LIN        equ ($05)
+def SGB_COMMAND_ATTR_DIV        equ ($06)
+def SGB_COMMAND_ATTR_CHR        equ ($07)
+def SGB_COMMAND_SOUND           equ ($08)
+def SGB_COMMAND_SOU_TRN         equ ($09)
+def SGB_COMMAND_PAL_SET         equ ($0A)
+def SGB_COMMAND_PAL_TRN         equ ($0B)
+def SGB_COMMAND_ATRC_EN         equ ($0C)
+def SGB_COMMAND_ICON_EN         equ ($0E)
+def SGB_COMMAND_DATA_SND        equ ($0F)
+def SGB_COMMAND_DATA_TRN        equ ($10)
+def SGB_COMMAND_MLT_REQ         equ ($11)
+def SGB_COMMAND_JUMP            equ ($12)
+def SGB_COMMAND_CHR_TRN         equ ($13)
+def SGB_COMMAND_PCT_TRN         equ ($14)
+def SGB_COMMAND_ATTR_TRN        equ ($15)
+def SGB_COMMAND_ATTR_SET        equ ($16)
+def SGB_COMMAND_MASK_EN         equ ($17)
+def SGB_COMMAND_PAL_PRI         equ ($19)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Command headers
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def SGB_HEADER_PAL01            equ ((SGB_COMMAND_PAL01 << 3) | 1)
+def SGB_HEADER_PAL23            equ ((SGB_COMMAND_PAL23 << 3) | 1)
+def SGB_HEADER_PAL03            equ ((SGB_COMMAND_PAL03 << 3) | 1)
+def SGB_HEADER_PAL12            equ ((SGB_COMMAND_PAL12 << 3) | 1)
+def SGB_HEADER_ATTR_BLK_1       equ ((SGB_COMMAND_ATTR_BLK << 3) | 1)
+def SGB_HEADER_ATTR_BLK_2       equ ((SGB_COMMAND_ATTR_BLK << 3) | 2)
+def SGB_HEADER_ATTR_BLK_3       equ ((SGB_COMMAND_ATTR_BLK << 3) | 3)
+def SGB_HEADER_ATTR_BLK_4       equ ((SGB_COMMAND_ATTR_BLK << 3) | 4)
+def SGB_HEADER_ATTR_BLK_5       equ ((SGB_COMMAND_ATTR_BLK << 3) | 5)
+def SGB_HEADER_ATTR_BLK_6       equ ((SGB_COMMAND_ATTR_BLK << 3) | 6)
+def SGB_HEADER_ATTR_BLK_7       equ ((SGB_COMMAND_ATTR_BLK << 3) | 7)
+def SGB_HEADER_ATTR_LIN_1       equ ((SGB_COMMAND_ATTR_LIN << 3) | 1)
+def SGB_HEADER_ATTR_LIN_2       equ ((SGB_COMMAND_ATTR_LIN << 3) | 2)
+def SGB_HEADER_ATTR_LIN_3       equ ((SGB_COMMAND_ATTR_LIN << 3) | 3)
+def SGB_HEADER_ATTR_LIN_4       equ ((SGB_COMMAND_ATTR_LIN << 3) | 4)
+def SGB_HEADER_ATTR_LIN_5       equ ((SGB_COMMAND_ATTR_LIN << 3) | 5)
+def SGB_HEADER_ATTR_LIN_6       equ ((SGB_COMMAND_ATTR_LIN << 3) | 6)
+def SGB_HEADER_ATTR_LIN_7       equ ((SGB_COMMAND_ATTR_LIN << 3) | 7)
+def SGB_HEADER_ATTR_DIV         equ ((SGB_COMMAND_ATTR_DIV << 3) | 1)
+def SGB_HEADER_ATTR_CHR_1       equ ((SGB_COMMAND_ATTR_CHR << 3) | 1)
+def SGB_HEADER_ATTR_CHR_2       equ ((SGB_COMMAND_ATTR_CHR << 3) | 2)
+def SGB_HEADER_ATTR_CHR_3       equ ((SGB_COMMAND_ATTR_CHR << 3) | 3)
+def SGB_HEADER_ATTR_CHR_4       equ ((SGB_COMMAND_ATTR_CHR << 3) | 4)
+def SGB_HEADER_ATTR_CHR_5       equ ((SGB_COMMAND_ATTR_CHR << 3) | 5)
+def SGB_HEADER_ATTR_CHR_6       equ ((SGB_COMMAND_ATTR_CHR << 3) | 6)
+def SGB_HEADER_SOUND            equ ((SGB_COMMAND_SOUND << 3) | 1)
+def SGB_HEADER_SOU_TRN          equ ((SGB_COMMAND_SOU_TRN << 3) | 1)
+def SGB_HEADER_PAL_SET          equ ((SGB_COMMAND_PAL_SET << 3) | 1)
+def SGB_HEADER_PAL_TRN          equ ((SGB_COMMAND_PAL_TRN << 3) | 1)
+def SGB_HEADER_ATRC_EN          equ ((SGB_COMMAND_ATRC_EN << 3) | 1)
+def SGB_HEADER_ICON_EN          equ ((SGB_COMMAND_ICON_EN << 3) | 1)
+def SGB_HEADER_DATA_SND         equ ((SGB_COMMAND_DATA_SND << 3) | 1)
+def SGB_HEADER_DATA_TRN         equ ((SGB_COMMAND_DATA_TRN << 3) | 1)
+def SGB_HEADER_MLT_REQ          equ ((SGB_COMMAND_MLT_REQ << 3) | 1)
+def SGB_HEADER_JUMP             equ ((SGB_COMMAND_JUMP << 3) | 1)
+def SGB_HEADER_CHR_TRN          equ ((SGB_COMMAND_CHR_TRN << 3) | 1)
+def SGB_HEADER_PCT_TRN          equ ((SGB_COMMAND_PCT_TRN << 3) | 1)
+def SGB_HEADER_ATTR_TRN         equ ((SGB_COMMAND_ATTR_TRN << 3) | 1)
+def SGB_HEADER_ATTR_SET         equ ((SGB_COMMAND_ATTR_SET << 3) | 1)
+def SGB_HEADER_MASK_EN          equ ((SGB_COMMAND_MASK_EN << 3) | 1)
+def SGB_HEADER_PAL_PRI          equ ((SGB_COMMAND_PAL_PRI << 3) | 1)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Constants
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def SGB_BYTES_PER_PACKET            equ (16)
+
+def SGB_PADDING                     equ ($00)
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Functions
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Initialize the SGB device.
+macro gbSgbInitializeDevice
+    call _gbSgbInitializeDevice
+endm
+
+; Send the SGB command at address \1.
+macro gbSgbSendCommand
+    ld hl, \1
+    call _gbSgbSendCommand
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; PALXX macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a PAL01 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal01
+db SGB_HEADER_PAL01
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db SGB_PADDING
+endm
+
+; Declare a PAL23 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal23
+db SGB_HEADER_PAL23
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db SGB_PADDING
+endm
+
+; Declare a PAL03 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal03
+db SGB_HEADER_PAL03
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db SGB_PADDING
+endm
+
+; Declare a PAL12 command loading from a .pal file \1 with
+; byte offset \2 for the first palette and byte offset \3
+; for the second palette.
+macro SgbPacket_Pal12
+db SGB_HEADER_PAL12
+incbin "\1", \2, 8
+incbin "\1", \3, 6
+db SGB_PADDING
+endm
+
+; Declare a PAL_TRN command.
+macro SgbPacket_PalTrn
+db SGB_HEADER_PAL_TRN
+ds 15, SGB_PADDING
+endm
+
+; PAL_SET flags.
+def PAL_SET_FLAG_NONE               equ ($00)
+def PAL_SET_FLAG_CANCEL_MASK        equ (1 << 6)
+def PAL_SET_FLAG_SET_ATTR           equ (1 << 7)
+
+; Declare a PAL_SET command.
+; \1 = palette 0 index (0-511)
+; \2 = palette 1 index (0-511)
+; \3 = palette 2 index (0-511)
+; \4 = palette 3 index (0-511)
+; \5 = flags
+; \6 = attribute file number (0-44) (PAL_SET_FLAG_SET_ATTR must be in \5)
+macro SgbPacket_PalSet
+db SGB_HEADER_PAL_SET
+dw \1, \2, \3, \4 
+db \5 | \6
+ds 6, SGB_PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; ATTR
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+def ATTR_BLK_CONTROL_NONE           equ ($00)
+def ATTR_BLK_CONTROL_INSIDE         equ ($01)
+def ATTR_BLK_CONTROL_BORDER         equ ($02)
+def ATTR_BLK_CONTROL_OUTSIDE        equ ($04)
+def ATTR_BLK_CONTROL_ALL            equ (ATTR_BLK_CONTROL_INSIDE | ATTR_BLK_CONTROL_BORDER | ATTR_BLK_CONTROL_OUTSIDE)
+def ATTR_BLK_OUTSIDE_PALETTE_0      equ (0 << 4)
+def ATTR_BLK_OUTSIDE_PALETTE_1      equ (1 << 4)
+def ATTR_BLK_OUTSIDE_PALETTE_2      equ (2 << 4)
+def ATTR_BLK_OUTSIDE_PALETTE_3      equ (3 << 4)
+def ATTR_BLK_BORDER_PALETTE_0       equ (0 << 2)
+def ATTR_BLK_BORDER_PALETTE_1       equ (1 << 2)
+def ATTR_BLK_BORDER_PALETTE_2       equ (2 << 2)
+def ATTR_BLK_BORDER_PALETTE_3       equ (3 << 2)
+def ATTR_BLK_INSIDE_PALETTE_0       equ (0 << 0)
+def ATTR_BLK_INSIDE_PALETTE_1       equ (1 << 0)
+def ATTR_BLK_INSIDE_PALETTE_2       equ (2 << 0)
+def ATTR_BLK_INSIDE_PALETTE_3       equ (3 << 0)
+
+def ATTR_LIN_VERTICAL               equ ($00)
+def ATTR_LIN_HORIZONTAL             equ ($80)
+def ATTR_LIN_PALETTE_0              equ (0 << 5)
+def ATTR_LIN_PALETTE_1              equ (1 << 5)
+def ATTR_LIN_PALETTE_2              equ (2 << 5)
+def ATTR_LIN_PALETTE_3              equ (3 << 5)
+
+def ATTR_DIV_VERTICAL               equ ($00)
+def ATTR_DIV_HORIZONTAL             equ ($40)
+def ATTR_DIV_BORDER_PALETTE_0       equ (0 << 4)
+def ATTR_DIV_BORDER_PALETTE_1       equ (1 << 4)
+def ATTR_DIV_BORDER_PALETTE_2       equ (2 << 4)
+def ATTR_DIV_BORDER_PALETTE_3       equ (3 << 4)
+def ATTR_DIV_TOP_LEFT_PALETTE_0     equ (0 << 2)
+def ATTR_DIV_TOP_LEFT_PALETTE_1     equ (1 << 2)
+def ATTR_DIV_TOP_LEFT_PALETTE_2     equ (2 << 2)
+def ATTR_DIV_TOP_LEFT_PALETTE_3     equ (3 << 2)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_0 equ (0 << 0)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_1 equ (1 << 0)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_2 equ (2 << 0)
+def ATTR_DIV_BOTTOM_RIGHT_PALETTE_3 equ (3 << 0)
+
+def ATTR_CHR_WRITE_HORIZONTAL       equ ($00)
+def ATTR_CHR_WRITE_VERTICAL         equ ($01)
+
+; Declare a ATTR_TRN command.
+macro SgbPacket_AttrTrn
+db SGB_HEADER_ATTR_TRN
+ds 15, SGB_PADDING
+endm
+
+; ATTR_SET flags.
+def ATTR_SET_FLAG_NONE              equ ($00)
+def ATTR_SET_FLAG_CANCEL_MASK       equ (1 << 6)
+
+; Declare a ATTR_SET command.
+; \1 = flags
+macro SgbPacket_AttrSet
+db ATTR_SET, \1
+ds 14, SGB_PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Borders
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a CHR_TRN command.
+; \1 = SNES VRAM tile block number (0 for tiles $00 to $7F, or 1 for tiles $80 to $FF)
+macro SgbPacket_ChrTrn
+db SGB_HEADER_CHR_TRN, \1
+ds 14, SGB_PADDING
+endm
+
+; Declare a PCT_TRN command.
+macro SgbPacket_PctTrn
+db SGB_HEADER_PCT_TRN
+ds 15, SGB_PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; SOUND macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Special ID.
+def SGB_EFFECT_RETRIGGER            equ ($00)
+def SGB_EFFECT_STOP                 equ ($80)
+def SGB_BGM_OFF                     equ ($00)
+
+; ID limits.
+def SGB_EFFECT_A_MAX_ID             equ ($30)
+def SGB_EFFECT_B_MAX_ID             equ ($19)
+def SGB_EFFECT_BGM_MAX_ID           equ ($02)
+
+; Base parameters.
+def SGB_FREQUENCY_SCALE_0           equ ($00)
+def SGB_FREQUENCY_SCALE_1           equ ($01)
+def SGB_FREQUENCY_SCALE_2           equ ($02)
+def SGB_FREQUENCY_SCALE_3           equ ($03)
+def SGB_FREQUENCY_VOLUME_0          equ ($00)
+def SGB_FREQUENCY_VOLUME_1          equ ($01)
+def SGB_FREQUENCY_VOLUME_2          equ ($02)
+def SGB_FREQUENCY_VOLUME_OFF        equ ($03)
+
+; Port A parameters.
+def SGB_PORT_A_FREQUENCY_SCALE_0    equ (SGB_FREQUENCY_SCALE_0 << 0)
+def SGB_PORT_A_FREQUENCY_SCALE_1    equ (SGB_FREQUENCY_SCALE_1 << 0)
+def SGB_PORT_A_FREQUENCY_SCALE_2    equ (SGB_FREQUENCY_SCALE_2 << 0)
+def SGB_PORT_A_FREQUENCY_SCALE_3    equ (SGB_FREQUENCY_SCALE_3 << 0)
+def SGB_PORT_A_FREQUENCY_VOLUME_0   equ (SGB_FREQUENCY_VOLUME_0 << 2)
+def SGB_PORT_A_FREQUENCY_VOLUME_1   equ (SGB_FREQUENCY_VOLUME_1 << 2)
+def SGB_PORT_A_FREQUENCY_VOLUME_2   equ (SGB_FREQUENCY_VOLUME_2 << 2)
+def SGB_PORT_A_FREQUENCY_VOLUME_OFF equ (SGB_FREQUENCY_VOLUME_OFF << 2)
+
+; Port B parameters.
+def SGB_PORT_B_FREQUENCY_SCALE_0    equ (SGB_FREQUENCY_SCALE_0 << 4)
+def SGB_PORT_B_FREQUENCY_SCALE_1    equ (SGB_FREQUENCY_SCALE_1 << 4)
+def SGB_PORT_B_FREQUENCY_SCALE_2    equ (SGB_FREQUENCY_SCALE_2 << 4)
+def SGB_PORT_B_FREQUENCY_SCALE_3    equ (SGB_FREQUENCY_SCALE_3 << 4)
+def SGB_PORT_B_FREQUENCY_VOLUME_0   equ (SGB_FREQUENCY_VOLUME_0 << 6)
+def SGB_PORT_B_FREQUENCY_VOLUME_1   equ (SGB_FREQUENCY_VOLUME_1 << 6)
+def SGB_PORT_B_FREQUENCY_VOLUME_2   equ (SGB_FREQUENCY_VOLUME_2 << 6)
+def SGB_PORT_B_FREQUENCY_VOLUME_OFF equ (SGB_FREQUENCY_VOLUME_OFF << 6)
+
+; Declare a SOUND command.
+; \1 = port A effect
+; \2 = port B effect
+; \3 = parameters
+; \4 = BGM
+macro SgbPacket_Sound
+db SGB_HEADER_SOUND
+db \1, \2, \3, \4
+ds 11, SGB_PADDING
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; MLT_REQ macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Declare a MLT_REQ command with joypad count \1.
+macro SgbPacket_MltReq
+db SGB_HEADER_MLT_REQ, \1
+ds 14, SGB_PADDING
+endm
+
+; Declare a MLT_REQ command with one joypad.
+macro SgbPacket_MltReq_OneJoypad
+    SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
+endm
+
+; Declare a MLT_REQ command with two joypads.
+macro SgbPacket_MltReq_TwoJoypad
+    SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
+endm
+
+; Declare a MLT_REQ command with four joypads.
+macro SgbPacket_MltReq_FourJoypad
+    SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Miscellaneous macros
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; ATRC_EN flags.
+def ATRC_EN_ENABLE                  equ ($00)
+def ATRC_EN_DISABLE                 equ ($01)
+
+; Declare a ATRC_EN command.
+; \1 = flags
+macro SgbPacket_AtrcEn
+db SGB_HEADER_ATRC_EN, \1
+ds 14, SGB_PADDING
+endm
+
+; ICON_EN flags.
+def ICON_EN_DISABLE_PALETTE_MENU    equ ($01)
+def ICON_EN_DISABLE_CONTROLLER_MENU equ ($02)
+def ICON_EN_DISABLE_COMMANDS        equ ($04)
+
+; Declare a ICON_EN command.
+; \1 = flags
+macro SgbPacket_IconEn
+db SGB_HEADER_ICON_EN, \1
+ds 14, SGB_PADDING
+endm
+
+; PAL_PRI flags.
+def PAL_PRI_USER                    equ ($00)
+def PAL_PRI_ROM                     equ ($01)
+
+; Declare a PAL_PRI command.
+; \1 = flags
+macro SgbPacket_PalPri
+db SGB_HEADER_PAL_PRI, \1
+ds 14, SGB_PADDING
+endm
+
+; Mask types.
+def MASK_EN_CANCEL                  equ ($00)
+def MASK_EN_FREEZE                  equ ($01)
+def MASK_EN_BLACK                   equ ($02)
+def MASK_EN_COLOR0                  equ ($03)
+
+; Declare a MASK_EN command of type \1.
+macro SgbPacket_MaskEn
+db SGB_HEADER_MASK_EN, \1
+ds 14, SGB_PADDING
+endm
+
+; Declare a MASK_EN command of type CANCEL.
+macro SgbPacket_MaskEn_Cancel
+    SgbPacket_MaskEn MASK_EN_CANCEL
+endm
+
+; Declare a MASK_EN command of type FREEZE.
+macro SgbPacket_MaskEn_Freeze
+    SgbPacket_MaskEn MASK_EN_FREEZE
+endm
+
+; Declare a MASK_EN command of type BLACK.
+macro SgbPacket_MaskEn_Black
+    SgbPacket_MaskEn MASK_EN_BLACK
+endm
+
+; Declare a MASK_EN command of type COLOR0.
+macro SgbPacket_MaskEn_Color0
+    SgbPacket_MaskEn MASK_EN_COLOR0
+endm
+
+endc
+

@@ -1,0 +1,41 @@
+if !def(GB_INTERRUPTS_RGBINC)
+def GB_INTERRUPTS_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Vblank
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Wait for the vblank.
+macro gbWaitVblank
+    call _gbWaitVblank
+endm
+
+; Must be used when entering the vblank.
+macro gbFlagVblank
+    call _gbFlagVblank
+endm
+
+; Run the vblank watchdog.
+macro gbVblankWatchdog
+if def(GB_VBLANK_WATCHDOG)
+    call _gbVblankWatchdog
+endc
+endm
+
+; Check whether the vblank overflowed.
+macro gbCheckVblankOverflow
+if def(GB_VBLANK_OVERFLOW_CHECK)
+    ld a, [rLY]
+    cp a, LY_VBLANK
+    jr nc, .overflow\@
+        ; The vblank work went over.
+        gbMessage "[VBLANK] overflow triggered"
+        rst $00
+    .overflow\@
+endc
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+

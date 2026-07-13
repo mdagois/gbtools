@@ -1,0 +1,81 @@
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Memory
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "input_wram", wram0
+
+vGbInput::              ds sizeof_GB_INPUT
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Initialization
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_input_initialization", romx, bank[INIT_BANK]
+
+_gbInputInitialize:
+    ld a, $FF
+    ld [vGbInput + GB_INPUT_CURRENT], a
+    ld [vGbInput + GB_INPUT_PREVIOUS], a
+    ld [vGbInput + GB_INPUT_PRESSED], a
+    ld [vGbInput + GB_INPUT_RELEASED], a
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Update
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_input_update", rom0
+
+_gbInputUpdate::
+    ; Store the previous input into the struct and (c).
+    ld a, [vGbInput + GB_INPUT_CURRENT]
+    ld [vGbInput + GB_INPUT_PREVIOUS], a
+    ld c, a
+
+    ; Read the dpad.
+    ld a, JOYP_GET_CTRL_PAD
+    ldh [rP1], a
+    ldh a, [rP1]
+    ldh a, [rP1]
+
+    ; Put the dpad input into (b)'s high nibble.
+    swap a
+    and a, $F0
+    ld b, a
+
+    ; Read the buttons.
+    ld a, JOYP_GET_BUTTONS
+    ldh [rP1], a
+    ldh a, [rP1]
+    ldh a, [rP1]
+    ldh a, [rP1]
+    ldh a, [rP1]
+    ldh a, [rP1]
+    ldh a, [rP1]
+
+    ; Merge the buttons' input into (b)'s low nibble.
+    and a, $0F
+    or a, b
+    ld b, a
+
+    ; Store the current input.
+    ld [vGbInput + GB_INPUT_CURRENT], a
+
+    ; Disable input polling.
+    ld a, JOYP_GET_NONE
+    ldh [rP1], a
+
+    ; Compute and store pressed buttons.
+    ld a, c
+    cpl
+    or a, b
+    ld [vGbInput + GB_INPUT_PRESSED], a
+
+    ; Compute and store released buttons.
+    ld a, b
+    cpl
+    or a, c
+    ld [vGbInput + GB_INPUT_RELEASED], a
+
+    ret
+

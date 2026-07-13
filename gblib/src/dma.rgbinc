@@ -1,0 +1,82 @@
+if !def(GB_DMA_RGBINC)
+def GB_DMA_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; OAM DMA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Hides all sprites using DMA.
+macro gbDmaOamClear
+    call _gbDmaOamClear
+endm
+
+; Copy sprites data using DMA.
+; \1 = high byte of the source address
+macro gbDmaOamCopy
+    ld a, \1
+    call _gbDmaOamCopy
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; CGB DMA
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Start a general DMA copy.
+; \1 = high byte of the destination address (higher 3 bits always %100)
+; \2 = low byte of the destination address (lower 4 bits always %0000)
+; \3 = high byte of the source address
+; \4 = low byte of the source address (lower 4 bits always %0000)
+; \5 = size (data byte size / 16 - 1)
+macro gbDmaCopyGeneral
+    ld a, \1
+    ldh [rHDMA3], a
+    ld a, \2
+    ldh [rHDMA4], a
+    ld a, \3
+    ldh [rHDMA1], a
+    ld a, \4
+    ldh [rHDMA2], a
+    ld a, \5
+    ldh [rHDMA5], a
+endm
+
+; Start a general DMA copy.
+; \1 = the destination address (higher 3 bits always %100, lower 4 bits always %0000))
+; \2 = the source address (lower 4 bits always %0000)
+; \3 = size (data byte size / 16 - 1)
+macro gbDmaCopyGeneral16
+    gbDmaCopyGeneral high(\1), low(\1), high(\2), low(\2), \3
+endm
+
+; Start a hblank DMA copy.
+; \1 = high byte of the destination address (higher 3 bits always %100)
+; \2 = low byte of the destination address (lower 4 bits always %0000)
+; \3 = high byte of the source address
+; \4 = low byte of the source address (lower 4 bits always %0000)
+; \5 = size (data byte size / 16 - 1)
+macro gbDmaCopyHblank
+    ld a, \1
+    ldh [rHDMA3], a
+    ld a, \2
+    ldh [rHDMA4], a
+    ld a, \3
+    ldh [rHDMA1], a
+    ld a, \4
+    ldh [rHDMA2], a
+    ld a, \5
+    or a, HDMA5F_MODE_HBL
+    ldh [rHDMA5], a
+endm
+
+; Start a hblank DMA copy.
+; \1 = the destination address (higher 3 bits always %100, lower 4 bits always %0000))
+; \2 = the source address (lower 4 bits always %0000)
+; \3 = size (data byte size / 16 - 1)
+macro gbDmaCopyHblank16
+    gbDmaCopyHblank high(\1), low(\1), high(\2), low(\2), \3
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+endc
+

@@ -1,0 +1,139 @@
+include "gblib.rgbinc"
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; WRAM
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+SECTION "sample_wram", WRAM0
+
+WRAM_BG_SCROLL_X:       ds 3
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Graphics
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "graphics_data", rom0
+graphics_data_start:
+incbin "parallax.chr"
+incbin "parallax.tlm"
+graphics_data_end:
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Interrupts
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "vblank_interrupt", rom0[INT_HANDLER_VBLANK]
+    jp VblankInterrupt
+
+section "lcd_interrupt", rom0[INT_HANDLER_STAT]
+    push af
+    call LcdInterrupt
+    pop af
+    reti
+
+section "interrupt_handlers", rom0
+
+VblankInterrupt:
+    gbVblankWatchdog
+    gbFlagVblank
+    reti
+
+LcdInterrupt:
+    ; check whether we are on the target line
+    ld a, [rSTAT]
+    bit 2, a
+    ret z
+
+    ; enable the hblank interrupt (as we are on the target line)
+    ; and check if we are in hblank
+    ld b, a
+    ld a, STAT_MODE_0
+    ld [rSTAT], a
+    ld a, b
+    and a, %00000011
+    ret nz
+
+    ; sand scrolling setup
+    ld a, [rLY]
+    cp a, 47
+    jr nz, .middle_section
+        ld a, [WRAM_BG_SCROLL_X + 1]
+        ld [rSCX], a
+        ld a, 111
+        ld [rLYC], a
+        ld a, STAT_LYC
+        ld [rSTAT], a
+        ret
+    .middle_section
+
+    ; wall scrolling setup
+    ld a, [WRAM_BG_SCROLL_X + 2]
+    ld [rSCX], a
+    ld a, 255
+    ld [rLYC], a
+    xor a
+    ld [rSTAT], a
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Sample
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "sample", rom0
+
+gameInitialize::
+    ; init the palette
+    ld a, %11100100
+    ld [rBGP], a
+
+    gbCopyMemory VRAM_START, graphics_data_start, graphics_data_end - graphics_data_start
+
+    ; setup interrupts
+    ld a, 255
+    ld [rLYC], a
+    xor a
+    ld [rSTAT], a
+    ld a, IE_VBLANK | IE_STAT
+    ld [rIE], a
+    ei
+
+    ; set the graphics parameters and turn back LCD on
+    ld a, LCDC_ENABLE | LCDC_BLOCK21 | LCDC_BG_9800 | LCDC_BG_ON
+    ld [rLCDC], a
+
+    ret
+
+gameUpdate::
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Logic
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    ; update the 3 scrolling values
+    ld a, [WRAM_BG_SCROLL_X + 0]
+
+    inc a
+    ld [rSCX], a ; set the scrolling to the sky value
+    ld [WRAM_BG_SCROLL_X + 0], a
+
+    ld b, a
+    sla a
+    ld [WRAM_BG_SCROLL_X + 1], a
+
+    add a, b
+    ld [WRAM_BG_SCROLL_X + 2], a
+
+    ; set up the first target line interrupt
+    ld a, 47
+    ld [rLYC], a
+    ld a, STAT_LYC
+    ld [rSTAT], a
+
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+    ; Vblank
+    ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    gbWaitVblank
+    gbCheckVblankOverflow
+
+    ret
+
