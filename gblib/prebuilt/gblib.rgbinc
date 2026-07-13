@@ -3011,6 +3011,28 @@ macro gbToggleCpuSpeed
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Timer
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Start the timer.
+; \1 = timer clock (TAC_4KH, TAC_262KHZ, TAC_65KHZ, or TAC_16KHZ)
+; \2 = clock divide (1-256)
+macro gbStartTimer
+    ld a, 256 - \2
+    ld [rTMA], a
+    ld [rTIMA], a
+    ld [rDIV], a
+    ld a, TACF_START | \1
+    ld [rTAC], a
+endm
+
+; Stop the timer.
+macro gbStopTimer
+    ld a, TACF_STOP
+    ld [rTAC], a
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 endc
 

@@ -145,4 +145,6 @@ The library exposes macros to help you makes games covering the following aspect
 | gbCallFunctionFromTable | Call a function from a function table.<br>\1 = table, \2 = index memory location |
 | gbJumpToFunctionFromTable | Jump to a function from a function table.<br>\1 = table, \2 = index memory location |
 | gbToggleCpuSpeed | Toggle the CPU between single and double speed.<br>CGB only. |
+| gbStartTimer | Start the timer.<br>\1 = timer clock (TAC_4KH, TAC_262KHZ, TAC_65KHZ, or TAC_16KHZ)<br>\2 = clock divide (1-256) |
+| gbStopTimer | Stop the timer. |
 
