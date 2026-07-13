@@ -111,6 +111,7 @@ db SGB_HEADER_PAL01
 incbin "\1", \2, 8
 incbin "\1", \3, 6
 db SGB_PADDING
+endm
 
 ; Declare a PAL23 command loading from a .pal file \1 with
 ; byte offset \2 for the first palette and byte offset \3
@@ -120,6 +121,7 @@ db SGB_HEADER_PAL23
 incbin "\1", \2, 8
 incbin "\1", \3, 6
 db SGB_PADDING
+endm
 
 ; Declare a PAL03 command loading from a .pal file \1 with
 ; byte offset \2 for the first palette and byte offset \3
@@ -129,6 +131,7 @@ db SGB_HEADER_PAL03
 incbin "\1", \2, 8
 incbin "\1", \3, 6
 db SGB_PADDING
+endm
 
 ; Declare a PAL12 command loading from a .pal file \1 with
 ; byte offset \2 for the first palette and byte offset \3
@@ -138,6 +141,7 @@ db SGB_HEADER_PAL12
 incbin "\1", \2, 8
 incbin "\1", \3, 6
 db SGB_PADDING
+endm
 
 ; Declare a PAL_TRN command.
 macro SgbPacket_PalTrn
@@ -284,17 +288,17 @@ endm
 
 ; Declare a MLT_REQ command with one joypad.
 macro SgbPacket_MltReq_OneJoypad
-SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
+    SgbPacket_MltReq MLT_REQ_ONE_JOYPAD
 endm
 
 ; Declare a MLT_REQ command with two joypads.
 macro SgbPacket_MltReq_TwoJoypad
-SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
+    SgbPacket_MltReq MLT_REQ_TWO_JOYPADS
 endm
 
 ; Declare a MLT_REQ command with four joypads.
 macro SgbPacket_MltReq_FourJoypad
-SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
+    SgbPacket_MltReq MLT_REQ_FOUR_JOYPADS
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -349,22 +353,22 @@ endm
 
 ; Declare a MASK_EN command of type CANCEL.
 macro SgbPacket_MaskEn_Cancel
-SgbPacket_MaskEn MASK_EN_CANCEL
+    SgbPacket_MaskEn MASK_EN_CANCEL
 endm
 
 ; Declare a MASK_EN command of type FREEZE.
 macro SgbPacket_MaskEn_Freeze
-SgbPacket_MaskEn MASK_EN_FREEZE
+    SgbPacket_MaskEn MASK_EN_FREEZE
 endm
 
 ; Declare a MASK_EN command of type BLACK.
 macro SgbPacket_MaskEn_Black
-SgbPacket_MaskEn MASK_EN_BLACK
+    SgbPacket_MaskEn MASK_EN_BLACK
 endm
 
 ; Declare a MASK_EN command of type COLOR0.
 macro SgbPacket_MaskEn_Color0
-SgbPacket_MaskEn MASK_EN_COLOR0
+    SgbPacket_MaskEn MASK_EN_COLOR0
 endm
 
 endc
