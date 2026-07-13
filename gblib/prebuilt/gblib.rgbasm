@@ -7,33 +7,33 @@ def GB_CONSTANTS_RGBINC equ 1
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 rsreset
-def MAIN_BANK               rb 1
-def INIT_BANK               rb 1
-def GB_GAME_BANK_START      rb 0
+def MAIN_BANK                   rb 1
+def INIT_BANK                   rb 1
+def GB_GAME_BANK_START          rb 0
 
-def ADDRESS_SIZE            equ 2
+def ADDRESS_SIZE                equ 2
 
-def VRAM_START              equ $8000
-def WRAM_START              equ $C000
-def HRAM_START              equ $FF80
-def BANK_START              equ $4000
+def VRAM_START                  equ $8000
+def WRAM_START                  equ $C000
+def HRAM_START                  equ $FF80
+def BANK_START                  equ $4000
 
-def VRAM_BLOCK_0            equ $8000
-def VRAM_BLOCK_1            equ $8800
-def VRAM_BLOCK_2            equ $9000
-def VRAM_MAP_0              equ $9800
-def VRAM_MAP_1              equ $9C00
+def VRAM_BLOCK_0                equ $8000
+def VRAM_BLOCK_1                equ $8800
+def VRAM_BLOCK_2                equ $9000
+def VRAM_MAP_0                  equ $9800
+def VRAM_MAP_1                  equ $9C00
 
-def VRAM_BLOCK_SIZE         equ $800
-def VRAM_MAP_SIZE           equ $800
-def WRAM_BANK_SIZE          equ 4096
-def HRAM_SIZE               equ 127
-def OAM_ALIGNMENT           equ 256
+def VRAM_BLOCK_SIZE             equ $800
+def VRAM_MAP_SIZE               equ $800
+def WRAM_BANK_SIZE              equ 4096
+def HRAM_SIZE                   equ 127
+def OAM_ALIGNMENT               equ 256
 
-def LCD_LINE_COUNT          equ 154
+def LCD_LINE_COUNT              equ 154
 
-def SPRITE_PALETTE_COUNT    equ 8
-def BG_PALETTE_COUNT        equ 8
+def CGB_SPRITE_PALETTE_COUNT    equ 8
+def CGB_BG_PALETTE_COUNT        equ 8
 
 endc
 
@@ -3029,6 +3029,28 @@ endm
 macro gbStopTimer
     ld a, TACF_STOP
     ld [rTAC], a
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Serial
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Start a serial transfer.
+; \1 = byte to exchange.
+macro gbStartSerialTransfer
+    ld a, \1
+    ld [rSB], a
+    ld a, $81
+    ld [rSC], a
+endm
+
+; Wait for a serial transfer.
+; \1 = byte to exchange.
+macro gbWaitSerialTransfer
+    ld a, \1
+    ld [rSB], a
+    ld a, $80
+    ld [rSC], a
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

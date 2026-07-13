@@ -240,6 +240,28 @@ macro gbStopTimer
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Serial
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Start a serial transfer.
+; \1 = byte to exchange.
+macro gbStartSerialTransfer
+    ld a, \1
+    ld [rSB], a
+    ld a, $81
+    ld [rSC], a
+endm
+
+; Wait for a serial transfer.
+; \1 = byte to exchange.
+macro gbWaitSerialTransfer
+    ld a, \1
+    ld [rSB], a
+    ld a, $80
+    ld [rSC], a
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 endc
 
