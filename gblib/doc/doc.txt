@@ -99,6 +99,7 @@
 | SgbPacket_MltReq_FourJoypad | Declare a MLT_REQ command with four joypads. |
 | SgbPacket_AtrcEn | Declare a ATRC_EN command.<br>\1 = flags |
 | SgbPacket_IconEn | Declare a ICON_EN command.<br>\1 = flags |
+| SgbPacket_PalPri | Declare a PAL_PRI command.<br>\1 = flags |
 | SgbPacket_MaskEn | Declare a MASK_EN command of type \1. |
 | SgbPacket_MaskEn_Cancel | Declare a MASK_EN command of type CANCEL. |
 | SgbPacket_MaskEn_Freeze | Declare a MASK_EN command of type FREEZE. |

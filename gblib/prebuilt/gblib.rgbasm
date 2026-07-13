@@ -2713,6 +2713,17 @@ db SGB_HEADER_ICON_EN, \1
 ds 14, SGB_PADDING
 endm
 
+; PAL_PRI flags.
+def PAL_PRI_USER                    equ ($00)
+def PAL_PRI_ROM                     equ ($01)
+
+; Declare a PAL_PRI command.
+; \1 = flags
+macro SgbPacket_PalPri
+db SGB_HEADER_PAL_PRI, \1
+ds 14, SGB_PADDING
+endm
+
 ; Mask types.
 def MASK_EN_CANCEL                  equ ($00)
 def MASK_EN_FREEZE                  equ ($01)
