@@ -7,7 +7,7 @@ build_directory = build
 debug_description = build with debug features and extra checks enabled
 release_description = deliverable build
 
-compile_options = -v -Werror -Weverything -I../prebuilt
+compile_options = -v -Werror -Weverything -Icommon
 debug_compile_options = -DBUILD_DEBUG
 release_compile_options = -DBUILD_RELEASE
 
@@ -18,7 +18,7 @@ fix_options = --pad-value $(padding_value) --validate --mbc-type 0x1B --ram-size
 
 launch_options = --watch
 
-sources = ../prebuilt/gblib.rgbasm
+sources = common/gblib.rgbasm
 
 ########################################
 # parallax

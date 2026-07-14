@@ -6,7 +6,7 @@ sources = $(wildcard src/*.rgbinc) $(wildcard src/*.rgbasm)
 all: doc/doc.txt
 
 prebuilt/gblib.rgbinc prebuilt/gblib.rgbasm: $(sources) scripts/build_lib.py
-	@python scripts/build_lib.py
+	@python scripts/build_lib.py && cp prebuilt/* samples/common/
 
 doc/doc.txt: prebuilt/gblib.rgbinc scripts/generate_doc.py
 	@mkdir -p doc && python scripts/generate_doc.py $< $@
