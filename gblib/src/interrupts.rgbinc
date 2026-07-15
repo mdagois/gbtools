@@ -10,18 +10,6 @@ macro gbWaitVblank
     call _gbWaitVblank
 endm
 
-; Must be used when entering the vblank.
-macro gbFlagVblank
-    call _gbFlagVblank
-endm
-
-; Run the vblank watchdog.
-macro gbVblankWatchdog
-if def(GB_VBLANK_WATCHDOG)
-    call _gbVblankWatchdog
-endc
-endm
-
 ; Check whether the vblank overflowed.
 macro gbCheckVblankOverflow
 if def(GB_VBLANK_OVERFLOW_CHECK)

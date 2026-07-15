@@ -33,8 +33,6 @@
 | copy | Copy \2 into \1 through (a).<br>Example: copy [$1234], 10 |
 | copyh | Copy \2 into \1 through (a) using ldh.<br>Example: copyh [$FF84], 10 |
 | gbWaitVblank | Wait for the vblank. |
-| gbFlagVblank | Must be used when entering the vblank. |
-| gbVblankWatchdog | Run the vblank watchdog. |
 | gbCheckVblankOverflow | Check whether the vblank overflowed. |
 | gbGetHardware | Get the hardware type in register a. |
 | gbInt8_AbsA | Compute the absolute of register a. |

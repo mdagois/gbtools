@@ -27,8 +27,11 @@ endc
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Initialization
+; Update
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+section "gb_vblank_interrupt", rom0[INT_HANDLER_VBLANK]
+    jp _gbVblankInterrupt
 
 section "gb_interrupts_update", rom0
 
@@ -49,18 +52,10 @@ endc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-_gbFlagVblank::
+_gbVblankInterrupt:
     push af
-    ld a, 1
-    ld [vIsVblank], a
-    pop af
-    ret
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
 if def(GB_VBLANK_WATCHDOG)
-_gbVblankWatchdog::
-    push af
+    ; Run the vblank watchdog.
     push hl
 
     ; Check the watchdog.
@@ -76,6 +71,10 @@ _gbVblankWatchdog::
     res 0, [hl]
 
     pop hl
-    pop af
-    ret
 endc
+    ; Raise the vblank flag.
+    ld a, 1
+    ld [vIsVblank], a
+    pop af
+    reti
+

@@ -22,9 +22,6 @@ graphics_data_end:
 ; Interrupts
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-section "vblank_interrupt", rom0[INT_HANDLER_VBLANK]
-    jp VblankInterrupt
-
 section "lcd_interrupt", rom0[INT_HANDLER_STAT]
     push af
     call LcdInterrupt
@@ -32,11 +29,6 @@ section "lcd_interrupt", rom0[INT_HANDLER_STAT]
     reti
 
 section "interrupt_handlers", rom0
-
-VblankInterrupt:
-    gbVblankWatchdog
-    gbFlagVblank
-    reti
 
 LcdInterrupt:
     ; check whether we are on the target line

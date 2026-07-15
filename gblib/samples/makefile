@@ -34,7 +34,7 @@ parallax_link_options = --dmg
 
 template_description = a template from which to build applications
 template_sources = $(wildcard template/*.rgbasm)
-template_fix_options = --color-only
+template_fix_options = --color-compatible --sgb-compatible
 
 ########################################
 

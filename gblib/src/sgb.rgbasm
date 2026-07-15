@@ -62,7 +62,7 @@ endr
 ; Update
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-section "sgb_update", romx
+section "sgb_update", rom0
 
 _WaitFrames:
     ; c holds the number of frames to wait.
