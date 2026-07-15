@@ -13,7 +13,9 @@ endm
 ; Run checks and gather statistics about the vblank.
 ; Call after the vblank operations are done.
 macro gbMarkVblankEnd
+if def(GB_VBLANK_OVERFLOW_CHECK) || def(GB_RECORD_LINES)
     call _gbMarkVblankEnd
+endc
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

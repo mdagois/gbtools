@@ -6,8 +6,8 @@ section "interrupt_wram", wram0
 
 vGbIsVblank:                    ds 1
 if def(GB_RECORD_LINES)
-vGbUpdateEndLine:               ds 1
-vGbVblankEndLine:               ds 1
+vGbPreVblankEndLine:            ds 1
+vGbPostVblankEndLine:           ds 1
 endc
 if def(GB_VBLANK_WATCHDOG)
 vGbVblankWatchdog:              ds 1
@@ -78,7 +78,7 @@ section "gb_vblank_interrupt", rom0[INT_HANDLER_VBLANK]
 section "gb_interrupts_update", rom0
 
 _gbWaitVblank::
-    gbRecordHighestLine vGbUpdateEndLine
+    gbRecordHighestLine vGbPreVblankEndLine
 if def(GB_VBLANK_WATCHDOG)
     ld hl, vGbVblankWatchdog
     set 0, [hl]
@@ -97,7 +97,13 @@ endc
 
 _gbMarkVblankEnd::
     gbCheckVblankOverflow
-    gbRecordHighestLine vGbVblankEndLine
+    gbRecordHighestLine vGbPostVblankEndLine
+if def(GB_RECORD_LINES)
+    ld a, [vGbPreVblankEndLine]
+    gbMessage "Pre-vblank end line: $%A%"
+    ld a, [vGbPostVblankEndLine]
+    gbMessage "Post-vblank end line: $%A%"
+endc
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

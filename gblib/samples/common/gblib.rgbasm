@@ -1,4 +1,28 @@
 
+if !def(GB_DEF_RGBINC)
+def GB_DEF_RGBINC equ 1
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+; Inferences
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+if def(BUILD_DEBUG)
+def GB_DEBUG_STACK        equ 1
+def GB_DEBUG_BREAKPOINT   equ 1
+def GB_DEBUG_MESSAGES     equ 1
+def GB_DEBUG_CHECKS       equ 1
+def GB_DEBUG_ASSERTS      equ 1
+def GB_VBLANK_WATCHDOG    equ 1
+def GB_RECORD_LINES       equ 1
+endc
+
+; Message support is required by checks and asserts
+if !def(GB_DEBUG_MESSAGES) && (def(GB_DEBUG_CHECKS) || def(GB_DEBUG_ASSERTS))
+def GB_DEBUG_MESSAGES     equ 1
+endc
+
+endc
+
 if !def(GB_CONSTANTS_RGBINC)
 def GB_CONSTANTS_RGBINC equ 1
 
@@ -39,25 +63,6 @@ endc
 
 if !def(GB_DEBUG_RGBINC)
 def GB_DEBUG_RGBINC equ 1
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Inferences
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-if def(BUILD_DEBUG)
-def GB_DEBUG_STACK        equ 1
-def GB_DEBUG_BREAKPOINT   equ 1
-def GB_DEBUG_MESSAGES     equ 1
-def GB_DEBUG_CHECKS       equ 1
-def GB_DEBUG_ASSERTS      equ 1
-def GB_VBLANK_WATCHDOG    equ 1
-def GB_RECORD_LINES       equ 1
-endc
-
-; Message support is required by checks and asserts
-if !def(GB_DEBUG_MESSAGES) && (def(GB_DEBUG_CHECKS) || def(GB_DEBUG_ASSERTS))
-def GB_DEBUG_MESSAGES     equ 1
-endc
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Breakpoints
@@ -1619,7 +1624,9 @@ endm
 ; Run checks and gather statistics about the vblank.
 ; Call after the vblank operations are done.
 macro gbMarkVblankEnd
+if def(GB_VBLANK_OVERFLOW_CHECK) || def(GB_RECORD_LINES)
     call _gbMarkVblankEnd
+endc
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3166,8 +3173,8 @@ section "interrupt_wram", wram0
 
 vGbIsVblank:                    ds 1
 if def(GB_RECORD_LINES)
-vGbUpdateEndLine:               ds 1
-vGbVblankEndLine:               ds 1
+vGbPreVblankEndLine:            ds 1
+vGbPostVblankEndLine:           ds 1
 endc
 if def(GB_VBLANK_WATCHDOG)
 vGbVblankWatchdog:              ds 1
@@ -3238,7 +3245,7 @@ section "gb_vblank_interrupt", rom0[INT_HANDLER_VBLANK]
 section "gb_interrupts_update", rom0
 
 _gbWaitVblank::
-    gbRecordHighestLine vGbUpdateEndLine
+    gbRecordHighestLine vGbPreVblankEndLine
 if def(GB_VBLANK_WATCHDOG)
     ld hl, vGbVblankWatchdog
     set 0, [hl]
@@ -3257,7 +3264,13 @@ endc
 
 _gbMarkVblankEnd::
     gbCheckVblankOverflow
-    gbRecordHighestLine vGbVblankEndLine
+    gbRecordHighestLine vGbPostVblankEndLine
+if def(GB_RECORD_LINES)
+    ld a, [vGbPreVblankEndLine]
+    gbMessage "Pre-vblank end line: $%A%"
+    ld a, [vGbPostVblankEndLine]
+    gbMessage "Post-vblank end line: $%A%"
+endc
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
