@@ -10,17 +10,10 @@ macro gbWaitVblank
     call _gbWaitVblank
 endm
 
-; Check whether the vblank overflowed.
-macro gbCheckVblankOverflow
-if def(GB_VBLANK_OVERFLOW_CHECK)
-    ld a, [rLY]
-    cp a, LY_VBLANK
-    jr nc, .overflow\@
-        ; The vblank work went over.
-        gbMessage "[VBLANK] overflow triggered"
-        rst $00
-    .overflow\@
-endc
+; Run checks and gather statistics about the vblank.
+; Call after the vblank operations are done.
+macro gbMarkVblankEnd
+    call _gbMarkVblankEnd
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

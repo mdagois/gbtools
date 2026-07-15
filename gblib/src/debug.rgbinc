@@ -46,32 +46,6 @@ endc
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Line recording
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Record the current line into \1 if the line is bigger than the current stored
-; one.
-macro gbRecordHighestLine
-if def(GB_RECORD_LINES)
-.recordhighestline\@
-    ldh a, [rLY]
-    cp a, LY_VBLANK
-    jr c, .vblank\@
-        sub a, LY_VBLANK
-        jr .vblank_done\@
-    .vblank\@
-        add a, LCD_LINE_COUNT - LY_VBLANK
-    .vblank_done\@
-    ld hl, \1
-    cp a, [hl]
-    jr c, .record\@
-        ld [hl], a
-    .record\@
-endc
-endm
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Checks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 

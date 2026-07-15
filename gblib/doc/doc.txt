@@ -2,7 +2,6 @@
 | :--- | :--- |
 | gbBreak | Add a code breakpoint. |
 | gbMessage | Output debug message \1. |
-| gbRecordHighestLine | Record the current line into \1 if the line is bigger than the current stored<br>one. |
 | gbCheckZ | Output debug message \3 when bit \2 in byte \1 is raised. |
 | gbCheckNZ | Output debug message \3 when bit \2 in byte \1 is raised. |
 | gbCheckLT | Output debug message \3 when \1 >= \2. |
@@ -33,7 +32,7 @@
 | copy | Copy \2 into \1 through (a).<br>Example: copy [$1234], 10 |
 | copyh | Copy \2 into \1 through (a) using ldh.<br>Example: copyh [$FF84], 10 |
 | gbWaitVblank | Wait for the vblank. |
-| gbCheckVblankOverflow | Check whether the vblank overflowed. |
+| gbMarkVblankEnd | Run checks and gather statistics about the vblank.<br>Call after the vblank operations are done. |
 | gbGetHardware | Get the hardware type in register a. |
 | gbInt8_AbsA | Compute the absolute of register a. |
 | gbInt16_Load | Load the value of a 16-bit register from memory.<br>\1: destination register<br>\2: source address |

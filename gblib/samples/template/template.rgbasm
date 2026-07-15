@@ -9,9 +9,6 @@ _GameWramStart:
 
 vOam:                   ds OAM_SIZE
 
-vUpdateEndLine:         ds 1
-vVblankEndLine:         ds 1
-
 _GameWramEnd:
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -45,13 +42,11 @@ section "game_update", rom0
 gameUpdate::
     ; Logic
     gbInputUpdate
-    gbRecordHighestLine vUpdateEndLine
 
     ; Vblank
     gbWaitVblank
     gbDmaOamCopy high(vOam)
-    gbCheckVblankOverflow
-    gbRecordHighestLine vVblankEndLine
+    gbMarkVblankEnd
 
     ret
 

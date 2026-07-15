@@ -85,32 +85,6 @@ endc
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-; Line recording
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-
-; Record the current line into \1 if the line is bigger than the current stored
-; one.
-macro gbRecordHighestLine
-if def(GB_RECORD_LINES)
-.recordhighestline\@
-    ldh a, [rLY]
-    cp a, LY_VBLANK
-    jr c, .vblank\@
-        sub a, LY_VBLANK
-        jr .vblank_done\@
-    .vblank\@
-        add a, LCD_LINE_COUNT - LY_VBLANK
-    .vblank_done\@
-    ld hl, \1
-    cp a, [hl]
-    jr c, .record\@
-        ld [hl], a
-    .record\@
-endc
-endm
-
-
-;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Checks
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -1642,17 +1616,10 @@ macro gbWaitVblank
     call _gbWaitVblank
 endm
 
-; Check whether the vblank overflowed.
-macro gbCheckVblankOverflow
-if def(GB_VBLANK_OVERFLOW_CHECK)
-    ld a, [rLY]
-    cp a, LY_VBLANK
-    jr nc, .overflow\@
-        ; The vblank work went over.
-        gbMessage "[VBLANK] overflow triggered"
-        rst $00
-    .overflow\@
-endc
+; Run checks and gather statistics about the vblank.
+; Call after the vblank operations are done.
+macro gbMarkVblankEnd
+    call _gbMarkVblankEnd
 endm
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3197,7 +3164,11 @@ _gbInputUpdate::
 
 section "interrupt_wram", wram0
 
-vIsVblank:                      ds 1
+vGbIsVblank:                    ds 1
+if def(GB_RECORD_LINES)
+vGbUpdateEndLine:               ds 1
+vGbVblankEndLine:               ds 1
+endc
 if def(GB_VBLANK_WATCHDOG)
 vGbVblankWatchdog:              ds 1
 endc
@@ -3210,7 +3181,7 @@ section "gb_interrupts_initialization", romx, bank[INIT_BANK]
 
 _gbInterruptsInitialize::
     xor a
-    ld [vIsVblank], a
+    ld [vGbIsVblank], a
 
 if def(GB_VBLANK_WATCHDOG)
     ; Reset the vblank watchdog.
@@ -3223,17 +3194,56 @@ endc
 ; Update
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
+; Record the current line into \1 if the line is bigger than the current stored
+; one.
+macro gbRecordHighestLine
+if def(GB_RECORD_LINES)
+.recordhighestline\@
+    ldh a, [rLY]
+    cp a, LY_VBLANK
+    jr c, .vblank\@
+        sub a, LY_VBLANK
+        jr .vblank_done\@
+    .vblank\@
+        add a, LCD_LINE_COUNT - LY_VBLANK
+    .vblank_done\@
+    ld hl, \1
+    cp a, [hl]
+    jr c, .record\@
+        ld [hl], a
+    .record\@
+endc
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; Check whether the vblank overflowed.
+macro gbCheckVblankOverflow
+if def(GB_VBLANK_OVERFLOW_CHECK)
+    ld a, [rLY]
+    cp a, LY_VBLANK
+    jr nc, .overflow\@
+        ; The vblank work went over.
+        gbMessage "[VBLANK] overflow triggered"
+        rst $00
+    .overflow\@
+endc
+endm
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
 section "gb_vblank_interrupt", rom0[INT_HANDLER_VBLANK]
     jp _gbVblankInterrupt
 
 section "gb_interrupts_update", rom0
 
 _gbWaitVblank::
+    gbRecordHighestLine vGbUpdateEndLine
 if def(GB_VBLANK_WATCHDOG)
     ld hl, vGbVblankWatchdog
     set 0, [hl]
 endc
-    ld hl, vIsVblank
+    ld hl, vGbIsVblank
     xor a
     .wait_vblank
         halt
@@ -3241,6 +3251,13 @@ endc
         cp a, [hl]
         jr z, .wait_vblank
         ld [hl], a
+    ret
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+_gbMarkVblankEnd::
+    gbCheckVblankOverflow
+    gbRecordHighestLine vGbVblankEndLine
     ret
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -3267,7 +3284,7 @@ if def(GB_VBLANK_WATCHDOG)
 endc
     ; Raise the vblank flag.
     ld a, 1
-    ld [vIsVblank], a
+    ld [vGbIsVblank], a
     pop af
     reti
 
