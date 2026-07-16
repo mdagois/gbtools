@@ -15,10 +15,35 @@ _GameWramEnd:
 ; Initialization
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
-section "game_initialization", rom0
+section "game_initialization", romx, bank[INIT_BANK]
 
 gameInitialize::
+    gbGetHardware
+    cp a, HARDWARE_MODEL_CGB
+    jr z, _initializeCGB
+    cp a, HARDWARE_MODEL_GBA
+    jr z, _initializeGBA
+    cp a, HARDWARE_MODEL_SGB1
+    jr z, _initializeSGB
+    cp a, HARDWARE_MODEL_SGB2
+    jr z, _initializeSGB
+    jr _initializeDMG
+
+_initializeCGB:
     gbToggleCpuSpeed
+    jr _initialize
+
+_initializeGBA:
+    jr _initializeCGB
+
+_initializeSGB:
+    gbSgbInitializeDevice
+    jr _initialize
+
+_initializeDMG:
+    jr _initialize
+
+_initialize:
     gbDmaOamClear
 
     ; Clear the WRAM.
