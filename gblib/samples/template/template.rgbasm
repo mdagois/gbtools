@@ -20,30 +20,31 @@ section "game_initialization", romx, bank[INIT_BANK]
 gameInitialize::
     gbGetHardware
     cp a, HARDWARE_MODEL_CGB
-    jr z, _initializeCGB
+    jr z, _InitializeCGB
     cp a, HARDWARE_MODEL_GBA
-    jr z, _initializeGBA
+    jr z, _InitializeGBA
     cp a, HARDWARE_MODEL_SGB1
-    jr z, _initializeSGB
+    jr z, _InitializeSGB
     cp a, HARDWARE_MODEL_SGB2
-    jr z, _initializeSGB
-    jr _initializeDMG
+    jr z, _InitializeSGB
+    jr _InitializeDMG
 
-_initializeCGB:
+_InitializeCGB:
     gbToggleCpuSpeed
-    jr _initialize
+    jr _InitializeCommon
 
-_initializeGBA:
-    jr _initializeCGB
+_InitializeGBA:
+    jr _InitializeCGB
 
-_initializeSGB:
+_InitializeSGB:
     gbSgbInitializeDevice
-    jr _initialize
+    jr _InitializeDMG
 
-_initializeDMG:
-    jr _initialize
+_InitializeDMG:
+    copyh [rBGP], %11100100
+    jr _InitializeCommon
 
-_initialize:
+_InitializeCommon:
     gbDmaOamClear
 
     ; Clear the WRAM.
